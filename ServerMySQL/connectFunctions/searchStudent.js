@@ -1,0 +1,17 @@
+module.exports = (app, mysqlConnection) => {
+  app.get('/students2/search/:query', (req, res) => {
+    const { query } = req.params;
+    mysqlConnection.query(
+      `SELECT * FROM Students2 INNER JOIN grades ON
+        students2.students_number = grades.students_number 
+        WHERE students2.students_name LIKE '%${query}%' OR students2.students_number LIKE '%${query}%';`,
+      (err, rows, fields) => {
+        if (rows.length) {
+          res.json(rows);
+        } else {
+          res.json('NotFound');
+        } 
+      }
+    );
+  });
+};
