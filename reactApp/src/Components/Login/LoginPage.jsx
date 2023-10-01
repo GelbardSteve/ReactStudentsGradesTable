@@ -2,8 +2,8 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { AdminForm } from '../Components/AdminForm/AdminForm';
-import { StudentLoginForm } from '../Components/StudentForm/StudentLoginForm';
+import { AdminLoginForm } from '../../UsersLoginForm/AdminLoginForm/AdminLoginForm';
+import { StudentLoginForm } from '../../UsersLoginForm/StudentLoginForm/StudentLoginForm';
 import { useState } from 'react';
 import { useCallback } from 'react';
 import { useEffect } from 'react';
@@ -106,7 +106,7 @@ export const LoginPage = () => {
           }}
         >
           {studentComponent === 'admin' ? (
-            <AdminForm Controller={Controller} control={control} errors={errors} trigger={trigger} />
+            <AdminLoginForm Controller={Controller} control={control} errors={errors} trigger={trigger} />
           ) : (
             <StudentLoginForm Controller={Controller} control={control} errors={errors} trigger={trigger} />
           )}

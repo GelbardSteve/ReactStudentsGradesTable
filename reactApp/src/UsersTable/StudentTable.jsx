@@ -1,6 +1,8 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { Table } from '../Components/Table/Table';
+import { LogOutButton } from '../Components/Buttons/LogOutButton';
 
 export const StudentTable = () => {
   const navigate = useNavigate();
@@ -29,36 +31,9 @@ export const StudentTable = () => {
   }, [navigate]);
 
   return (
-    <div className="m-4">
-      <div className="d-flex justify-content-between">
-        <div></div>
-        <button type="button" className="btn btn-info mb-4" onClick={handleLogOut}>
-          Log-out
-        </button>
-      </div>
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th scope="col">{'Student name'}</th>
-            <th scope="col">{'Student number'}</th>
-            <th scope="col">{'Student grades'}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {studentData.map((user) => {
-            console.log(user)
-            return (
-              <React.Fragment key={user.students_id}>
-                <tr>
-                  <td>{user.students_name}</td>
-                  <td>{user.students_number}</td>
-                  <td>{user.studentsGrades}</td>
-                </tr>
-              </React.Fragment>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <>
+      <LogOutButton handleLogOut={handleLogOut} />
+      <Table tableData={studentData} permission={false} />
+    </>
   );
 };

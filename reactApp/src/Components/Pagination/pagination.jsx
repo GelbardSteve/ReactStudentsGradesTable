@@ -11,7 +11,6 @@ export const Pagination = ({ itemsCount, pageSize, onPageChange, currentPage }) 
       <ul className="pagination"> 
         {pages.map(page => {
         return (
-          
           <li key={page} className={ page === currentPage ? 'page-item active' : 'page-item'}>
             <button onClick={() => onPageChange(page)} className="page-link">
               {page}

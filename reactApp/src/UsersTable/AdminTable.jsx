@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import axios from 'axios';
-import { useCallback } from 'react';
-import { AddUserModal } from '../JustTry/AddUserModal';
-import { Pagination } from '../pagination/pagination';
-import { orderBy } from 'lodash';
-import { Table } from '../Components/Table';
+import { Table } from '../Components/Table/Table';
 import { useNavigate } from 'react-router-dom';
+import { orderBy } from 'lodash';
+import { AddUserModal } from '../UsersActionsModal/AddUserModal';
+import { LogOutButton } from '../Components/Buttons/LogOutButton';
 
-export const ParentComponent = () => {
+export const AdminTable = () => {
   const navigate = useNavigate();
   const getTotalPageFromLocalStorage = localStorage.getItem('totalPages');
   const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('inputValue')) || 1);
@@ -94,10 +92,25 @@ export const ParentComponent = () => {
     getSortedData();
   }, [getSortedData]);
 
+  const handleSearchInputChange = useCallback(
+    async (e, setFormData) => {
+      const { name, value } = e.target;
+      const studentSearch = value ? await axios.get(`http://localhost:3000/students2/search/${value}`) : '';
+
+      studentSearch.data !== 'NotFound' && value !== '' ? setState(studentSearch.data) : setState(originalData); // Reset state to original data
+
+      setFormData({
+        ...setFormData,
+        [name]: value,
+      });
+    },
+    [setState, originalData]
+  );
+
   const handleLogOut = useCallback(() => {
     const userAuthentication = localStorage.getItem('adminAuthentication');
     axios.post('http://localhost:3000/remove/authentication', { authentication: userAuthentication }).then((res) => {
-    if (res.data === 200) {
+      if (res.data === 200) {
         localStorage.removeItem('adminAuthentication');
         navigate('/');
       }
@@ -107,27 +120,23 @@ export const ParentComponent = () => {
   return (
     <>
       <AddUserModal isModalOpen={isModalOpen} closeModal={closeModal} onCreate={handleCreate} />
-      <div className="m-4">
-        <div className="d-flex justify-content-between">
-          <div></div>
-          <button type="button" className="btn btn-info mb-4" onClick={handleLogOut}>
-            Log-out
-          </button>
-        </div>
-        <Table
-          tableData={state}
-          handleColumnHeaderClick={handleColumnHeaderClick}
-          selectedStudentId={selectedStudentId}
-          closeEditModal={closeEditModal}
-          handleCreate={handleCreate}
-          openEditModal={openEditModal}
-          handleDelete={handleDelete}
-          setState={setState}
-          originalData={originalData}
-          openModal={openModal}
-        />
-        <Pagination itemsCount={studentsCount} pageSize={pageSize} currentPage={currentPage} onPageChange={handlePageChange} />
-      </div>
+      <LogOutButton handleLogOut={handleLogOut} />
+      <Table
+        tableData={state}
+        permission={true}
+        openModal={openModal}
+        handleSearchInputChange={handleSearchInputChange}
+        handleColumnHeaderClick={handleColumnHeaderClick}
+        selectedStudentId={selectedStudentId}
+        closeEditModal={closeEditModal}
+        handleCreate={handleCreate}
+        openEditModal={openEditModal}
+        handleDelete={handleDelete}
+        studentsCount={studentsCount}
+        pageSize={pageSize}
+        currentPage={currentPage}
+        handlePageChange={handlePageChange}
+      />
     </>
   );
 };
