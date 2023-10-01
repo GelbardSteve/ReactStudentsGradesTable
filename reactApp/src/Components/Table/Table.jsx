@@ -3,6 +3,7 @@ import { SearchInput } from '../Search/Search';
 import { EditUserModal } from '../../UsersActionsModal/EditUserModal';
 import { DeleteButton } from '../Buttons/DeleteButton';
 import { EditButton } from '../Buttons/EditButton';
+import { CreateNewUser } from '../Buttons/CreateNewUser';
 import { Pagination } from '../Pagination/pagination';
 
 export const Table = ({
@@ -25,9 +26,7 @@ export const Table = ({
     <div className="m-4">
       {permission && (
         <>
-          <button onClick={openModal} type="button" className="btn btn-primary">
-            Create new user
-          </button>
+          <CreateNewUser openModal={openModal} />
           <SearchInput handleSearchDara={handleSearchInputChange} />
         </>
       )}
