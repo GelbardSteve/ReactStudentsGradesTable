@@ -22,13 +22,19 @@ export const Table = ({
   currentPage,
   handlePageChange,
 }) => {
+  const containerClass = {
+    display: "flex",
+    alignItems: "center"
+  }
+
+
   return (
     <div className="m-4">
       {permission && (
-        <>
+        <div style={containerClass}>
           <CreateNewUser openModal={openModal} />
           <SearchInput handleSearchDara={handleSearchInputChange} />
-        </>
+        </div>
       )}
       <table className="table table-hover table-fixed">
         <thead>

@@ -23,9 +23,8 @@ export const LoginPage = () => {
   } = useForm();
 
   const customStyles = {
-    padding: '5px',
-    width: '26%',
-    margin: '39px 0 -68px 9%',
+    width: "34%",
+    margin: "40px auto 0 auto",
     pointer: {
       cursor: 'pointer',
     },
