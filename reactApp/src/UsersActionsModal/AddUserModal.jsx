@@ -156,7 +156,7 @@ export const AddUserModal = ({ isModalOpen, closeModal, onCreate }) => {
             <button
               disabled={!isValid || isUserExist}
               type="submit"
-              className="btn btn-primary btn-block p-3 w-25 mt-4 ml-auto mr-auto"
+              className="btn btn-primary btn-block p-2 w-25 mt-4 ml-auto mr-auto"
             >
               Create a user
             </button>
