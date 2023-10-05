@@ -43,7 +43,7 @@ export const Table = ({
               {'Student name'}
             </th>
             <th scope="col">{'Student number'}</th>
-            <th scope="col">{'Students info'}</th>
+            <th scope="col">{'Students grades | info'}</th>
             {permission && (
               <>
                 <th scope="col">{'Edit user'}</th>
