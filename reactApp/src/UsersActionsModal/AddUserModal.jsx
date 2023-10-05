@@ -1,64 +1,56 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { CustomModal } from '../Components/Modal/Modal';
+import { useForm, Controller } from 'react-hook-form';
 
 export const AddUserModal = ({ isModalOpen, closeModal, onCreate }) => {
   const [isUserExist, setIsUserExist] = useState(false);
+  const [userExistError, setUserExistError] = useState();
 
-  const [formData, setFormData] = useState({
-    studentName: '',
-    studentsNumber: '',
-    studentsGrades: '',
-  });
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isValid },
+    trigger,
+    reset,
+  } = useForm();
 
-  const handleInputChange = async (e) => {
-    const { name, value } = e.target;
+  const baseUrl = 'http://localhost:3000';
 
-    if (name === 'studentsNumber' && value) {
-      await axios.get(`http://localhost:3000/students2/search/${value}`).then((res) => {
+  const handleInputChange = async (value) => {
+    setIsUserExist(false);
+    if (value) {
+      await axios.get(`${baseUrl}/students2/search/${value}`).then((res) => {
         if (res.data !== 'NotFound') {
           setIsUserExist(true);
+          setUserExistError('User number already exists');
         } else {
           setIsUserExist(false);
         }
       });
     }
-
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const resetForm = () => {
-    setFormData({
-      studentName: '',
-      studentsNumber: '',
-      studentsGrades: '',
-    });
   };
 
   const handleCloseTheModal = () => {
     setIsUserExist(false);
-    resetForm();
+    reset();
     closeModal();
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  //Handle form submission
+  const handleSubmitCreateNewUser = async (data) => {
     if (isUserExist) {
       return;
     }
     // You can perform actions with the form data here
-    const forStudentsTable = { students_name: formData.studentName, students_number: formData.studentsNumber };
-    const forGradesTable = { studentsGrades: formData.studentsGrades, students_number: formData.studentsNumber };
-    axios.post('http://localhost:3000/students2', forStudentsTable).then(() => onCreate(forStudentsTable));
+    const forStudentsTable = { students_name: data.studentName, students_number: data.studentsNumber };
+    const forGradesTable = { studentsGrades: data.studentsGrades, students_number: data.studentsNumber };
+    axios.post(`${baseUrl}/students2`, forStudentsTable).then(() => onCreate(forStudentsTable));
     axios
-      .post('http://localhost:3000/grades', forGradesTable)
+      .post(`${baseUrl}/grades`, forGradesTable)
       .then(() => onCreate())
       .then(() => {
-        resetForm();
+        reset();
         closeModal();
       });
   };
@@ -71,44 +63,102 @@ export const AddUserModal = ({ isModalOpen, closeModal, onCreate }) => {
         header={
           <>
             <h5 className="modal-title">New message</h5>
-            <button type="button" className="close" onClick={handleCloseTheModal}>
+            <button
+              type="button"
+              className="close"
+              onClick={handleCloseTheModal}
+            >
               <span aria-hidden="true">&times;</span>
             </button>
           </>
         }
       >
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(handleSubmitCreateNewUser)}>
           <div className="form-group">
-            <label htmlFor="studentName" className="col-form-label">
-              Students Name
-            </label>
-            <input id="studentName" name="studentName" value={formData.studentName} onChange={handleInputChange} required type="text" className="form-control" />
-          </div>
-          <div className="form-group">
-            <label htmlFor="studentsNumber" className="col-form-label">
-              Students Number
-            </label>
-            <input
-              id="studentsNumber"
-              name="studentsNumber"
-              value={formData.studentsNumber}
-              onChange={handleInputChange}
-              required
-              type="number"
-              className={`form-control ${isUserExist ? 'is-invalid' : ''}`}
-            />
-            {isUserExist && <div className="">User already exists.</div>}
-          </div>
-          <div className="form-group">
-            <label htmlFor="studentsGrades" className="col-form-label">
-              Students Grades
-            </label>
-            <textarea id="studentsGrades" name="studentsGrades" value={formData.studentsGrades} onChange={handleInputChange} required className="form-control"></textarea>
+            <div className="form-outline mb-4">
+              <label htmlFor="studentName">Students Name</label>
+              <Controller
+                name="studentName"
+                control={control}
+                rules={{ required: 'Name is required' }}
+                defaultValue=""
+                render={({ field }) => (
+                  <>
+                    <input
+                      {...field}
+                      id="studentName"
+                      name="studentName"
+                      required
+                      type="text"
+                      className={`form-control ${errors.studentName ? 'is-invalid' : ''}`}
+                      onBlur={() => trigger('studentName')}
+                    />
+                    {errors.studentName && <p className="invalid-feedback">{errors.studentName.message}</p>}
+                  </>
+                )}
+              />
+            </div>
+            <div className="form-outline mb-4">
+              <label htmlFor="studentsNumber">Students Number</label>
+              <Controller
+                name="studentsNumber"
+                control={control}
+                rules={{ required: 'Number is required' }}
+                defaultValue=""
+                render={({ field }) => (
+                  <>
+                    <input
+                      {...field}
+                      id="studentsNumber"
+                      name="studentsNumber"
+                      required
+                      type="number"
+                      className={`form-control ${errors.studentsNumber || isUserExist ? 'is-invalid' : ''}`}
+                      onChange={(e) => {
+                        const { value } = e.target;
+                        field.onChange(value);
+                        handleInputChange(value);
+                      }}
+                      onBlur={() => trigger('studentsNumber')}
+                    />
+                    {(errors.studentsNumber || isUserExist) && (
+                      <p className="invalid-feedback">{isUserExist ? userExistError : errors.studentsNumber.message}</p>
+                    )}
+                  </>
+                )}
+              />
+            </div>
+            <div className="form-outline mb-4">
+              <label htmlFor="studentsGrades">Students Grades</label>
+              <Controller
+                name="studentsGrades"
+                control={control}
+                rules={{ required: 'Grades is required' }}
+                defaultValue=""
+                render={({ field }) => (
+                  <>
+                    <textarea
+                      {...field}
+                      id="studentsGrades"
+                      name="studentsGrades"
+                      required
+                      className={`form-control ${errors.studentsGrades ? 'is-invalid' : ''}`}
+                      onBlur={() => trigger('studentsGrades')}
+                    />
+                    {errors.studentsGrades && <p className="invalid-feedback">{errors.studentsGrades.message}</p>}
+                  </>
+                )}
+              />
+            </div>
           </div>
 
           <div className="modal-footer">
-            <button disabled={isUserExist} type="submit" className="btn btn-primary">
-              Send message
+            <button
+              disabled={!isValid || isUserExist}
+              type="submit"
+              className="btn btn-primary btn-block p-3 w-25 mt-4 ml-auto mr-auto"
+            >
+              Create a user
             </button>
           </div>
         </form>

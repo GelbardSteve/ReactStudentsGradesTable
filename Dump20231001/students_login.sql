@@ -1,6 +1,6 @@
--- MySQL dump 10.13  Distrib 8.0.34, for macos13 (arm64)
+-- MySQL dump 10.13  Distrib 8.0.34, for macos13 (x86_64)
 --
--- Host: localhost    Database: students
+-- Host: 127.0.0.1    Database: students
 -- ------------------------------------------------------
 -- Server version	8.1.0
 
@@ -37,7 +37,7 @@ CREATE TABLE `login` (
 
 LOCK TABLES `login` WRITE;
 /*!40000 ALTER TABLE `login` DISABLE KEYS */;
-INSERT INTO `login` VALUES (1,'admin','admin','84597f253309a6bfe9e2d66eef7d264ad6414008'),(2,'admin2','admin2',NULL),(3,'steve','st491990',NULL);
+INSERT INTO `login` VALUES (1,'admin','admin','5f103e1a4e10325f9936f7e6fb560dd050e626fe'),(2,'admin2','admin2',NULL),(3,'steve','st491990',NULL);
 /*!40000 ALTER TABLE `login` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-01  9:59:13
+-- Dump completed on 2023-10-05 16:38:00

@@ -1,6 +1,6 @@
--- MySQL dump 10.13  Distrib 8.0.34, for macos13 (arm64)
+-- MySQL dump 10.13  Distrib 8.0.34, for macos13 (x86_64)
 --
--- Host: localhost    Database: students
+-- Host: 127.0.0.1    Database: students
 -- ------------------------------------------------------
 -- Server version	8.1.0
 
@@ -27,7 +27,7 @@ CREATE TABLE `grades` (
   `studentsGrades` varchar(255) DEFAULT NULL,
   `students_number` int DEFAULT NULL,
   PRIMARY KEY (`students_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1280 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1281 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -36,7 +36,7 @@ CREATE TABLE `grades` (
 
 LOCK TABLES `grades` WRITE;
 /*!40000 ALTER TABLE `grades` DISABLE KEYS */;
-INSERT INTO `grades` VALUES (1262,'english: 100, math: 90',1),(1269,'sadsadad asdasd',2),(1270,'asdasad12314',3),(1274,'English: 100',-8),(1276,'6sfsd',6),(1278,'sad',22),(1279,'asd',11);
+INSERT INTO `grades` VALUES (1262,'english: 100, math: 90',1),(1269,'sadsadad asdasd',2),(1270,'asdasad12314',3),(1274,'English: 100',-8),(1280,'some value',4);
 /*!40000 ALTER TABLE `grades` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -49,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-01  9:59:13
+-- Dump completed on 2023-10-05 16:38:00
