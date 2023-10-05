@@ -40,11 +40,11 @@ export const AdminTable = () => {
       .then((response) => {
         setState(response.data.items);
         setOriginalData(response.data.items);
-        setStudentsCount(response.data.totalPages > 3 ? response.data.totalPages : 3);
+        setStudentsCount(response.data.totalPages > pageSize ? response.data.totalPages : pageSize);
         return response;
       })
       .then((response) => {
-        localStorage.setItem('totalPages', response.data.totalPages > 3 ? response.data.totalPages : 3);
+        localStorage.setItem('totalPages', response.data.totalPages > pageSize ? response.data.totalPages : pageSize);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
