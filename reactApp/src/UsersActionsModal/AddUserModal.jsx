@@ -129,11 +129,11 @@ export const AddUserModal = ({ isModalOpen, closeModal, onCreate }) => {
               />
             </div>
             <div className="form-outline mb-4">
-              <label htmlFor="studentsGrades">Students Grades</label>
+              <label htmlFor="studentsGrades">Students Grades | info</label>
               <Controller
                 name="studentsGrades"
                 control={control}
-                rules={{ required: 'Grades is required' }}
+                rules={{ required: 'Grades | info is required' }}
                 defaultValue=""
                 render={({ field }) => (
                   <>
