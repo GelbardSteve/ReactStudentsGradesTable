@@ -95,17 +95,20 @@ export const AdminTable = () => {
 
       // Check if we need to update pagination
       if (state.length >= pageSize) {
-        // Calculate the new number of pages
         const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
 
-        // Update the current page and save it to localStorage
         setCurrentPage(pagesCount);
         localStorage.setItem('inputValue', pagesCount);
-
         // Update the total number of pages and save it to localStorage
         setStudentsCount(studentsCount + 1);
         localStorage.setItem('totalPages', studentsCount + 1);
+      } else if (state.length <= 2 && state.length < pageSize) {
+        // If we don't need to update pagination, simply increment the studentsCount
+        setStudentsCount(studentsCount);
+        localStorage.setItem('totalPages', studentsCount);
       } else {
+        console.log('state.length', state.length);
+        console.log('pageSize', pageSize);
         // If we don't need to update pagination, simply increment the studentsCount
         setStudentsCount(studentsCount + 1);
         localStorage.setItem('totalPages', studentsCount + 1);
@@ -141,11 +144,7 @@ export const AdminTable = () => {
 
   return (
     <>
-      <AddUserModal
-        isModalOpen={isModalOpen}
-        closeModal={closeModal}
-        onCreate={handleCreate}
-      />
+      <AddUserModal isModalOpen={isModalOpen} closeModal={closeModal} onCreate={handleCreate} />
       <LogOutButton handleLogOut={handleLogOut} />
       <Table
         tableData={state}
