@@ -6,8 +6,8 @@ module.exports = (app, mysqlConnection) => {
     mysqlConnection.query(
       `SELECT * FROM Students2 INNER JOIN grades ON
         students2.students_number = grades.students_number 
-        WHERE (students2.students_name LIKE ? OR students2.students_number = ?)`,
-      [sanitizedQuery, query],
+        WHERE students2.students_number = ? OR students2.students_name LIKE ?`,
+      [query, sanitizedQuery],
       (err, rows, fields) => {
         if (rows.length) {
           res.json(rows);

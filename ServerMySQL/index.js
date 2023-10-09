@@ -29,8 +29,6 @@ app.listen(3000, () =>
 
 getFunc.getData(app, mysqlConnection);
 getFunc.searchStudent(app, mysqlConnection);
-getFunc.postStudentsData(app, mysqlConnection);
-getFunc.postGradesData(app, mysqlConnection);
 getFunc.updateGrades(app, mysqlConnection);
 getFunc.deleteData(app, mysqlConnection);
 getFunc.loginStudents(app, mysqlConnection);
@@ -38,3 +36,4 @@ getFunc.loginAdmin(app, mysqlConnection);
 getFunc.loginAuthentication(app, mysqlConnection);
 getFunc.removeAuthentication(app, mysqlConnection);
 getFunc.studentsDataByAuthentication(app, mysqlConnection);
+getFunc.createNewStudent(app, mysqlConnection);

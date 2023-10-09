@@ -32,22 +32,22 @@ export const Table = ({
     <div className="m-4">
       {permission && (
         <div style={containerClass}>
-          <CreateNewUser openModal={openModal} />
+          <CreateNewUser openModal={openModal}/>
           <SearchInput handleSearchDara={handleSearchInputChange} />
         </div>
       )}
-      <table className="table table-hover align-middle">
+      <table className="table table-hover table-fixed">
         <thead>
           <tr>
-            <th scope="col align-middle" onClick={() => handleColumnHeaderClick('students_name')}>
+            <th scope="col" onClick={() => handleColumnHeaderClick('students_name')}>
               {'Student name'}
             </th>
-            <th scope="col align-middle">{'Student number'}</th>
-            <th scope="col align-middle">{'Students grades | info'}</th>
+            <th scope="col">{'Student number'}</th>
+            <th scope="col">{'Students grades | info'}</th>
             {permission && (
               <>
-                <th scope="col align-middle">{'Edit user'}</th>
-                <th scope="col align-middle">{'Delete user'}</th>
+                <th scope="col">{'Edit user'}</th>
+                <th scope="col">{'Delete user'}</th>
               </>
             )}
           </tr>
@@ -59,15 +59,15 @@ export const Table = ({
                 <EditUserModal user={user} isModalOpen={true} closeModal={closeEditModal} onCreate={handleCreate} />
               )}
               <tr>
-                <td className='align-middle'>{user.students_name}</td>
-                <td className='align-middle'>{user.students_number}</td>
-                <td className='align-middle w-50'>{user.studentsGrades}</td>
+                <td>{user.students_name}</td>
+                <td>{user.students_number}</td>
+                <td>{user.studentsGrades}</td>
                 {permission && (
                   <>
-                    <td className='align-middle'>
+                    <td>
                       <EditButton user={user} openEditModal={openEditModal} />
                     </td>
-                    <td className='align-middle'>
+                    <td>
                       <DeleteButton data={user} onDelete={handleDelete} />
                     </td>
                   </>

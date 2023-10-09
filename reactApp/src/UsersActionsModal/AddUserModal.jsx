@@ -3,7 +3,7 @@ import axios from 'axios';
 import { CustomModal } from '../Components/Modal/Modal';
 import { useForm, Controller } from 'react-hook-form';
 
-export const AddUserModal = ({ isModalOpen, closeModal, onCreate }) => {
+export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
   const [isUserExist, setIsUserExist] = useState(false);
   const [userExistError, setUserExistError] = useState();
 
@@ -43,16 +43,13 @@ export const AddUserModal = ({ isModalOpen, closeModal, onCreate }) => {
       return;
     }
     // You can perform actions with the form data here
-    const forStudentsTable = { students_name: data.studentName, students_number: data.studentsNumber };
-    const forGradesTable = { studentsGrades: data.studentsGrades, students_number: data.studentsNumber };
-    axios.post(`${baseUrl}/students2`, forStudentsTable).then(() => onCreate(forStudentsTable));
-    axios
-      .post(`${baseUrl}/grades`, forGradesTable)
-      .then(() => onCreate())
-      .then(() => {
-        reset();
-        closeModal();
-      });
+    const forStudentsTable = { students_name: data.studentName, students_number: data.studentsNumber, studentsGrades: data.studentsGrades };
+    const { data: userResponse } = await axios.post(`${baseUrl}/students2`, forStudentsTable);
+
+    reset();
+    closeModal();
+
+    onCreate(userResponse)
   };
 
   return (
@@ -156,7 +153,7 @@ export const AddUserModal = ({ isModalOpen, closeModal, onCreate }) => {
             <button
               disabled={!isValid || isUserExist}
               type="submit"
-              className="btn btn-primary btn-block p-2 w-25 mt-4 ml-auto mr-auto"
+              className="btn btn-primary btn-block p-3 w-25 mt-4 ml-auto mr-auto"
             >
               Create a user
             </button>

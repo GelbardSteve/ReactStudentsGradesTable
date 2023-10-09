@@ -129,7 +129,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, onCreate }) => {
             <button
               disabled={!isValid}
               type="submit"
-              className="btn btn-primary p-2 w-25 mt-4 ml-auto mr-auto"
+              className="btn btn-primary p-3 w-25 mt-4 ml-auto mr-auto"
             >
               Update student
             </button>

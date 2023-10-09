@@ -1,16 +1,15 @@
-module.exports = (app, mysqlConnection) => {
+module.exports = (mysqlConnection, emp) => {
   //add to grades table
-  app.post('/grades', (req, res) => {
-    const emp = req.body;
+  return new Promise(async (resolve, reject) => {
     const sql = 'INSERT INTO students.grades (studentsGrades, students_number) VALUES (?, ?)';
     const values = [emp.studentsGrades, emp.students_number];
 
-    mysqlConnection.query(sql, values, (err, rows, fields) => {
+    await mysqlConnection.query(sql, values, (err, rows, fields) => {
       if (!err) {
-        res.status(200).json('successful');
+        resolve(rows);
       } else {
         console.error(err);
-        res.status(500).json('error');
+        reject(500);
       }
     });
   });

@@ -1,16 +1,25 @@
-module.exports = (app, mysqlConnection) => {
+const searchStudent = require('./searchStudent');
+
+module.exports = (mysqlConnection, emp, app) => {
   //add to students2 table
-  app.post('/students2', (req, res) => {
-    const emp = req.body;
+  return new Promise(async (resolve, reject) => {
     const sql = 'INSERT INTO students.students2 (students_name, students_number) VALUES (?, ?)';
     const values = [emp.students_name, emp.students_number];
 
-    mysqlConnection.query(sql, values, (err, rows, fields) => {
+    await mysqlConnection.query(sql, values, (err, rows, fields) => {
       if (!err) {
-        res.status(200).json('successful');
-      } else {
-        console.error(err);
-        res.status(500).json('error');
+        mysqlConnection.query(
+          `SELECT * FROM Students2 INNER JOIN grades ON
+           students2.students_number = grades.students_number 
+           WHERE students2.students_number LIKE '%${emp.students_number}%'`,
+          (err, rows2, fields) => {
+            if (rows2) {
+              resolve(rows2);
+            } else {
+              reject(err);
+            }
+          }
+        );
       }
     });
   });

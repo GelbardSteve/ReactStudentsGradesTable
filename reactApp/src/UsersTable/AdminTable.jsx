@@ -40,11 +40,11 @@ export const AdminTable = () => {
       .then((response) => {
         setState(response.data.items);
         setOriginalData(response.data.items);
-        setStudentsCount(response.data.totalPages > pageSize ? response.data.totalPages : pageSize);
+        setStudentsCount(response.data.totalPages > 3 ? response.data.totalPages : 3);
         return response;
       })
       .then((response) => {
-        localStorage.setItem('totalPages', response.data.totalPages > pageSize ? response.data.totalPages : pageSize);
+        localStorage.setItem('totalPages', response.data.totalPages > 3 ? response.data.totalPages : 3);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);
@@ -88,9 +88,31 @@ export const AdminTable = () => {
     getSortedData();
   }, [getSortedData, state, currentPage, handlePageChange]);
 
-  const handleCreate = useCallback(async () => {
-    getSortedData();
-  }, [getSortedData]);
+  const handleCreate = useCallback(
+    async (data) => {
+      // Add the new student to the list
+      setState((prevState) => [...prevState, data]);
+
+      // Check if we need to update pagination
+      if (state.length >= pageSize) {
+        // Calculate the new number of pages
+        const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
+
+        // Update the current page and save it to localStorage
+        setCurrentPage(pagesCount);
+        localStorage.setItem('inputValue', pagesCount);
+
+        // Update the total number of pages and save it to localStorage
+        setStudentsCount(studentsCount + 1);
+        localStorage.setItem('totalPages', studentsCount + 1);
+      } else {
+        // If we don't need to update pagination, simply increment the studentsCount
+        setStudentsCount(studentsCount + 1);
+        localStorage.setItem('totalPages', studentsCount + 1);
+      }
+    },
+    [pageSize, state, studentsCount]
+  );
 
   const handleSearchInputChange = useCallback(
     async (e, setFormData) => {
@@ -119,10 +141,15 @@ export const AdminTable = () => {
 
   return (
     <>
-      <AddUserModal isModalOpen={isModalOpen} closeModal={closeModal} onCreate={handleCreate} />
+      <AddUserModal
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+        onCreate={handleCreate}
+      />
       <LogOutButton handleLogOut={handleLogOut} />
       <Table
         tableData={state}
+        setState={setState}
         permission={true}
         openModal={openModal}
         handleSearchInputChange={handleSearchInputChange}
