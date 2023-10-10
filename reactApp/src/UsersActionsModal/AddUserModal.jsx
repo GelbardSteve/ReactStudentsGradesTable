@@ -151,7 +151,7 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
 
           <div className="modal-footer">
             <button
-              disabled={!isValid || isUserExist}
+              disabled={(!isValid || isUserExist) && !isModalOpen}
               type="submit"
               className="btn btn-primary btn-block p-3 w-25 mt-4 ml-auto mr-auto"
             >
