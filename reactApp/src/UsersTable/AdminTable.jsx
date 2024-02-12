@@ -88,6 +88,10 @@ export const AdminTable = () => {
     getSortedData();
   }, [getSortedData, state, currentPage, handlePageChange]);
 
+  const handleUpdateTable = useCallback((updatedUser) => {
+    setState(prevState => prevState.map(user => user.students_id === updatedUser.students_id ? updatedUser : user));
+  }, []);
+
   const handleCreate = useCallback(
     async (data) => {
       // Add the new student to the list
@@ -147,6 +151,7 @@ export const AdminTable = () => {
       <AddUserModal isModalOpen={isModalOpen} closeModal={closeModal} onCreate={handleCreate} />
       <LogOutButton handleLogOut={handleLogOut} />
       <Table
+        handleUpdateTable={handleUpdateTable}
         tableData={state}
         setState={setState}
         permission={true}

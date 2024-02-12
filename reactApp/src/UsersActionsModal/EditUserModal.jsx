@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 import { CustomModal } from '../Components/Modal/Modal';
 
-export const EditUserModal = ({ user, isModalOpen, closeModal, onCreate }) => {
+export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable }) => {
   const {
     control,
     handleSubmit,
@@ -28,7 +28,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, onCreate }) => {
       };
 
       await axios.put('http://localhost:3000/grades', forGradesTable);
-      onCreate();
+      handleUpdateTable(forGradesTable);
       closeModal();
     } catch (error) {
       console.error('Error submitting form:', error);
