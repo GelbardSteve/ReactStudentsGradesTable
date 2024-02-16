@@ -4,14 +4,13 @@ import { Table } from '../Components/Table/Table';
 import { useNavigate } from 'react-router-dom';
 import { orderBy } from 'lodash';
 import { AddUserModal } from '../UsersActionsModal/AddUserModal';
-import { LogOutButton } from '../Components/Buttons/LogOutButton';
+import { Button } from '../Components/Buttons/Button';
 
 export const AdminTable = () => {
   const navigate = useNavigate();
-  const getTotalPageFromLocalStorage = localStorage.getItem('totalPages');
   const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('inputValue')) || 1);
   const [pageSize] = useState(3);
-  const [studentsCount, setStudentsCount] = useState(getTotalPageFromLocalStorage);
+  const [studentsCount, setStudentsCount] = useState('');
   const [state, setState] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState(null); // Initialize as null
@@ -80,16 +79,21 @@ export const AdminTable = () => {
     [setCurrentPage]
   );
 
-  const handleDelete = useCallback(() => {
-    if (state.length === 1) {
-      const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
-      handlePageChange(newPage);
-    }
-    getSortedData();
-  }, [getSortedData, state, currentPage, handlePageChange]);
+  const handleDelete = useCallback(
+    async (students_id) => {
+      await axios.delete(`http://localhost:3000/students2/${students_id}`);
+
+      if (state.length === 1) {
+        const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
+        handlePageChange(newPage);
+      }
+      getSortedData();
+    },
+    [getSortedData, state, currentPage, handlePageChange]
+  );
 
   const handleUpdateTable = useCallback((updatedUser) => {
-    setState(prevState => prevState.map(user => user.students_id === updatedUser.students_id ? updatedUser : user));
+    setState((prevState) => prevState.map((user) => (user.students_id === updatedUser.students_id ? updatedUser : user)));
   }, []);
 
   const handleCreate = useCallback(
@@ -100,22 +104,12 @@ export const AdminTable = () => {
       // Check if we need to update pagination
       if (state.length >= pageSize) {
         const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
-
         setCurrentPage(pagesCount);
-        localStorage.setItem('inputValue', pagesCount);
-        // Update the total number of pages and save it to localStorage
         setStudentsCount(studentsCount + 1);
-        localStorage.setItem('totalPages', studentsCount + 1);
       } else if (state.length <= 2 && state.length < pageSize) {
-        // If we don't need to update pagination, simply increment the studentsCount
         setStudentsCount(studentsCount);
-        localStorage.setItem('totalPages', studentsCount);
       } else {
-        console.log('state.length', state.length);
-        console.log('pageSize', pageSize);
-        // If we don't need to update pagination, simply increment the studentsCount
         setStudentsCount(studentsCount + 1);
-        localStorage.setItem('totalPages', studentsCount + 1);
       }
     },
     [pageSize, state, studentsCount]
@@ -149,7 +143,10 @@ export const AdminTable = () => {
   return (
     <>
       <AddUserModal isModalOpen={isModalOpen} closeModal={closeModal} onCreate={handleCreate} />
-      <LogOutButton handleLogOut={handleLogOut} />
+      <div className="d-flex justify-content-between m-4">
+        <div></div>
+        <Button onClick={handleLogOut} text="Log out" buttonType="outline-info" />
+      </div>
       <Table
         handleUpdateTable={handleUpdateTable}
         tableData={state}

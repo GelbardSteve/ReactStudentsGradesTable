@@ -22,6 +22,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
   const onSubmit = async (data) => {
     try {
       const forGradesTable = {
+        students_name: user.students_name,
         students_id: user.students_id,
         studentsGrades: data.studentsGrades,
         students_number: data.studentsNumber,

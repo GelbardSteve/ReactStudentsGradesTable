@@ -20,9 +20,11 @@ export const CustomModal = ({ isModalOpen, handleCloseTheModal, header, children
   }, []);
 
   return (
-    <Modal style={customStyles} isOpen={isModalOpen} onRequestClose={handleCloseTheModal} contentLabel="Example Modal" className="modal-content" overlayClassName="modal-overlay">
-      <div className="modal-header">{header}</div>
-      <div className="modal-body">{children}</div>
-    </Modal>
+    <div data-test="modal-create-user" >
+      <Modal style={customStyles} isOpen={isModalOpen} onRequestClose={handleCloseTheModal} contentLabel="Example Modal" className="modal-content" overlayClassName="modal-overlay">
+        <div className="modal-header">{header}</div>
+        <div className="modal-body">{children}</div>
+      </Modal>
+    </div>
   );
 };

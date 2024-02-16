@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Table } from '../Components/Table/Table';
-import { LogOutButton } from '../Components/Buttons/LogOutButton';
+import { Button } from '../Components/Buttons/Button';
 
 export const StudentTable = () => {
   const navigate = useNavigate();
@@ -32,7 +32,10 @@ export const StudentTable = () => {
 
   return (
     <>
-      <LogOutButton handleLogOut={handleLogOut} />
+      <div className="d-flex justify-content-between m-4">
+        <div></div>
+        <Button onClick={handleLogOut} text="Log out" buttonType="outline-info" />
+      </div>
       <Table tableData={studentData} permission={false} />
     </>
   );

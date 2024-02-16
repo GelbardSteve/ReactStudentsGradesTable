@@ -1,6 +1,7 @@
 module.exports = (app, mysqlConnection) => {
   ///////////////////////////////////////////////////////////////
   app.get('/students2', (req, res) => {
+    console.log('req', req)
     const currentPag = req.query.currentPag;
     const pageSize = req.query.pageSize;
 

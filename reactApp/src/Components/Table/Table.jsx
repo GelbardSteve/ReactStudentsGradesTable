@@ -1,9 +1,7 @@
 import React from 'react';
 import { SearchInput } from '../Search/Search';
 import { EditUserModal } from '../../UsersActionsModal/EditUserModal';
-import { DeleteButton } from '../Buttons/DeleteButton';
-import { EditButton } from '../Buttons/EditButton';
-import { CreateNewUser } from '../Buttons/CreateNewUser';
+import { Button } from '../Buttons/Button';
 import { Pagination } from '../Pagination/pagination';
 
 export const Table = ({
@@ -24,16 +22,15 @@ export const Table = ({
   handlePageChange,
 }) => {
   const containerClass = {
-    display: "flex",
-    alignItems: "center"
-  }
-
+    display: 'flex',
+    alignItems: 'center',
+  };
 
   return (
     <div className="m-4">
       {permission && (
         <div style={containerClass}>
-          <CreateNewUser openModal={openModal}/>
+          <Button onClick={openModal} text="Create new user" buttonType="outline-primary" />
           <SearchInput handleSearchDara={handleSearchInputChange} />
         </div>
       )}
@@ -66,10 +63,10 @@ export const Table = ({
                 {permission && (
                   <>
                     <td>
-                      <EditButton user={user} openEditModal={openEditModal} />
+                      <Button onClick={() => openEditModal(user.students_id)} text="Update" buttonType="outline-secondary" />
                     </td>
                     <td>
-                      <DeleteButton data={user} onDelete={handleDelete} />
+                      <Button onClick={() => handleDelete(user.students_id)} text="Delete" buttonType="outline-danger" />
                     </td>
                   </>
                 )}
