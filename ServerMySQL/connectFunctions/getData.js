@@ -1,7 +1,6 @@
 module.exports = (app, mysqlConnection) => {
   ///////////////////////////////////////////////////////////////
   app.get('/students2', (req, res) => {
-    console.log('req', req)
     const currentPag = req.query.currentPag;
     const pageSize = req.query.pageSize;
 
@@ -19,9 +18,8 @@ module.exports = (app, mysqlConnection) => {
         const totalItemsQuery = 'SELECT COUNT(*) AS totalItems FROM Students2;';
 
         mysqlConnection.query(totalItemsQuery, (err, rows, fields) => {
-         
           const totalItems = rows[0].totalItems;
-          
+
           res.send({
             items: allRows,
             currentPage: currentPag,
