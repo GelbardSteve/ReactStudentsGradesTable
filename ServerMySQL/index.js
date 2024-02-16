@@ -1,31 +1,29 @@
-const mysql = require("mysql");
-const express = require("express");
+const mysql = require('mysql');
+const express = require('express');
 const app = express();
-const cors = require("cors");
-const getFunc = require("./exportsFunctions");
+const cors = require('cors');
+const getFunc = require('./exportsFunctions');
 
 app.use(cors());
 app.use(express.json());
 
 const mysqlConnection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "password",
-  database: "students",
+  host: 'localhost',
+  user: 'root',
+  password: 'password',
+  database: 'students',
   multipleStatements: true,
 });
 
 mysqlConnection.connect((err) => {
   if (!err) {
-    console.log("DB Connect");
+    console.log('DB Connect');
   } else {
     console.log(`DB not Connect ${err}`);
   }
 });
 
-app.listen(3000, () =>
-  console.log("Express server is running at port no: 3000!")
-);
+app.listen(3000, () => console.log('Express server is running at port no: 3000!'));
 
 getFunc.getData(app, mysqlConnection);
 getFunc.searchStudent(app, mysqlConnection);
