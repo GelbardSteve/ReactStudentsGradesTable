@@ -37,7 +37,7 @@ export const Table = ({
       <table className="table table-hover table-fixed">
         <thead>
           <tr>
-            <th scope="col" onClick={() => handleColumnHeaderClick('students_name')}>
+            <th scope="col" onClick={() => handleColumnHeaderClick?.('students_name')}>
               {'Student name'}
             </th>
             <th scope="col">{'Student number'}</th>

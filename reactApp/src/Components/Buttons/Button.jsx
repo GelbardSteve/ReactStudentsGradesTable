@@ -1,8 +1,8 @@
 import React from 'react';
 
-export const Button = ({ onClick, text, buttonType = 'primary' }) => {
+export const Button = ({ onClick, text, type = 'button', buttonType = 'primary', disabled }) => {
   return (
-    <button onClick={onClick} type="button" className={`btn btn-${buttonType}`}>
+    <button disabled={disabled} onClick={onClick} type={type} className={`btn btn-${buttonType}`}>
       {text}
     </button>
   );

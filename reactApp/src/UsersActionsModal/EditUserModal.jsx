@@ -2,6 +2,8 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 import { CustomModal } from '../Components/Modal/Modal';
+import { StyledFotter } from './UserActions.styles';
+import { Button } from '../Components/Buttons/Button';
 
 export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable }) => {
   const {
@@ -44,11 +46,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
         header={
           <>
             <h5 className="modal-title">New message</h5>
-            <button
-              type="button"
-              className="close"
-              onClick={closeModal}
-            >
+            <button type="button" className="close" onClick={closeModal}>
               <span aria-hidden="true">&times;</span>
             </button>
           </>
@@ -56,54 +54,29 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
       >
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-group">
-            <label
-              htmlFor="studentName"
-              className="col-form-label"
-            >
+            <label htmlFor="studentName" className="col-form-label">
               Students Name
             </label>
             <Controller
               name="studentName"
               control={control}
               defaultValue={user.students_name}
-              render={({ field }) => (
-                <input
-                  readOnly
-                  id="studentName"
-                  type="text"
-                  className="form-control"
-                  {...field}
-                />
-              )}
+              render={({ field }) => <input readOnly id="studentName" type="text" className="form-control" {...field} />}
             />
           </div>
           <div className="form-group">
-            <label
-              htmlFor="studentsNumber"
-              className="col-form-label"
-            >
+            <label htmlFor="studentsNumber" className="col-form-label">
               Students Number
             </label>
             <Controller
               name="studentsNumber"
               control={control}
               defaultValue={user.students_number}
-              render={({ field }) => (
-                <input
-                  readOnly
-                  id="studentsNumber"
-                  type="number"
-                  className="form-control"
-                  {...field}
-                />
-              )}
+              render={({ field }) => <input readOnly id="studentsNumber" type="number" className="form-control" {...field} />}
             />
           </div>
           <div className="form-group">
-            <label
-              htmlFor="studentsGrades"
-              className="col-form-label"
-            >
+            <label htmlFor="studentsGrades" className="col-form-label">
               Students Grades | info
             </label>
             <Controller
@@ -114,7 +87,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
               render={({ field }) => (
                 <>
                   <textarea
-                     {...field}
+                    {...field}
                     id="studentsGrades"
                     name="studentsGrades"
                     required
@@ -126,15 +99,9 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
               )}
             />
           </div>
-          <div className="modal-footer">
-            <button
-              disabled={!isValid}
-              type="submit"
-              className="btn btn-primary p-3 w-25 mt-4 ml-auto mr-auto"
-            >
-              Update student
-            </button>
-          </div>
+          <StyledFotter className="modal-footer">
+            <Button text="Update student" disabled={!isValid} type="submit" />
+          </StyledFotter>
         </form>
       </CustomModal>
     </div>

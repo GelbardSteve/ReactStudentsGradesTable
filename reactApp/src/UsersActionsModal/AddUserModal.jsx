@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { CustomModal } from '../Components/Modal/Modal';
 import { useForm, Controller } from 'react-hook-form';
+import { StyledFotter } from './UserActions.styles';
+import { Button } from '../Components/Buttons/Button';
 
 export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
   const [isUserExist, setIsUserExist] = useState(false);
@@ -49,7 +51,7 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
     reset();
     closeModal();
 
-    onCreate(userResponse)
+    onCreate(userResponse);
   };
 
   return (
@@ -60,11 +62,7 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
         header={
           <>
             <h5 className="modal-title">New message</h5>
-            <button
-              type="button"
-              className="close"
-              onClick={handleCloseTheModal}
-            >
+            <button type="button" className="close" onClick={handleCloseTheModal}>
               <span aria-hidden="true">&times;</span>
             </button>
           </>
@@ -118,9 +116,7 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
                       }}
                       onBlur={() => trigger('studentsNumber')}
                     />
-                    {(errors.studentsNumber || isUserExist) && (
-                      <p className="invalid-feedback">{isUserExist ? userExistError : errors.studentsNumber.message}</p>
-                    )}
+                    {(errors.studentsNumber || isUserExist) && <p className="invalid-feedback">{isUserExist ? userExistError : errors.studentsNumber.message}</p>}
                   </>
                 )}
               />
@@ -149,15 +145,9 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
             </div>
           </div>
 
-          <div className="modal-footer">
-            <button
-              disabled={(!isValid || isUserExist) && !isModalOpen}
-              type="submit"
-              className="btn btn-primary btn-block p-3 w-25 mt-4 ml-auto mr-auto"
-            >
-              Create a user
-            </button>
-          </div>
+          <StyledFotter className="modal-footer">
+            <Button text="Create a user" disabled={!isValid || isUserExist} type="submit" />
+          </StyledFotter>
         </form>
       </CustomModal>
     </div>
