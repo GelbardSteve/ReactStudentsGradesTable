@@ -51,15 +51,15 @@ export const Table = ({
           </tr>
         </thead>
         <tbody>
-          {tableData.map((user) => (
-            <React.Fragment key={user?.students_id}>
-              {selectedStudentId === user?.students_id && ( // Show modal only for the selected student ID
+          {tableData?.map((user) => (
+            <React.Fragment key={user.students_id}>
+              {selectedStudentId === user.students_id && ( // Show modal only for the selected student ID
                 <EditUserModal handleUpdateTable={handleUpdateTable} user={user} isModalOpen={true} closeModal={closeEditModal} onCreate={handleCreate} />
               )}
               <tr>
-                <td>{user?.students_name}</td>
-                <td>{user?.students_number}</td>
-                <td>{user?.studentsGrades}</td>
+                <td>{user.students_name}</td>
+                <td>{user.students_number}</td>
+                <td>{user.studentsGrades}</td>
                 {permission && (
                   <>
                     <td>
