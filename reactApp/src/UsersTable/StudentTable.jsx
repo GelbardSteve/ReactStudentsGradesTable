@@ -34,7 +34,7 @@ export const StudentTable = () => {
     <>
       <div className="d-flex justify-content-between m-4">
         <div></div>
-        <Button onClick={handleLogOut} text="Log out" buttonType="outline-info" />
+        <Button onClick={handleLogOut} text="Log out" />
       </div>
       <Table tableData={studentData} permission={false} />
     </>

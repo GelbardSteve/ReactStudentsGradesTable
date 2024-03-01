@@ -1,18 +1,6 @@
 import React, { useEffect } from 'react';
+import { StyledModal, StyleHeader } from './Modal.styles';
 import Modal from 'react-modal';
-
-const customStyles = {
-  content: {
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    padding: '20px',
-    boxShadow: '8px 8px 8px 8px rgba(0.2, 0.2, 0.2, 0.2)',
-    zIndex: '9999',
-    width: '80%',
-  },
-};
 
 export const CustomModal = ({ isModalOpen, handleCloseTheModal, header, children }) => {
   useEffect(() => {
@@ -20,11 +8,11 @@ export const CustomModal = ({ isModalOpen, handleCloseTheModal, header, children
   }, []);
 
   return (
-    <div data-test="modal-create-user" >
-      <Modal style={customStyles} isOpen={isModalOpen} onRequestClose={handleCloseTheModal} contentLabel="Example Modal" className="modal-content" overlayClassName="modal-overlay">
-        <div className="modal-header">{header}</div>
+    <div data-test="modal-create-user">
+      <StyledModal isOpen={isModalOpen} onRequestClose={handleCloseTheModal} contentLabel="Example Modal" className="modal-content" overlayClassName="modal-overlay">
+        <StyleHeader className="modal-header">{header}</StyleHeader>
         <div className="modal-body">{children}</div>
-      </Modal>
+      </StyledModal>
     </div>
   );
 };

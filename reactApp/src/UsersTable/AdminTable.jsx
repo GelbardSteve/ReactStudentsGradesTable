@@ -145,7 +145,7 @@ export const AdminTable = () => {
       <AddUserModal isModalOpen={isModalOpen} closeModal={closeModal} onCreate={handleCreate} />
       <div className="d-flex justify-content-between m-4">
         <div></div>
-        <Button onClick={handleLogOut} text="Log out" buttonType="outline-info" />
+        <Button onClick={handleLogOut} text="Log out" />
       </div>
       <Table
         handleUpdateTable={handleUpdateTable}

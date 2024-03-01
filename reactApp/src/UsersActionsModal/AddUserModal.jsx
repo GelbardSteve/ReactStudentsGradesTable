@@ -61,10 +61,8 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
         handleCloseTheModal={handleCloseTheModal}
         header={
           <>
-            <h5 className="modal-title">New message</h5>
-            <button type="button" className="close" onClick={handleCloseTheModal}>
-              <span aria-hidden="true">&times;</span>
-            </button>
+            <h5 className="modal-title">Create User</h5>
+            <Button onClick={handleCloseTheModal} text={<span aria-hidden="true">&times;</span>} />
           </>
         }
       >

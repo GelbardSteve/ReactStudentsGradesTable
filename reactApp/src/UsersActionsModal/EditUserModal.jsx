@@ -45,10 +45,8 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
         onRequestClose={closeModal}
         header={
           <>
-            <h5 className="modal-title">New message</h5>
-            <button type="button" className="close" onClick={closeModal}>
-              <span aria-hidden="true">&times;</span>
-            </button>
+            <h5 className="modal-title">Edit User</h5>
+            <Button onClick={closeModal} text={<span aria-hidden="true">&times;</span>} />
           </>
         }
       >

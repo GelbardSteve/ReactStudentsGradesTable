@@ -1,5 +1,6 @@
 import React from 'react';
 import { range } from 'lodash';
+import { Button } from '../Buttons/Button';
 
 export const Pagination = ({ itemsCount, pageSize, onPageChange, currentPage }) => {
   const itemLength = itemsCount;
@@ -8,15 +9,14 @@ export const Pagination = ({ itemsCount, pageSize, onPageChange, currentPage }) 
 
   return (
     <nav aria-label="Page navigation example">
-      <ul className="pagination"> 
-        {pages.map(page => {
-        return (
-          <li key={page} className={ page === currentPage ? 'page-item active' : 'page-item'}>
-            <button onClick={() => onPageChange(page)} className="page-link">
-              {page}
-            </button>
-          </li>
-        )})}
+      <ul className="pagination">
+        {pages.map((page) => {
+          return (
+            <li key={page}>
+              <Button text={page} onClick={() => onPageChange(page)} className={`mr-1 ${page === currentPage ? 'page-item active' : 'page-item'}`} />
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );

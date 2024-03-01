@@ -7,6 +7,7 @@ import { StudentLoginForm } from '../../UsersLoginForm/StudentLoginForm/StudentL
 import { useState } from 'react';
 import { useCallback } from 'react';
 import { useEffect } from 'react';
+import { Button } from '../Buttons/Button';
 
 export const LoginPage = () => {
   const [studentComponent, setStudentComponent] = useState('admin');
@@ -23,8 +24,8 @@ export const LoginPage = () => {
   } = useForm();
 
   const customStyles = {
-    width: "34%",
-    margin: "40px auto 0 auto",
+    width: '34%',
+    margin: '40px auto 0 auto',
     pointer: {
       cursor: 'pointer',
     },
@@ -41,7 +42,7 @@ export const LoginPage = () => {
 
     axios.post(`http://localhost:3000/${url}/authentication`, { authentication: userAuthentication }).then((res) => {
       if (res.data !== 401 && url === 'login') {
-        console.log(res)
+        console.log(res);
         navigate('/table');
       } else if (res.data !== 401 && url === 'students') {
         navigate('/studentTable');
@@ -111,9 +112,7 @@ export const LoginPage = () => {
           )}
           {errors.loginError && <p className="d-flex justify-content-center mt-3 text-danger">{errors.loginError.message}</p>}
 
-          <button disabled={!isValid} type="submit" className="btn btn-primary btn-block mb-4">
-            Sign in
-          </button>
+          <Button text="Sign In" disabled={!isValid} type="submit" className="btn-block mb-4" />
         </form>
         <div>
           <img src={'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp'} className="img-fluid" alt="Login Illustration" />
