@@ -5,17 +5,17 @@ import { useNavigate } from 'react-router-dom';
 import { orderBy } from 'lodash';
 import { AddUserModal } from '../UsersActionsModal/AddUserModal';
 import { Button } from '../Components/Buttons/Button';
+import { useLogout, useSortedData } from './Table.hooks';
 
 export const AdminTable = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('inputValue')) || 1);
   const [pageSize] = useState(3);
-  const [studentsCount, setStudentsCount] = useState('');
-  const [state, setState] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState(null); // Initialize as null
   const [sortedColumn, setSortedColumn] = useState('asc'); // Initialize as 'asc'
-  const [originalData, setOriginalData] = useState([]);
+  const { state, setState, originalData, studentsCount, setStudentsCount, getSortedData } = useSortedData(currentPage, pageSize);
+  const handleLogOut = useLogout('admin');
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -32,24 +32,6 @@ export const AdminTable = () => {
   const closeEditModal = () => {
     setSelectedStudentId(null);
   };
-
-  const getSortedData = useCallback(async () => {
-    await axios
-      .get(`http://localhost:3000/students2?currentPag=${currentPage}&pageSize=${pageSize}`)
-      .then((response) => {
-        setState(response.data.items);
-        setOriginalData(response.data.items);
-        setStudentsCount(response.data.totalPages > 3 ? response.data.totalPages : 3);
-        return response;
-      })
-      .then((response) => {
-        localStorage.setItem('totalPages', response.data.totalPages > 3 ? response.data.totalPages : 3);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-        setState(false);
-      });
-  }, [currentPage, pageSize]);
 
   useEffect(() => {
     const userAuthentication = localStorage.getItem('adminAuthentication');
@@ -94,6 +76,7 @@ export const AdminTable = () => {
 
   const handleUpdateTable = useCallback((updatedUser) => {
     setState((prevState) => prevState.map((user) => (user.students_id === updatedUser.students_id ? updatedUser : user)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCreate = useCallback(
@@ -112,7 +95,7 @@ export const AdminTable = () => {
         setStudentsCount(studentsCount + 1);
       }
     },
-    [pageSize, state, studentsCount]
+    [pageSize, state, setState, studentsCount, setStudentsCount]
   );
 
   const handleSearchInputChange = useCallback(
@@ -130,16 +113,6 @@ export const AdminTable = () => {
     [setState, originalData]
   );
 
-  const handleLogOut = useCallback(() => {
-    const userAuthentication = localStorage.getItem('adminAuthentication');
-    axios.post('http://localhost:3000/remove/authentication', { authentication: userAuthentication }).then((res) => {
-      if (res.data === 200) {
-        localStorage.removeItem('adminAuthentication');
-        navigate('/');
-      }
-    });
-  }, [navigate]);
-
   return (
     <>
       <AddUserModal isModalOpen={isModalOpen} closeModal={closeModal} onCreate={handleCreate} />
@@ -148,22 +121,23 @@ export const AdminTable = () => {
         <Button onClick={handleLogOut} text="Log out" />
       </div>
       <Table
+        state={state}
         handleUpdateTable={handleUpdateTable}
-        tableData={state}
-        setState={setState}
-        permission={true}
-        openModal={openModal}
         handleSearchInputChange={handleSearchInputChange}
         handleColumnHeaderClick={handleColumnHeaderClick}
-        selectedStudentId={selectedStudentId}
-        closeEditModal={closeEditModal}
         handleCreate={handleCreate}
-        openEditModal={openEditModal}
         handleDelete={handleDelete}
-        studentsCount={studentsCount}
-        pageSize={pageSize}
-        currentPage={currentPage}
-        handlePageChange={handlePageChange}
+        openModal={openModal}
+        openEditModal={openEditModal}
+        closeEditModal={closeEditModal}
+        paginationProps={{
+          studentsCount,
+          pageSize,
+          currentPage,
+          handlePageChange,
+        }}
+        selectedStudentId={selectedStudentId}
+        permission={true}
       />
     </>
   );

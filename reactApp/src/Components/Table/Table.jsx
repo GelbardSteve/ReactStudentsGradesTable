@@ -5,21 +5,18 @@ import { Button } from '../Buttons/Button';
 import { Pagination } from '../Pagination/pagination';
 
 export const Table = ({
-  tableData,
+  state,
   handleUpdateTable,
-  permission,
-  openModal,
   handleSearchInputChange,
   handleColumnHeaderClick,
-  selectedStudentId,
-  closeEditModal,
   handleCreate,
-  openEditModal,
   handleDelete,
-  studentsCount,
-  pageSize,
-  currentPage,
-  handlePageChange,
+  openModal,
+  openEditModal,
+  closeEditModal,
+  paginationProps,
+  selectedStudentId,
+  permission,
 }) => {
   const containerClass = {
     display: 'flex',
@@ -51,7 +48,7 @@ export const Table = ({
           </tr>
         </thead>
         <tbody>
-          {tableData?.map((user) => (
+          {state?.map((user) => (
             <React.Fragment key={user?.students_id}>
               {selectedStudentId === user?.students_id && ( // Show modal only for the selected student ID
                 <EditUserModal handleUpdateTable={handleUpdateTable} user={user} isModalOpen={true} closeModal={closeEditModal} onCreate={handleCreate} />
@@ -75,7 +72,9 @@ export const Table = ({
           ))}
         </tbody>
       </table>
-      {studentsCount && <Pagination itemsCount={studentsCount} pageSize={pageSize} currentPage={currentPage} onPageChange={handlePageChange} />}
+      {paginationProps && paginationProps.studentsCount > 0 && (
+        <Pagination itemsCount={paginationProps.studentsCount} pageSize={paginationProps.pageSize} currentPage={paginationProps.currentPage} onPageChange={paginationProps.handlePageChange} />
+      )}
     </div>
   );
 };
