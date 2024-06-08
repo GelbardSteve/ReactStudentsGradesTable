@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 import { CustomModal } from '../Components/Modal/Modal';
@@ -15,7 +15,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
   } = useForm();
 
   // Set default values when the component mounts
-  React.useEffect(() => {
+  useEffect(() => {
     setValue('studentName', user.students_name);
     setValue('studentsNumber', user.students_number);
     setValue('studentsGrades', user.studentsGrades);
