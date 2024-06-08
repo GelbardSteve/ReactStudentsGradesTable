@@ -34,15 +34,15 @@ export const Table = ({
       <table className="table table-hover table-fixed">
         <thead>
           <tr>
-            <th scope="col" onClick={() => handleColumnHeaderClick?.('students_name')}>
+            <th style={{ cursor: 'pointer' }} scope="col" onClick={() => handleColumnHeaderClick?.('students_name')}>
               {'Student name'}
             </th>
             <th scope="col">{'Student number'}</th>
             <th scope="col">{'Students grades | info'}</th>
             {permission && (
               <>
-                <th scope="col">{'Edit user'}</th>
-                <th scope="col">{'Delete user'}</th>
+                <th scope="col">{'Edit Student'}</th>
+                <th scope="col">{'Delete Student'}</th>
               </>
             )}
           </tr>
