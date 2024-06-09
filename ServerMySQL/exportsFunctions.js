@@ -9,4 +9,5 @@ module.exports = {
   removeAuthentication: require('./connectFunctions/removeAuthentication'),
   studentsDataByAuthentication: require('./connectFunctions/studentsDataByAuthentication'),
   createNewStudent: require('./connectFunctions/createNewUser'),
+  updateFavorites: require('./connectFunctions/updateFavorites'),
 };

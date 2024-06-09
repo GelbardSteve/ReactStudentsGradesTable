@@ -4,6 +4,7 @@ import { CustomModal } from '../Components/Modal/Modal';
 import { useForm, Controller } from 'react-hook-form';
 import { StyledFotter } from './UserActions.styles';
 import { Button } from '../Components/Buttons/Button';
+import { toast } from 'react-toastify';
 
 export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
   const [isUserExist, setIsUserExist] = useState(false);
@@ -46,12 +47,14 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
     }
     // You can perform actions with the form data here
     const forStudentsTable = { students_name: data.studentName, students_number: data.studentsNumber, studentsGrades: data.studentsGrades };
-    const { data: userResponse } = await axios.post(`${baseUrl}/students2`, forStudentsTable);
+    const response = await axios.post(`${baseUrl}/students2`, forStudentsTable);
 
-    reset();
-    closeModal();
-
-    onCreate(userResponse);
+    if (response.status === 200) {
+      reset();
+      closeModal();
+      toast.success(`User ${response.data.students_name} was created`);
+      onCreate(response.data);
+    }
   };
 
   return (
@@ -62,7 +65,7 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
         header={
           <>
             <h5 className="modal-title">Create User</h5>
-            <Button onClick={handleCloseTheModal} text={<span aria-hidden="true">&times;</span>} />
+            <Button onClick={handleCloseTheModal}>{<span aria-hidden="true">&times;</span>}</Button>
           </>
         }
       >
@@ -144,7 +147,9 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
           </div>
 
           <StyledFotter className="modal-footer">
-            <Button text="Create a user" disabled={!isValid || isUserExist} type="submit" />
+            <Button disabled={!isValid || isUserExist} type="submit">
+              {'Create a user'}
+            </Button>
           </StyledFotter>
         </form>
       </CustomModal>

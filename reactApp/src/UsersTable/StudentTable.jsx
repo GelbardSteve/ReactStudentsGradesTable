@@ -2,14 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Table } from '../Components/Table/Table';
-import { Button } from '../Components/Buttons/Button';
-import { useLogout } from './Table.hooks';
 
 export const StudentTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [studentData, setStudentData] = useState([]);
-  const handleLogOut = useLogout('student');
 
   useEffect(() => {
     const userAuthentication = localStorage.getItem('studentAuthentication');
@@ -22,13 +19,5 @@ export const StudentTable = () => {
     });
   }, [location.state, navigate]);
 
-  return (
-    <>
-      <div className="d-flex justify-content-between m-4">
-        <div></div>
-        <Button onClick={handleLogOut} text="Log out" />
-      </div>
-      <Table state={studentData} permission={false} />
-    </>
-  );
+  return <Table state={studentData} permission={false} />;
 };

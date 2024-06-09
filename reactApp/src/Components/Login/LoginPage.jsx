@@ -48,7 +48,7 @@ export const LoginPage = () => {
         navigate('/studentTable');
       }
     });
-  }, [navigate, studentComponent, userTablePath, setUserTablePath]);
+  }, [navigate, userTablePath, setUserTablePath]);
 
   const onAdminSubmitForm = async (data) => {
     await axios.post('http://localhost:3000/login', data).then((res) => {
@@ -112,7 +112,9 @@ export const LoginPage = () => {
           )}
           {errors.loginError && <p className="d-flex justify-content-center mt-3 text-danger">{errors.loginError.message}</p>}
 
-          <Button text="Sign In" disabled={!isValid} type="submit" className="btn-block mb-4" />
+          <Button disabled={!isValid} type="submit" className="btn-block mb-4">
+            {'Sign In'}
+          </Button>
         </form>
         <div>
           <img src={'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp'} className="img-fluid" alt="Login Illustration" />

@@ -46,7 +46,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
         header={
           <>
             <h5 className="modal-title">Edit User</h5>
-            <Button onClick={closeModal} text={<span aria-hidden="true">&times;</span>} />
+            <Button onClick={closeModal}>{<span aria-hidden="true">&times;</span>}</Button>
           </>
         }
       >
@@ -98,7 +98,9 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
             />
           </div>
           <StyledFotter className="modal-footer">
-            <Button text="Update student" disabled={!isValid} type="submit" />
+            <Button disabled={!isValid} type="submit">
+              {'Update student'}
+            </Button>
           </StyledFotter>
         </form>
       </CustomModal>

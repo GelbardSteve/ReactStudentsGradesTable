@@ -13,7 +13,9 @@ export const Pagination = ({ itemsCount, pageSize, onPageChange, currentPage }) 
         {pages.map((page) => {
           return (
             <li key={page}>
-              <Button text={page} onClick={() => onPageChange(page)} className={`mr-1 ${page === currentPage ? 'page-item active' : 'page-item'}`} />
+              <Button onClick={() => onPageChange(page)} className={`mr-1 ${page === currentPage ? 'page-item active' : 'page-item'}`}>
+                {page}
+              </Button>
             </li>
           );
         })}

@@ -4,8 +4,8 @@ import { Table } from '../Components/Table/Table';
 import { useNavigate } from 'react-router-dom';
 import { orderBy } from 'lodash';
 import { AddUserModal } from '../UsersActionsModal/AddUserModal';
-import { Button } from '../Components/Buttons/Button';
-import { useLogout, useSortedData } from './Table.hooks';
+import { useSortedData } from './Table.hooks';
+import { toast } from 'react-toastify';
 
 export const AdminTable = () => {
   const navigate = useNavigate();
@@ -15,7 +15,6 @@ export const AdminTable = () => {
   const [selectedStudentId, setSelectedStudentId] = useState(null); // Initialize as null
   const [sortedColumn, setSortedColumn] = useState('asc'); // Initialize as 'asc'
   const { state, setState, originalData, studentsCount, setStudentsCount, getSortedData } = useSortedData(currentPage, pageSize);
-  const handleLogOut = useLogout('admin');
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -62,14 +61,17 @@ export const AdminTable = () => {
   );
 
   const handleDelete = useCallback(
-    async (students_id) => {
-      await axios.delete(`http://localhost:3000/students2/${students_id}`);
+    async (student) => {
+      const response = await axios.delete(`http://localhost:3000/students2/${student.students_id}`);
 
       if (state.length === 1) {
         const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
         handlePageChange(newPage);
       }
-      getSortedData();
+      if (response.status === 200) {
+        toast.success(`User ${student.students_name} was deleted`);
+        getSortedData();
+      }
     },
     [getSortedData, state, currentPage, handlePageChange]
   );
@@ -116,12 +118,10 @@ export const AdminTable = () => {
   return (
     <>
       <AddUserModal isModalOpen={isModalOpen} closeModal={closeModal} onCreate={handleCreate} />
-      <div className="d-flex justify-content-between m-4">
-        <div></div>
-        <Button onClick={handleLogOut} text="Log out" />
-      </div>
       <Table
         state={state}
+        setState={setState}
+        getSortedData={getSortedData}
         handleUpdateTable={handleUpdateTable}
         handleSearchInputChange={handleSearchInputChange}
         handleColumnHeaderClick={handleColumnHeaderClick}
