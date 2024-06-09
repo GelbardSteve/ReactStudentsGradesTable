@@ -2,8 +2,11 @@ import React from 'react';
 import { Button } from '../Buttons/Button';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useSortedData } from '../../UsersTable/Table.hooks';
 
-export const Favorites = ({ user, setState }) => {
+export const Favorites = ({ user }) => {
+  const { setState } = useSortedData();
+
   const handleUserFavorites = ({ students_name, favorites, students_number }) => {
     axios.post(`http://localhost:3000/favorites`, { id: students_number, favorites: !favorites }).then((res) => {
       const action = !favorites ? 'added into' : 'removed from';

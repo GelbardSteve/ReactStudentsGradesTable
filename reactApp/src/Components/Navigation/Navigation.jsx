@@ -4,6 +4,7 @@ import { AdminTable } from '../../UsersTable/AdminTable';
 import { StudentTable } from '../../UsersTable/StudentTable';
 import { LoginPage } from '../Login/LoginPage';
 import { PageLayout } from '../PageLayout/PageLayout';
+import { FavoritesPage } from '../../Components/Favorites/FavoritesPage';
 
 export const Home = () => {
   return (
@@ -18,7 +19,22 @@ export const Home = () => {
             </PageLayout>
           }
         />
-        <Route path="/studentTable" element={<StudentTable />} />
+        <Route
+          path="/studentTable"
+          element={
+            <PageLayout>
+              <StudentTable />
+            </PageLayout>
+          }
+        />
+        <Route
+          path="/favorites"
+          element={
+            <PageLayout>
+              <FavoritesPage />
+            </PageLayout>
+          }
+        />
       </Routes>
     </Router>
   );

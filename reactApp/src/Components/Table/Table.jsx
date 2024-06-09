@@ -7,7 +7,6 @@ import { Favorites } from '../Favorites/Favorites';
 
 export const Table = ({
   state,
-  setState,
   handleUpdateTable,
   handleSearchInputChange,
   handleColumnHeaderClick,
@@ -76,7 +75,7 @@ export const Table = ({
                         </Button>
                       </td>
                       <td>
-                        <Favorites user={user} setState={setState} />
+                        <Favorites user={user} />
                       </td>
                     </>
                   )}

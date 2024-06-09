@@ -8,8 +8,9 @@ export const useSortedData = (currentPage, pageSize) => {
   const [studentsCount, setStudentsCount] = useState('');
 
   const getSortedData = useCallback(async () => {
+    const url = currentPage && pageSize ? `http://localhost:3000/students2?currentPag=${currentPage}&pageSize=${pageSize}` : 'http://localhost:3000/students2';
     try {
-      const response = await axios.get(`http://localhost:3000/students2?currentPag=${currentPage}&pageSize=${pageSize}`);
+      const response = await axios.get(url);
       setState(response.data.items);
       setOriginalData(response.data.items);
       setStudentsCount(response.data.totalPages > 3 ? response.data.totalPages : 3);
@@ -22,7 +23,7 @@ export const useSortedData = (currentPage, pageSize) => {
 
   useEffect(() => {
     getSortedData();
-  }, [getSortedData]);
+  }, [getSortedData, state]);
 
   return { state, setState, originalData, studentsCount, setStudentsCount, getSortedData };
 };
