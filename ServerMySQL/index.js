@@ -35,3 +35,4 @@ getFunc.loginAuthentication(app, mysqlConnection);
 getFunc.removeAuthentication(app, mysqlConnection);
 getFunc.studentsDataByAuthentication(app, mysqlConnection);
 getFunc.createNewStudent(app, mysqlConnection);
+getFunc.updateFavorites(app, mysqlConnection);

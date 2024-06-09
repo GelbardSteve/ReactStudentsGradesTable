@@ -3,9 +3,11 @@ import { SearchInput } from '../Search/Search';
 import { EditUserModal } from '../../UsersActionsModal/EditUserModal';
 import { Button } from '../Buttons/Button';
 import { Pagination } from '../Pagination/pagination';
+import { Favorites } from '../Favorites/Favorites';
 
 export const Table = ({
   state,
+  setState,
   handleUpdateTable,
   handleSearchInputChange,
   handleColumnHeaderClick,
@@ -27,7 +29,9 @@ export const Table = ({
     <div className="m-4">
       {permission && (
         <div style={containerClass}>
-          <Button onClick={openModal} text="Create new user" buttonType="outline-primary" />
+          <Button onClick={openModal} buttonType="outline-primary">
+            {'Create new user'}
+          </Button>
           <SearchInput handleSearchDara={handleSearchInputChange} />
         </div>
       )}
@@ -43,33 +47,43 @@ export const Table = ({
               <>
                 <th scope="col">{'Edit Student'}</th>
                 <th scope="col">{'Delete Student'}</th>
+                <th scope="col">{'Add to Favorites'}</th>
               </>
             )}
           </tr>
         </thead>
         <tbody>
-          {state?.map((user) => (
-            <React.Fragment key={user?.students_id}>
-              {selectedStudentId === user?.students_id && ( // Show modal only for the selected student ID
-                <EditUserModal handleUpdateTable={handleUpdateTable} user={user} isModalOpen={true} closeModal={closeEditModal} onCreate={handleCreate} />
-              )}
-              <tr>
-                <td>{user?.students_name}</td>
-                <td>{user?.students_number}</td>
-                <td>{user?.studentsGrades}</td>
-                {permission && (
-                  <>
-                    <td>
-                      <Button onClick={() => openEditModal(user.students_id)} text="Update" buttonType="outline-secondary" />
-                    </td>
-                    <td>
-                      <Button onClick={() => handleDelete(user.students_id)} text="Delete" buttonType="outline-danger" />
-                    </td>
-                  </>
+          {state?.map((user) => {
+            return (
+              <React.Fragment key={user?.students_id}>
+                {selectedStudentId === user?.students_id && ( // Show modal only for the selected student ID
+                  <EditUserModal handleUpdateTable={handleUpdateTable} user={user} isModalOpen={true} closeModal={closeEditModal} onCreate={handleCreate} />
                 )}
-              </tr>
-            </React.Fragment>
-          ))}
+                <tr>
+                  <td>{user?.students_name}</td>
+                  <td>{user?.students_number}</td>
+                  <td>{user?.studentsGrades}</td>
+                  {permission && (
+                    <>
+                      <td>
+                        <Button onClick={() => openEditModal(user.students_id)} buttonType="outline-secondary">
+                          {'Update'}
+                        </Button>
+                      </td>
+                      <td>
+                        <Button onClick={() => handleDelete(user)} buttonType="outline-danger">
+                          {'Delete'}
+                        </Button>
+                      </td>
+                      <td>
+                        <Favorites user={user} setState={setState} />
+                      </td>
+                    </>
+                  )}
+                </tr>
+              </React.Fragment>
+            );
+          })}
         </tbody>
       </table>
       {paginationProps && paginationProps.studentsCount > 0 && (

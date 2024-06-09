@@ -27,10 +27,12 @@ export const useSortedData = (currentPage, pageSize) => {
   return { state, setState, originalData, studentsCount, setStudentsCount, getSortedData };
 };
 
-export const useLogout = (user) => {
+export const useLogout = () => {
   const navigate = useNavigate();
 
   const handleLogout = useCallback(() => {
+    const isAdmin = localStorage.getItem('adminAuthentication') ? true : false;
+    const user = isAdmin ? 'admin' : 'student';
     const userAuthenticationToken = `${user}Authentication`;
     const userAuthentication = localStorage.getItem(userAuthenticationToken);
     const isAdminAuthentication = user === 'admin' ? { authentication: userAuthentication } : { table: 'students2', authentication: userAuthentication };
@@ -41,7 +43,7 @@ export const useLogout = (user) => {
         navigate('/');
       }
     });
-  }, [user, navigate]);
+  }, [navigate]);
 
   return handleLogout;
 };
