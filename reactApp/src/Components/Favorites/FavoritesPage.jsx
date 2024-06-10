@@ -30,7 +30,7 @@ export const FavoritesPage = () => {
           );
         })
       ) : (
-        <EmptyPage />
+        <EmptyPage text="No favorites were added" />
       )}
     </StyleFavoritesContainer>
   );

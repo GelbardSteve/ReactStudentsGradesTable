@@ -5,8 +5,12 @@ import { StudentTable } from '../../UsersTable/StudentTable';
 import { LoginPage } from '../Login/LoginPage';
 import { PageLayout } from '../PageLayout/PageLayout';
 import { FavoritesPage } from '../../Components/Favorites/FavoritesPage';
+import { useUserRole } from '../../Components/UserProvider/UserProvide';
+import { EmptyPage } from '../EmptyPage/Empty';
 
 export const Home = () => {
+  const { userRole } = useUserRole();
+
   return (
     <Router>
       <Routes>
@@ -30,9 +34,13 @@ export const Home = () => {
         <Route
           path="/favorites"
           element={
-            <PageLayout>
-              <FavoritesPage />
-            </PageLayout>
+            userRole === 'admin' ? (
+              <PageLayout>
+                <FavoritesPage />
+              </PageLayout>
+            ) : (
+              <EmptyPage text="Access denied" />
+            )
           }
         />
       </Routes>

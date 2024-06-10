@@ -3,19 +3,25 @@ import { useLogout } from '../../UsersTable/Table.hooks';
 import { Button } from '../Buttons/Button';
 import { StyleHeader } from './Layout.styles';
 import { useNavigate } from 'react-router-dom';
+import { useUserRole } from '../../Components/UserProvider/UserProvide';
 
 export const Header = () => {
   const handleLogOut = useLogout();
   const navigate = useNavigate();
-
+  const { userRole } = useUserRole();
+  console.log('userRole', userRole);
   return (
     <header>
       <StyleHeader>
         <div>
-          <Button className="mr-2" onClick={() => navigate('/favorites')}>
-            {'Favorites'}
-          </Button>
-          <Button onClick={() => navigate('/table')}>{'Table'}</Button>
+          {userRole === 'admin' && (
+            <>
+              <Button className="mr-2" onClick={() => navigate('/favorites')}>
+                {'Favorites'}
+              </Button>
+              <Button onClick={() => navigate('/table')}>{'Table'}</Button>
+            </>
+          )}
         </div>
         <Button buttonType="danger" onClick={handleLogOut}>
           {'Log out'}

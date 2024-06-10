@@ -8,10 +8,12 @@ import { useState } from 'react';
 import { useCallback } from 'react';
 import { useEffect } from 'react';
 import { Button } from '../Buttons/Button';
+import { useUserRole } from '../../Components/UserProvider/UserProvide';
 
 export const LoginPage = () => {
   const [studentComponent, setStudentComponent] = useState('admin');
   const [userTablePath, setUserTablePath] = useState('');
+  const { updateUserRole } = useUserRole();
 
   const navigate = useNavigate();
   const {
@@ -58,6 +60,7 @@ export const LoginPage = () => {
           message: 'Invalid username or password',
         });
       } else {
+        updateUserRole('admin');
         localStorage.setItem('adminAuthentication', res.data.authentication);
         navigate('/table');
       }

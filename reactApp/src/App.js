@@ -5,7 +5,7 @@ function App() {
   return (
     <>
       <Home />
-      <ToastContainer position="bottom-center" />
+      <ToastContainer position="bottom-center" autoClose={1800} />
     </>
   );
 }
