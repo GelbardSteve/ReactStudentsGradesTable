@@ -2,11 +2,8 @@ import React from 'react';
 import { Button } from '../Buttons/Button';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useSortedData } from '../../UsersTable/Table.hooks';
 
-export const Favorites = ({ user }) => {
-  const { setState } = useSortedData();
-
+export const Favorites = ({ user, setState }) => {
   const updateFavorites = async (students_number, favorites) => {
     try {
       const response = await axios.post('http://localhost:3000/favorites', {
@@ -28,7 +25,7 @@ export const Favorites = ({ user }) => {
             className="btn-sm ml-2"
             onClick={async () => {
               const res = await updateFavorites(students_number, favorites);
-              res && setState((prevState) => prevState.map((u) => (u.students_number === students_number ? { ...u, favorites: !favorites } : u)));
+              res && setState((prevState) => prevState.map((u) => (u.students_number === students_number ? { ...u, favorites } : u)));
             }}
           >
             {'Undo'}

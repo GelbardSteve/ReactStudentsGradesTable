@@ -23,7 +23,7 @@ export const useSortedData = (currentPage, pageSize) => {
 
   useEffect(() => {
     getSortedData();
-  }, [getSortedData, state]);
+  }, [getSortedData]);
 
   return { state, setState, originalData, studentsCount, setStudentsCount, getSortedData };
 };
@@ -47,4 +47,11 @@ export const useLogout = () => {
   }, [navigate]);
 
   return handleLogout;
+};
+
+export const useUserRole = () => {
+  const isAdmin = localStorage.getItem('adminAuthentication') ? true : false;
+  const user = isAdmin ? 'admin' : 'student';
+
+  return { user };
 };

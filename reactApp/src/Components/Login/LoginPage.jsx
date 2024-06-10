@@ -8,12 +8,10 @@ import { useState } from 'react';
 import { useCallback } from 'react';
 import { useEffect } from 'react';
 import { Button } from '../Buttons/Button';
-import { useUserRole } from '../../Components/UserProvider/UserProvide';
 
 export const LoginPage = () => {
   const [studentComponent, setStudentComponent] = useState('admin');
   const [userTablePath, setUserTablePath] = useState('');
-  const { updateUserRole } = useUserRole();
 
   const navigate = useNavigate();
   const {
@@ -44,7 +42,6 @@ export const LoginPage = () => {
 
     axios.post(`http://localhost:3000/${url}/authentication`, { authentication: userAuthentication }).then((res) => {
       if (res.data !== 401 && url === 'login') {
-        console.log(res);
         navigate('/table');
       } else if (res.data !== 401 && url === 'students') {
         navigate('/studentTable');
@@ -60,7 +57,6 @@ export const LoginPage = () => {
           message: 'Invalid username or password',
         });
       } else {
-        updateUserRole('admin');
         localStorage.setItem('adminAuthentication', res.data.authentication);
         navigate('/table');
       }

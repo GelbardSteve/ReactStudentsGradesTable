@@ -120,6 +120,7 @@ export const AdminTable = () => {
       <AddUserModal isModalOpen={isModalOpen} closeModal={closeModal} onCreate={handleCreate} />
       <Table
         state={state}
+        setState={setState}
         getSortedData={getSortedData}
         handleUpdateTable={handleUpdateTable}
         handleSearchInputChange={handleSearchInputChange}
