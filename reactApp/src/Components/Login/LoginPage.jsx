@@ -42,7 +42,6 @@ export const LoginPage = () => {
 
     axios.post(`http://localhost:3000/${url}/authentication`, { authentication: userAuthentication }).then((res) => {
       if (res.data !== 401 && url === 'login') {
-        console.log(res);
         navigate('/table');
       } else if (res.data !== 401 && url === 'students') {
         navigate('/studentTable');
