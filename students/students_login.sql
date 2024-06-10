@@ -1,6 +1,6 @@
--- MySQL dump 10.13  Distrib 8.0.34, for macos13 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.34, for macos13 (arm64)
 --
--- Host: 127.0.0.1    Database: students
+-- Host: localhost    Database: students
 -- ------------------------------------------------------
 -- Server version	8.1.0
 
@@ -27,6 +27,7 @@ CREATE TABLE `login` (
   `Name` varchar(45) DEFAULT NULL,
   `Password` varchar(11) DEFAULT NULL,
   `authentication` varchar(50) DEFAULT NULL,
+  `userRole` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -37,7 +38,7 @@ CREATE TABLE `login` (
 
 LOCK TABLES `login` WRITE;
 /*!40000 ALTER TABLE `login` DISABLE KEYS */;
-INSERT INTO `login` VALUES (1,'admin','admin','5f103e1a4e10325f9936f7e6fb560dd050e626fe'),(2,'admin2','admin2',NULL),(3,'steve','st491990',NULL);
+INSERT INTO `login` VALUES (1,'admin','admin','a2cf1b55fc7f9f347fab7b37374a53b05eb37493',NULL),(2,'admin2','admin2',NULL,NULL),(3,'steve','st491990',NULL,NULL);
 /*!40000 ALTER TABLE `login` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-05 18:39:22
+-- Dump completed on 2024-06-10 15:39:15
