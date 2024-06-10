@@ -8,7 +8,9 @@ export const useSortedData = (currentPage, pageSize) => {
   const [studentsCount, setStudentsCount] = useState('');
 
   const getSortedData = useCallback(async () => {
-    const url = currentPage && pageSize ? `http://localhost:3000/students2?currentPag=${currentPage}&pageSize=${pageSize}` : 'http://localhost:3000/students2';
+    const shouldUpdatePage = pageSize !== undefined;
+    const url = shouldUpdatePage ? `http://localhost:3000/students2?currentPag=${currentPage}&pageSize=${pageSize}` : 'http://localhost:3000/students2';
+
     try {
       const response = await axios.get(url);
       setState(response.data.items);

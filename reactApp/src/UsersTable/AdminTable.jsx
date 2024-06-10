@@ -85,7 +85,7 @@ export const AdminTable = () => {
     async (data) => {
       // Add the new student to the list
       setState((prevState) => [...prevState, data]);
-
+      getSortedData();
       // Check if we need to update pagination
       if (state.length >= pageSize) {
         const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
