@@ -2,7 +2,7 @@ import React from 'react';
 import { useSortedData } from '../../UsersTable/Table.hooks';
 import { Favorites } from './Favorites';
 import { StyleFavoritesContainer } from './Favorites.styles';
-import { EmptyPage } from '../Empty';
+import { EmptyPage } from '../EmptyPage/Empty';
 
 export const FavoritesPage = () => {
   const { state, setState } = useSortedData();
