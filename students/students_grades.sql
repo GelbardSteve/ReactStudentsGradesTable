@@ -36,7 +36,7 @@ CREATE TABLE `grades` (
 
 LOCK TABLES `grades` WRITE;
 /*!40000 ALTER TABLE `grades` DISABLE KEYS */;
-INSERT INTO `grades` VALUES (1589,'English: 100',1),(1590,'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',2),(1591,'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',3),(1592,'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',4);
+INSERT INTO `grades` VALUES (1589,'English: 100',1),(1590,'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',2),(1591,'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',3);
 /*!40000 ALTER TABLE `grades` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -49,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-10 18:23:43
+-- Dump completed on 2024-06-14 11:37:44
