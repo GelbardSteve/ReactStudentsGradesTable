@@ -9,7 +9,7 @@ export const Header = () => {
   const handleLogOut = useLogout();
   const navigate = useNavigate();
   const { roles } = useRoles();
-  console.log('user', roles);
+
   return (
     <header>
       <StyleHeader>
