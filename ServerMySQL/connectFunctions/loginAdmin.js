@@ -16,7 +16,7 @@ module.exports = (app, mysqlConnection) => {
           console.log(`Updated authentication for user ${emp.Name}`);
         });
 
-        res.json({ authentication: authenticationString });
+        res.json({ authentication: authenticationString, userRole: rows[0].userRole });
       } else {
         res.json(401); // Send HTTP status code 400 for bad request
       }

@@ -50,10 +50,3 @@ export const useLogout = () => {
 
   return handleLogout;
 };
-
-export const useUserRole = () => {
-  const isAdmin = localStorage.getItem('adminAuthentication') ? true : false;
-  const user = isAdmin ? 'admin' : 'student';
-
-  return { user };
-};

@@ -8,10 +8,12 @@ import { useState } from 'react';
 import { useCallback } from 'react';
 import { useEffect } from 'react';
 import { Button } from '../Buttons/Button';
+import { useRoles } from '../RoleProvider/RoleProvider';
 
 export const LoginPage = () => {
   const [studentComponent, setStudentComponent] = useState('admin');
   const [userTablePath, setUserTablePath] = useState('');
+  const { saveRoles } = useRoles();
 
   const navigate = useNavigate();
   const {
@@ -57,6 +59,7 @@ export const LoginPage = () => {
           message: 'Invalid username or password',
         });
       } else {
+        saveRoles(res.data.userRole);
         localStorage.setItem('adminAuthentication', res.data.authentication);
         navigate('/table');
       }

@@ -1,19 +1,20 @@
 import React from 'react';
-import { useLogout, useUserRole } from '../../UsersTable/Table.hooks';
+import { useLogout } from '../../UsersTable/Table.hooks';
 import { Button } from '../Buttons/Button';
 import { StyleHeader } from './Layout.styles';
 import { useNavigate } from 'react-router-dom';
+import { useRoles } from '../RoleProvider/RoleProvider';
 
 export const Header = () => {
   const handleLogOut = useLogout();
   const navigate = useNavigate();
-  const { user } = useUserRole();
-
+  const { roles } = useRoles();
+  console.log('user', roles);
   return (
     <header>
       <StyleHeader>
         <div>
-          {user === 'admin' && (
+          {roles === 'admin' && (
             <>
               <Button className="mr-2" onClick={() => navigate('/favorites')}>
                 {'Favorites'}

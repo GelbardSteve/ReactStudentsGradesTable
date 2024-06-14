@@ -6,10 +6,10 @@ import { LoginPage } from '../Login/LoginPage';
 import { PageLayout } from '../PageLayout/PageLayout';
 import { FavoritesPage } from '../../Components/Favorites/FavoritesPage';
 import { EmptyPage } from '../EmptyPage/Empty';
-import { useUserRole } from '../../UsersTable/Table.hooks';
+import { useRoles } from '../RoleProvider/RoleProvider';
 
 export const Home = () => {
-  const { user } = useUserRole();
+  const { roles } = useRoles();
 
   return (
     <Router>
@@ -34,7 +34,7 @@ export const Home = () => {
         <Route
           path="/favorites"
           element={
-            user === 'admin' ? (
+            roles === 'admin' ? (
               <PageLayout>
                 <FavoritesPage />
               </PageLayout>
