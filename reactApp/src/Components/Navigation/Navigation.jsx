@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AdminTable } from '../../UsersTable/AdminTable';
 import { StudentTable } from '../../UsersTable/StudentTable';
@@ -11,6 +11,8 @@ import { useSelector } from 'react-redux';
 export const Home = () => {
   const userRole = useSelector((state) => state.role.roles);
   const userAuthentication = localStorage.getItem('adminAuthentication');
+  const studentAuthentication = localStorage.getItem('studentAuthentication');
+  const { authentication } = useSelector((state) => state.role.student);
 
   return (
     <Router>
@@ -31,9 +33,13 @@ export const Home = () => {
         <Route
           path="/studentTable"
           element={
-            <PageLayout>
-              <StudentTable />
-            </PageLayout>
+            authentication ? (
+              <PageLayout>
+                <StudentTable />
+              </PageLayout>
+            ) : (
+              <Navigate to="/" replace />
+            )
           }
         />
         <Route

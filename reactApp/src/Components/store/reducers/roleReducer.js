@@ -1,5 +1,5 @@
 // src/store/reducers/roleReducer.js
-import { SET_ROLES, CLEAR_ROLES } from '../actions/roleActions';
+import { SET_ROLES, CLEAR_ROLES, SET_STUDENT } from '../actions/roleActions';
 
 const initialState = {
   roles: [],
@@ -16,6 +16,11 @@ const roleReducer = (state = initialState, action) => {
       return {
         ...state,
         roles: [],
+      };
+    case SET_STUDENT:
+      return {
+        ...state,
+        student: action.payload,
       };
     default:
       return state;

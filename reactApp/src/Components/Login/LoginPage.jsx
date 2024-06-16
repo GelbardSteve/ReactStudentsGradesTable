@@ -9,7 +9,7 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { Button } from '../Buttons/Button';
-import { setRoles } from '../../Components/store/actions/roleActions';
+import { setRoles, setStudent } from '../../Components/store/actions/roleActions';
 
 export const LoginPage = () => {
   const dispatch = useDispatch();
@@ -75,8 +75,9 @@ export const LoginPage = () => {
           message: 'Invalid student number',
         });
       } else {
+        dispatch(setStudent({ userData: res.data.userData, authentication: res.data.authentication }));
         localStorage.setItem('studentAuthentication', res.data.authentication);
-        navigate('/studentTable', { state: { studentData: res.data.userData } });
+        navigate('/studentTable');
       }
     });
   };
