@@ -1,14 +1,12 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import axios from 'axios';
 import { Table } from '../Components/Table/Table';
-import { useNavigate } from 'react-router-dom';
 import { orderBy } from 'lodash';
 import { AddUserModal } from '../UsersActionsModal/AddUserModal';
 import { useSortedData } from './Table.hooks';
 import { toast } from 'react-toastify';
 
 export const AdminTable = () => {
-  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('inputValue')) || 1);
   const [pageSize] = useState(3);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,15 +31,8 @@ export const AdminTable = () => {
   };
 
   useEffect(() => {
-    const userAuthentication = localStorage.getItem('adminAuthentication');
-    axios.post('http://localhost:3000/login/authentication', { authentication: userAuthentication }).then((res) => {
-      if (res.data !== 401) {
-        getSortedData();
-      } else {
-        navigate('/');
-      }
-    });
-  }, [getSortedData, navigate]);
+    getSortedData();
+  }, [getSortedData]);
 
   const handleColumnHeaderClick = (column) => {
     const sortedData = [...state];
@@ -97,7 +88,7 @@ export const AdminTable = () => {
         setStudentsCount(studentsCount + 1);
       }
     },
-    [pageSize, state, setState, studentsCount, setStudentsCount]
+    [pageSize, state, setState, studentsCount, setStudentsCount, getSortedData]
   );
 
   const handleSearchInputChange = useCallback(

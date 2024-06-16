@@ -3,18 +3,18 @@ import { useLogout } from '../../UsersTable/Table.hooks';
 import { Button } from '../Buttons/Button';
 import { StyleHeader } from './Layout.styles';
 import { useNavigate } from 'react-router-dom';
-import { useRoles } from '../RoleProvider/RoleProvider';
+import { useSelector } from 'react-redux';
 
 export const Header = () => {
   const handleLogOut = useLogout();
   const navigate = useNavigate();
-  const { roles } = useRoles();
+  const userRole = useSelector((state) => state.role.roles);
 
   return (
     <header>
       <StyleHeader>
         <div>
-          {roles === 'admin' && (
+          {userRole === 'admin' && (
             <>
               <Button className="mr-2" onClick={() => navigate('/favorites')}>
                 {'Favorites'}

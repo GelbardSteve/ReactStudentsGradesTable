@@ -1,15 +1,16 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AdminTable } from '../../UsersTable/AdminTable';
 import { StudentTable } from '../../UsersTable/StudentTable';
 import { LoginPage } from '../Login/LoginPage';
 import { PageLayout } from '../PageLayout/PageLayout';
 import { FavoritesPage } from '../../Components/Favorites/FavoritesPage';
 import { EmptyPage } from '../EmptyPage/Empty';
-import { useRoles } from '../RoleProvider/RoleProvider';
+import { useSelector } from 'react-redux';
 
 export const Home = () => {
-  const { roles } = useRoles();
+  const userRole = useSelector((state) => state.role.roles);
+  const userAuthentication = localStorage.getItem('adminAuthentication');
 
   return (
     <Router>
@@ -18,9 +19,13 @@ export const Home = () => {
         <Route
           path="/table"
           element={
-            <PageLayout>
-              <AdminTable />
-            </PageLayout>
+            userAuthentication ? (
+              <PageLayout>
+                <AdminTable />
+              </PageLayout>
+            ) : (
+              <Navigate to="/" replace />
+            )
           }
         />
         <Route
@@ -34,7 +39,7 @@ export const Home = () => {
         <Route
           path="/favorites"
           element={
-            roles === 'admin' ? (
+            userRole === 'admin' ? (
               <PageLayout>
                 <FavoritesPage />
               </PageLayout>

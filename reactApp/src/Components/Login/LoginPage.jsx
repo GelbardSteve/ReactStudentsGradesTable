@@ -6,14 +6,15 @@ import { AdminLoginForm } from '../../UsersLoginForm/AdminLoginForm/AdminLoginFo
 import { StudentLoginForm } from '../../UsersLoginForm/StudentLoginForm/StudentLoginForm';
 import { useState } from 'react';
 import { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { Button } from '../Buttons/Button';
-import { useRoles } from '../RoleProvider/RoleProvider';
+import { setRoles } from '../../Components/store/actions/roleActions';
 
 export const LoginPage = () => {
+  const dispatch = useDispatch();
   const [studentComponent, setStudentComponent] = useState('admin');
   const [userTablePath, setUserTablePath] = useState('');
-  const { saveRoles } = useRoles();
 
   const navigate = useNavigate();
   const {
@@ -59,7 +60,7 @@ export const LoginPage = () => {
           message: 'Invalid username or password',
         });
       } else {
-        saveRoles(res.data.userRole);
+        dispatch(setRoles(res.data.userRole));
         localStorage.setItem('adminAuthentication', res.data.authentication);
         navigate('/table');
       }
