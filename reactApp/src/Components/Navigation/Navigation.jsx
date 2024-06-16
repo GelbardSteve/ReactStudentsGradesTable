@@ -11,9 +11,9 @@ import { useSelector } from 'react-redux';
 export const Home = () => {
   const userRole = useSelector((state) => state.role.roles);
   const userAuthentication = localStorage.getItem('adminAuthentication');
-  const student = useSelector((state) => state.role.student);
-
-  const authentication = student.authentication ?? null;
+  const students = useSelector((state) => state.students.student);
+  console.log(students);
+  const authentication = students.authentication ?? null;
 
   return (
     <Router>

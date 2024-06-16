@@ -10,15 +10,6 @@ export const setRoles = (roles) => ({
   payload: roles,
 });
 
-export const setStudent = (student) => ({
-  type: SET_STUDENT,
-  payload: student,
-});
-
 export const clearRoles = () => ({
   type: CLEAR_ROLES,
-});
-
-export const clearStudent = () => ({
-  type: CLEAR_STUDENT,
 });

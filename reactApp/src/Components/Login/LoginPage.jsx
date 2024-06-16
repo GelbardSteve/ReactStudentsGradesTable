@@ -9,7 +9,8 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { Button } from '../Buttons/Button';
-import { setRoles, setStudent } from '../../Components/store/actions/roleActions';
+import { setRoles } from '../../Components/store/actions/roleActions';
+import { setStudent } from '../../Components/store/actions/studentActions';
 
 export const LoginPage = () => {
   const dispatch = useDispatch();

@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { clearRoles, clearStudent } from '../Components/store/actions/roleActions';
+import { clearRoles } from '../Components/store/actions/roleActions';
+import { clearStudent } from '../Components/store/actions/studentActions';
 
 export const useSortedData = (currentPage, pageSize) => {
   const [state, setState] = useState([]);
