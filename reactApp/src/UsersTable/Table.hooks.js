@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { clearRoles } from '../Components/store/actions/roleActions';
+import { clearRoles, clearStudent } from '../Components/store/actions/roleActions';
 
 export const useSortedData = (currentPage, pageSize) => {
   const [state, setState] = useState([]);
@@ -46,6 +46,7 @@ export const useLogout = () => {
     axios.post('http://localhost:3000/remove/authentication', isAdminAuthentication).then((res) => {
       if (res.data === 200) {
         dispatch(clearRoles());
+        dispatch(clearStudent());
         localStorage.removeItem(userAuthenticationToken);
         navigate('/');
       }

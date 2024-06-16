@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AdminTable } from '../../UsersTable/AdminTable';
 import { StudentTable } from '../../UsersTable/StudentTable';
@@ -11,8 +11,9 @@ import { useSelector } from 'react-redux';
 export const Home = () => {
   const userRole = useSelector((state) => state.role.roles);
   const userAuthentication = localStorage.getItem('adminAuthentication');
-  const studentAuthentication = localStorage.getItem('studentAuthentication');
-  const { authentication } = useSelector((state) => state.role.student);
+  const student = useSelector((state) => state.role.student);
+
+  const authentication = student.authentication ?? null;
 
   return (
     <Router>

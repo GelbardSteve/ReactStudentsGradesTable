@@ -3,6 +3,7 @@
 export const SET_ROLES = 'SET_ROLES';
 export const CLEAR_ROLES = 'CLEAR_ROLES';
 export const SET_STUDENT = 'SET_STUDENT';
+export const CLEAR_STUDENT = 'CLEAR_STUDENT';
 
 export const setRoles = (roles) => ({
   type: SET_ROLES,
@@ -16,4 +17,8 @@ export const setStudent = (student) => ({
 
 export const clearRoles = () => ({
   type: CLEAR_ROLES,
+});
+
+export const clearStudent = () => ({
+  type: CLEAR_STUDENT,
 });
