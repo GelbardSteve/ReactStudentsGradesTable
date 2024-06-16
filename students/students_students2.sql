@@ -29,7 +29,7 @@ CREATE TABLE `students2` (
   `authentication` varchar(50) DEFAULT NULL,
   `favorites` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`students_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1613 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1617 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +38,7 @@ CREATE TABLE `students2` (
 
 LOCK TABLES `students2` WRITE;
 /*!40000 ALTER TABLE `students2` DISABLE KEYS */;
-INSERT INTO `students2` VALUES (1609,'student',1,NULL,1),(1610,'students2',2,NULL,0),(1611,'student3',3,NULL,0);
+INSERT INTO `students2` VALUES (1609,'student',1,NULL,0),(1610,'students2',2,NULL,0),(1611,'student3',3,NULL,0),(1613,'steve3',4,NULL,0),(1614,'Steve5',5,NULL,0),(1615,'steve6',6,NULL,0),(1616,'steve7',7,NULL,0);
 /*!40000 ALTER TABLE `students2` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-14 11:37:44
+-- Dump completed on 2024-06-16 12:42:27

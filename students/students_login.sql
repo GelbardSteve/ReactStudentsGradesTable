@@ -25,8 +25,8 @@ DROP TABLE IF EXISTS `login`;
 CREATE TABLE `login` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `Name` varchar(45) DEFAULT NULL,
-  `Password` varchar(11) DEFAULT NULL,
-  `authentication` varchar(50) DEFAULT NULL,
+  `password` varchar(64) DEFAULT NULL,
+  `authentication` varchar(60) DEFAULT NULL,
   `userRole` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
@@ -38,7 +38,7 @@ CREATE TABLE `login` (
 
 LOCK TABLES `login` WRITE;
 /*!40000 ALTER TABLE `login` DISABLE KEYS */;
-INSERT INTO `login` VALUES (1,'admin','admin','69e6bdb00be495c12f768c2f7257ab009619b7d7','admin'),(2,'admin2','admin2',NULL,NULL),(3,'steve','st491990',NULL,NULL);
+INSERT INTO `login` VALUES (1,'admin','$2a$10$crs3lKK29YwfNyrrxp5i9uAQN/csbiQr.V2Is5rF0HfaVJhQGwTg6','c7342835b0ff3be6b962a3a6d0048f2c7285b27d','admin'),(2,'admin2','admin2',NULL,NULL),(3,'steve','st491990',NULL,NULL);
 /*!40000 ALTER TABLE `login` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -51,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-14 11:37:44
+-- Dump completed on 2024-06-16 12:42:27

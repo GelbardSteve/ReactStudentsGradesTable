@@ -24,10 +24,10 @@ DROP TABLE IF EXISTS `grades`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `grades` (
   `students_id` int NOT NULL AUTO_INCREMENT,
-  `studentsGrades` text,
+  `studentsGrades` mediumtext COLLATE utf8mb4_unicode_ci,
   `students_number` int DEFAULT NULL,
   PRIMARY KEY (`students_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1593 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1597 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -36,7 +36,7 @@ CREATE TABLE `grades` (
 
 LOCK TABLES `grades` WRITE;
 /*!40000 ALTER TABLE `grades` DISABLE KEYS */;
-INSERT INTO `grades` VALUES (1589,'English: 100',1),(1590,'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',2),(1591,'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',3);
+INSERT INTO `grades` VALUES (1589,'English: 100',1),(1590,'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',2),(1591,'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',3),(1593,'asdsad',4),(1594,'sdfs',5),(1595,'שדגשדג',6),(1596,'dsfds',7);
 /*!40000 ALTER TABLE `grades` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -49,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-14 11:37:44
+-- Dump completed on 2024-06-16 12:42:27
