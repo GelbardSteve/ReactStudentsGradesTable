@@ -63,12 +63,14 @@ export const useUpdateUser = (onSuccess) => {
     return student;
   };
 
-  export const useDeleteUser = (onSuccess) => {
+  export const useDeleteUser = (onSuccess, setFilteredData) => {
     return useMutation(async (data) => {
       return deleteUser(data);
     }, {
       onSuccess: (data) => {
         onSuccess?.(data);
+        setFilteredData((previous) => previous.filter(previu => previu.students_id !== data?.student?.students_id));
+
       },
       onError: (error) => {
         console.error('Error delete user:', error);

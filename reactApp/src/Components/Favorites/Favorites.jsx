@@ -4,7 +4,7 @@ import React from 'react';
 import { toast } from 'react-toastify';
 import { Button } from '../Buttons/Button';
 
-export const Favorites = ({ user }) => {
+export const Favorites = ({ user, onFavoriteToggle }) => {
   const queryClient = useQueryClient();
 
   const updateFavorites = async (students_number, favorites) => {
@@ -21,6 +21,9 @@ export const Favorites = ({ user }) => {
     {
       onSuccess: (_, { students_number, favorites, students_name }) => {
         queryClient.invalidateQueries(['sortedData']);
+
+        // Notify the parent component to update the UI
+        onFavoriteToggle(students_number, favorites);
 
         // Create undo button
         const undoAction = (

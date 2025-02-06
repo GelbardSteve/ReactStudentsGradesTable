@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { EditUserModal } from '../../UsersActionsModal/EditUserModal';
 import { useDeleteUser } from '../../UsersActionsModal/UserActionsModal.hooks';
@@ -16,6 +16,7 @@ export const Table = ({
   handleDelete,
   handleUpdateTable,
   paginationProps,
+  refetch
 }) => {
   const [selectedStudentId, setSelectedStudentId] = useState(null); // Initialize as null
   const [filteredData, setFilteredData] = useState(state);
@@ -24,16 +25,10 @@ export const Table = ({
   const userRole = useSelector((state) => state.role.roles);
   const permission = userRole === 'admin';
 
-  useEffect(() => {
-    setFilteredData(state)
-  }, [state])
-
- 
   const containerClass = {
     display: 'flex',
     alignItems: 'center',
   };
-
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -41,51 +36,53 @@ export const Table = ({
 
   const closeEditModal = () => {
     setSelectedStudentId(null);
-    setIsModalOpen(false);  
+    setIsModalOpen(false);
   };
-  
-  
+
   const openEditModal = (studentId) => {
     setSelectedStudentId(studentId);
   };
 
-
   const handleSearchInputChange = useCallback(
-    async (e, setFormData) => {
-      const { name, value } = e.target;
+    async (e) => {
+      const { value } = e.target;
       setSearchQuery(value);
-      setFormData({
-        ...setFormData,
-        [name]: value,
-      });
-      
-      const studentSearch = value ? await axios.get(`https://node-4-pdlj.onrender.com/students2/search/${value}`) : '';
-
-       // If search returns no results, fall back to original data
-        if (studentSearch?.data !== 'NotFound' && value !== '') {
+  
+      if (value !== '') {
+        const studentSearch = await axios.get(`https://node-4-pdlj.onrender.com/students2/search/${value}`);
+        if (studentSearch?.data !== 'NotFound') {
           setFilteredData(studentSearch.data);
         } else {
-          setFilteredData(originalData);
+          setFilteredData(originalData); // Fallback to original data if no results
         }
+      } else {
+        setFilteredData(state); // If search is cleared, revert to the full state data
+      }
     },
-    [originalData]
+    [state, originalData]
   );
 
   const onSuccessDelete = (data) => {
     handleDelete(data);
+    setFilteredData((previous) => previous.filter(previu => previu.students_id !== data?.student?.students_id));
   }
 
-  const {mutate: onUserDelete} =  useDeleteUser((data) => {
-    // Reset the deleting state after the delete is successful
-    setDeletingUserId(null);
-    onSuccessDelete(data);
-  });
+  const { mutate: onUserDelete, isLoading: isDeleteUserLoading } = useDeleteUser(onSuccessDelete);
 
   const handleDeleteUser = (student) => {
-    setDeletingUserId(student.students_id); // Set the user being deleted
-    onUserDelete(student); // Call the delete function
+    setDeletingUserId(student.students_id); // Set deleting user ID before calling delete
+    onUserDelete(student);
   };
-  
+
+  const handleFavoriteToggle = (students_number, favorites) => {
+    // Update the filteredData state to reflect the new favorite status
+    setFilteredData((prevData) =>
+      prevData.map((user) =>
+        user.students_number === students_number ? { ...user, favorites } : user
+      )
+    );
+  };
+  const handleState = searchQuery !== '' ? filteredData : state;
   return (
     <div className="m-4">
       {permission && (
@@ -93,7 +90,10 @@ export const Table = ({
           <Button onClick={openModal} buttonType="outline-primary">
             {'Create new user'}
           </Button>
-          <SearchInput handleSearchDara={handleSearchInputChange} />
+          <SearchInput 
+  value={searchQuery} // Bind the value to the searchQuery state
+  handleSearchDara={handleSearchInputChange} 
+/>
         </div>
       )}
       <table className="table table-hover table-fixed">
@@ -114,7 +114,7 @@ export const Table = ({
           </tr>
         </thead>
         <tbody>
-          {filteredData?.map((user) => {
+          {handleState?.map((user) => {
             return (
               <React.Fragment key={user?.students_id}>
                 {selectedStudentId === user?.students_id && ( // Show modal only for the selected student ID
@@ -132,16 +132,20 @@ export const Table = ({
                         </Button>
                       </td>
                       <td>
-                      <Button
+                        <Button
                           onClick={() => handleDeleteUser(user)} // Use the modified handleDelete
                           buttonType="outline-danger"
-                          isLoading={deletingUserId === user?.students_id} // Only show loading for the deleted user
+                          disabled={deletingUserId === user?.students_id} // Disable button after deleting
+                          isLoading={deletingUserId === user?.students_id && isDeleteUserLoading}
                         >
                           {'Delete'}
                         </Button>
                       </td>
                       <td>
-                        <Favorites user={user} />
+                        <Favorites
+                          user={user}
+                          onFavoriteToggle={handleFavoriteToggle}
+                        />
                       </td>
                     </>
                   )}

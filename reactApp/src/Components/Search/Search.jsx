@@ -1,15 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-export const SearchInput = ({ handleSearchDara }) => {
+export const SearchInput = ({ value, handleSearchDara }) => {
   const customStyles = {
     width: '300px',
     marginLeft: '30px',
     marginBottom: '30px',
   };
-
-  const [inputValue, setInputValue] = useState({
-    searchInput: '',
-  });
 
   return (
     <div style={customStyles}>
@@ -17,8 +13,8 @@ export const SearchInput = ({ handleSearchDara }) => {
       <input
         id="searchInput"
         name="searchInput"
-        value={inputValue.searchInput}
-        onChange={(e) => handleSearchDara(e, setInputValue)}
+        value={value} // Bind to the value prop passed from the parent
+        onChange={handleSearchDara} // Use the passed handler
         placeholder="Search student by name or number"
         type="text"
         className={'form-control border border-dark'}

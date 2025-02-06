@@ -29,12 +29,12 @@ export const AdminTable = () => {
   }, []);
 
   const handleDelete = useCallback(async (student) => {
+        refetch();
         toast.success(`User ${student.students_name} was deleted`);
         if (state.length === 1) {
           const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
           handlePageChange(newPage);
         }
-        refetch();
   }, [state, currentPage, handlePageChange, refetch]);
 
   const handleCreate = useCallback(
@@ -75,6 +75,7 @@ export const AdminTable = () => {
           currentPage,
           handlePageChange,
         }}
+        refetch={refetch}
       />
     </>
   );
