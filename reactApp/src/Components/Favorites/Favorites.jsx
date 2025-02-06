@@ -1,56 +1,65 @@
-import React from 'react';
-import { Button } from '../Buttons/Button';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import React from 'react';
 import { toast } from 'react-toastify';
+import { Button } from '../Buttons/Button';
 
-export const Favorites = ({ user, setState }) => {
+export const Favorites = ({ user }) => {
+  const queryClient = useQueryClient();
+
   const updateFavorites = async (students_number, favorites) => {
-    try {
-      const response = await axios.post('http://localhost:3000/favorites', {
-        id: students_number,
-        favorites,
-      });
-      return response.status === 200;
-    } catch (error) {
-      console.error('Error updating favorites', error);
-      return false;
-    }
+    const response = await axios.post('https://node-4-pdlj.onrender.com/favorites', {
+      id: students_number,
+      favorites,
+    });
+    return response.status === 200;
   };
 
-  const handleUserFavorites = async ({ students_name, favorites, students_number }) => {
-    try {
-      if (await updateFavorites(students_number, !favorites)) {
-        const cancelAction = (
+  // Mutation for toggling favorites
+  const { mutate: toggleFavorite, isLoading } = useMutation(
+    async ({ students_number, favorites }) => updateFavorites(students_number, favorites),
+    {
+      onSuccess: (_, { students_number, favorites, students_name }) => {
+        queryClient.invalidateQueries(['sortedData']);
+
+        // Create undo button
+        const undoAction = (
           <Button
             className="btn-sm ml-2"
-            onClick={async () => {
-              const res = await updateFavorites(students_number, favorites);
-              res && setState((prevState) => prevState.map((u) => (u.students_number === students_number ? { ...u, favorites } : u)));
-            }}
+            onClick={() => toggleFavorite({ students_number, favorites: !favorites })}
           >
-            {'Undo'}
+            Undo
           </Button>
         );
 
-        const actionMessage = (
+        // Show toast notification with undo
+        toast.success(
           <span>
-            User {students_name} was {favorites ? 'removed from' : 'added to'} favorites
-            {!!favorites && cancelAction}
+            User {students_name} was {favorites ? 'added to' : 'removed from'} favorites {!favorites && undoAction}
           </span>
         );
-
-        toast.success(actionMessage);
-        setState((prevState) => prevState.map((u) => (u.students_number === students_number ? { ...u, favorites: !favorites } : u)));
-      } else {
-        console.log('Error: Response not OK');
+      },
+      onError: () => {
+        toast.error('Failed to update favorites');
       }
-    } catch (error) {
-      console.error('Error updating favorites', error);
     }
+  );
+
+  const handleUserFavorites = () => {
+    toggleFavorite({
+      students_number: user.students_number,
+      favorites: !user.favorites, // Toggle the favorite status
+      students_name: user.students_name, // Needed for toast message
+    });
   };
 
   return (
-    <Button onClick={() => handleUserFavorites(user)} buttonType="link" className="text-dark">
+    <Button
+      onClick={handleUserFavorites}
+      buttonType="link"
+      className="text-dark"
+      disabled={isLoading}
+    >
       <i className={`fa-${user.favorites ? 'solid' : 'regular'} fa-star`}></i>
     </Button>
   );

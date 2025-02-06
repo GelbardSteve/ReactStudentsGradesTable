@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import axios from 'axios';
+import { Controller, useForm } from 'react-hook-form';
+import { Button } from '../Components/Buttons/Button';
 import { CustomModal } from '../Components/Modal/Modal';
 import { StyledFotter } from './UserActions.styles';
-import { Button } from '../Components/Buttons/Button';
+import { useUpdateUser } from './UserActionsModal.hooks';
 
 export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable }) => {
   const {
@@ -21,22 +21,12 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
     setValue('studentsGrades', user.studentsGrades);
   }, [user, setValue]);
 
-  const onSubmit = async (data) => {
-    try {
-      const forGradesTable = {
-        students_name: user.students_name,
-        students_id: user.students_id,
-        studentsGrades: data.studentsGrades,
-        students_number: data.studentsNumber,
-      };
-
-      await axios.put('http://localhost:3000/grades', forGradesTable);
-      handleUpdateTable(forGradesTable);
+  const onSuccess = (userName) => {
+      handleUpdateTable(userName);
       closeModal();
-    } catch (error) {
-      console.error('Error submitting form:', error);
-    }
-  };
+  }
+
+  const {mutate: onUpdateUser, isLoading: isUpdateUserLoading } = useUpdateUser(onSuccess);
 
   return (
     <div>
@@ -50,7 +40,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
           </>
         }
       >
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit((data) => onUpdateUser({ user, data }))}>
           <div className="form-group">
             <label htmlFor="studentName" className="col-form-label">
               Students Name
@@ -98,7 +88,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
             />
           </div>
           <StyledFotter className="modal-footer">
-            <Button disabled={!isValid} type="submit">
+            <Button disabled={!isValid} type="submit" isLoading={isUpdateUserLoading}>
               {'Update student'}
             </Button>
           </StyledFotter>

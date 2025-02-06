@@ -4,14 +4,15 @@ const app = express();
 const cors = require('cors');
 const getFunc = require('./exportsFunctions');
 
+
 app.use(cors());
 app.use(express.json());
 
 const mysqlConnection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'password',
-  database: 'students',
+  host: 'mysql-stevegel.alwaysdata.net',
+  user: 'stevegel',
+  password: 'Pa%%w0rd419990',
+  database: 'stevegel_students',
   multipleStatements: true,
 });
 

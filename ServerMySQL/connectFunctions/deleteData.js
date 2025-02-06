@@ -3,7 +3,7 @@ module.exports = (app, mysqlConnection) => {
   app.delete("/students2/:students_id", (req, res) => {
     const emp = req.params;
     mysqlConnection.query(
-      `DELETE students2, grades FROM students2
+      `DELETE students2, grades FROM stevegel_students.students2
       INNER JOIN grades ON students2.students_number = grades.students_number
       WHERE students2.students_id AND grades.students_id = ${emp.students_id};`,
       (err, rows, fields) => {

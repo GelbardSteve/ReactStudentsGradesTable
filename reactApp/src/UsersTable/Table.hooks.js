@@ -1,58 +1,79 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { clearRoles } from '../Components/store/actions/roleActions';
 import { clearStudent } from '../Components/store/actions/studentActions';
 
 export const useSortedData = (currentPage, pageSize) => {
-  const [state, setState] = useState([]);
-  const [originalData, setOriginalData] = useState([]);
-  const [studentsCount, setStudentsCount] = useState('');
-
-  const getSortedData = useCallback(async () => {
+  const fetchSortedData = async () => {
     const shouldUpdatePage = pageSize !== undefined;
-    const url = shouldUpdatePage ? `http://localhost:3000/students2?currentPag=${currentPage}&pageSize=${pageSize}` : 'http://localhost:3000/students2';
+    const url = shouldUpdatePage 
+      ? `https://node-4-pdlj.onrender.com/students2?currentPag=${currentPage}&pageSize=${pageSize}`
+      : 'https://node-4-pdlj.onrender.com/students2';
 
-    try {
-      const response = await axios.get(url);
-      setState(response.data.items);
-      setOriginalData(response.data.items);
-      setStudentsCount(response.data.totalPages > 3 ? response.data.totalPages : 3);
-      localStorage.setItem('totalPages', response.data.totalPages > 3 ? response.data.totalPages : 3);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setState(false);
-    }
-  }, [currentPage, pageSize]);
+    const { data } = await axios.get(url);
+    
+    // Save total pages locally
+    const totalPages = data.totalPages > 3 ? data.totalPages : 3;
+    localStorage.setItem('totalPages', totalPages);
 
-  useEffect(() => {
-    getSortedData();
-  }, [getSortedData]);
+    return {
+      items: data.items,
+      totalPages,
+    };
+  };
 
-  return { state, setState, originalData, studentsCount, setStudentsCount, getSortedData };
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['sortedData', currentPage, pageSize],
+    queryFn: fetchSortedData,
+    keepPreviousData: true, // Helps prevent UI flickers when changing pages
+  });
+
+  return {
+    state: data?.items || [],
+    originalData: data?.items || [],
+    studentsCount: data?.totalPages || 3,
+    isLoading,
+    isError,
+    refetch, // Function to manually trigger a refetch if needed
+  };
 };
 
 export const useLogout = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogout = useCallback(() => {
-    const isAdmin = localStorage.getItem('adminAuthentication') ? true : false;
-    const user = isAdmin ? 'admin' : 'student';
-    const userAuthenticationToken = `${user}Authentication`;
-    const userAuthentication = localStorage.getItem(userAuthenticationToken);
-    const isAdminAuthentication = user === 'admin' ? { authentication: userAuthentication } : { table: 'students2', authentication: userAuthentication };
+  const logOutAPI = (isAdminAuthentication) => {
+    return axios.post('https://node-4-pdlj.onrender.com/remove/authentication', isAdminAuthentication);
+  };
 
-    axios.post('http://localhost:3000/remove/authentication', isAdminAuthentication).then((res) => {
-      if (res.data === 200) {
+  const { mutate: loginAdmin, isLoading: isAdminLoading } = useMutation(
+    async () => {
+      const isAdmin = localStorage.getItem('adminAuthentication') ? true : false;
+      const user = isAdmin ? 'admin' : 'student';
+      const userAuthenticationToken = `${user}Authentication`;
+      const userAuthentication = localStorage.getItem(userAuthenticationToken);
+      const isAdminAuthentication =
+        user === 'admin'
+          ? { authentication: userAuthentication }
+          : { table: 'students2', authentication: userAuthentication };
+
+      return logOutAPI(isAdminAuthentication);
+    },
+    {
+      onSuccess: () => {
+        const isAdmin = localStorage.getItem('adminAuthentication') ? true : false;
+        const user = isAdmin ? 'admin' : 'student';
+        const userAuthenticationToken = `${user}Authentication`;
+
         dispatch(clearRoles());
         dispatch(clearStudent());
         localStorage.removeItem(userAuthenticationToken);
         navigate('/');
       }
-    });
-  }, [navigate, dispatch]);
+    }
+  );
 
-  return handleLogout;
+  return { loginAdmin, isAdminLoading };
 };

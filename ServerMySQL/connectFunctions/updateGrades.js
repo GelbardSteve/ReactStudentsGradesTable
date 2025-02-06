@@ -8,7 +8,7 @@ module.exports = (app, mysqlConnection) => {
       return res.status(400).json({ error: 'Invalid request body' });
     }
 
-    const sql = `UPDATE students.grades 
+    const sql = `UPDATE stevegel_students.grades 
                  SET studentsGrades = ? 
                  WHERE students_id = ?`;
     const values = [studentsGrades, students_id];

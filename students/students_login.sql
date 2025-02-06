@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.34, for macos13 (arm64)
 --
--- Host: localhost    Database: students
+-- Host: localhost    Database: stevegel_students
 -- ------------------------------------------------------
 -- Server version	8.1.0
 

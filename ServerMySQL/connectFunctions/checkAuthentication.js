@@ -2,7 +2,7 @@ module.exports = (app, mysqlConnection) => {
   //Admin Login
   app.post('/login/authentication', (req, res, next) => {
     const emp = req.body;
-    const sql = `SELECT * FROM login 
+    const sql = `SELECT * FROM stevegel_students.login 
     WHERE authentication = "${emp.authentication}"`;
     mysqlConnection.query(sql, (err, rows, fields) => {
       if (rows.length !== 0) {

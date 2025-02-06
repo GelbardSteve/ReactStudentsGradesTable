@@ -3,7 +3,7 @@ module.exports = (app, mysqlConnection) => {
   app.post('/favorites', (req, res, next) => {
     const emp = req.body;
     const favoritesValue = emp.favorites ? 1 : 0;
-    const updateSql = `UPDATE students.students2 SET favorites = "${favoritesValue}" WHERE students_number = "${emp.id}"`;
+    const updateSql = `UPDATE stevegel_students.students2 SET favorites = "${favoritesValue}" WHERE students_number = "${emp.id}"`;
     // Using the correct variable name here
     mysqlConnection.query(updateSql, (err, result) => {
       if (err) {

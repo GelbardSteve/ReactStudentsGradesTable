@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
 import axios from 'axios';
-import { CustomModal } from '../Components/Modal/Modal';
-import { useForm, Controller } from 'react-hook-form';
-import { StyledFotter } from './UserActions.styles';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { Button } from '../Components/Buttons/Button';
-import { toast } from 'react-toastify';
+import { CustomModal } from '../Components/Modal/Modal';
+import { StyledFotter } from './UserActions.styles';
+import { useCreateUser } from './UserActionsModal.hooks';
 
 export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
   const [isUserExist, setIsUserExist] = useState(false);
@@ -18,7 +18,7 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
     reset,
   } = useForm();
 
-  const baseUrl = 'http://localhost:3000';
+  const baseUrl = 'https://node-4-pdlj.onrender.com';
 
   const handleInputChange = async (value) => {
     setIsUserExist(false);
@@ -40,22 +40,21 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
     closeModal();
   };
 
-  //Handle form submission
-  const handleSubmitCreateNewUser = async (data) => {
+  const onSuccess =  (user) => {
+    reset();
+    closeModal();
+    onCreate(user);
+  }
+
+  const { mutate: onCreateUser, isLoading: isCreateUserLoading } = useCreateUser(onSuccess)
+
+  const handleSubmitCreateNewUser = (data) => {
     if (isUserExist) {
       return;
     }
-    // You can perform actions with the form data here
-    const forStudentsTable = { students_name: data.studentName, students_number: data.studentsNumber, studentsGrades: data.studentsGrades };
-    const response = await axios.post(`${baseUrl}/students2`, forStudentsTable);
 
-    if (response.status === 200) {
-      reset();
-      closeModal();
-      toast.success(`User ${response.data.students_name} was created`);
-      onCreate(response.data);
-    }
-  };
+    onCreateUser(data)
+  }
 
   return (
     <div>
@@ -69,7 +68,7 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
           </>
         }
       >
-        <form onSubmit={handleSubmit(handleSubmitCreateNewUser)}>
+        <form onSubmit={handleSubmit((user) => handleSubmitCreateNewUser(user))}>
           <div className="form-group">
             <div className="form-outline mb-4">
               <label htmlFor="studentName">Students Name</label>
@@ -147,7 +146,7 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
           </div>
 
           <StyledFotter className="modal-footer">
-            <Button disabled={!isValid || isUserExist} type="submit">
+            <Button disabled={!isValid || isUserExist} type="submit" isLoading={isCreateUserLoading}>
               {'Create a user'}
             </Button>
           </StyledFotter>

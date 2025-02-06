@@ -1,22 +1,16 @@
-import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import axios from 'axios';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AdminLoginForm } from '../../UsersLoginForm/AdminLoginForm/AdminLoginForm';
 import { StudentLoginForm } from '../../UsersLoginForm/StudentLoginForm/StudentLoginForm';
-import { useState } from 'react';
-import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { useEffect } from 'react';
 import { Button } from '../Buttons/Button';
-import { setRoles } from '../../Components/store/actions/roleActions';
-import { setStudent } from '../../Components/store/actions/studentActions';
+import { useLoginAdmin, useLoginStudent } from './Login.hooks';
+import { verifyAuthentication } from './LoginPage.helper';
 
 export const LoginPage = () => {
   const dispatch = useDispatch();
   const [studentComponent, setStudentComponent] = useState('admin');
-  const [userTablePath, setUserTablePath] = useState('');
-
   const navigate = useNavigate();
   const {
     control,
@@ -26,6 +20,8 @@ export const LoginPage = () => {
     setError,
     clearErrors,
   } = useForm();
+  const { loginAdmin, isAdminLoading } = useLoginAdmin(setError, navigate, dispatch);
+  const { loginStudent, isStudentLoading } = useLoginStudent(setError, navigate, dispatch);
 
   const customStyles = {
     width: '34%',
@@ -34,54 +30,24 @@ export const LoginPage = () => {
       cursor: 'pointer',
     },
   };
-
+  
+  // Submit handlers
+  const onAdminSubmitForm = (data) => loginAdmin(data);
+  const onStudentSubmitForm = (data) => loginStudent(data);
+  
+  // Auto-login effect
   useEffect(() => {
-    const adminAuthentication = localStorage.getItem('adminAuthentication');
-    const studentAuthentication = localStorage.getItem('studentAuthentication');
-
-    if (!adminAuthentication && !studentAuthentication) return;
-
-    const userAuthentication = adminAuthentication ? adminAuthentication : studentAuthentication;
-    const url = adminAuthentication ? 'login' : 'students';
-
-    axios.post(`http://localhost:3000/${url}/authentication`, { authentication: userAuthentication }).then((res) => {
-      if (res.data !== 401 && url === 'login') {
-        navigate('/table');
-      } else if (res.data !== 401 && url === 'students') {
-        navigate('/studentTable');
-      }
+    const adminAuth = localStorage.getItem('adminAuthentication');
+    const studentAuth = localStorage.getItem('studentAuthentication');
+    if (!adminAuth && !studentAuth) return;
+  
+    const userAuth = adminAuth || studentAuth;
+    const url = adminAuth ? 'login' : 'students';
+  
+    verifyAuthentication(userAuth, url).then((res) => {
+      if (res !== 401) navigate(url === 'login' ? '/table' : '/studentTable');
     });
-  }, [navigate, userTablePath, setUserTablePath]);
-
-  const onAdminSubmitForm = async (data) => {
-    await axios.post('http://localhost:3000/login', data).then((res) => {
-      if (res.data === 401) {
-        setError('loginError', {
-          type: 'manual',
-          message: 'Invalid username or password',
-        });
-      } else {
-        dispatch(setRoles(res.data.userRole));
-        localStorage.setItem('adminAuthentication', res.data.authentication);
-        navigate('/table');
-      }
-    });
-  };
-
-  const onStudentSubmitForm = async (data) => {
-    await axios.post(`http://localhost:3000/students2/${data.studentNumber}`, data).then((res) => {
-      if (res.data === 'NotFound') {
-        setError('loginError', {
-          type: 'manual',
-          message: 'Invalid student number',
-        });
-      } else {
-        dispatch(setStudent({ userData: res.data.userData, authentication: res.data.authentication }));
-        localStorage.setItem('studentAuthentication', res.data.authentication);
-        navigate('/studentTable');
-      }
-    });
-  };
+  }, [navigate]);
 
   const handleChangeComponent = useCallback(
     (componentState) => {
@@ -116,8 +82,7 @@ export const LoginPage = () => {
             <StudentLoginForm Controller={Controller} control={control} errors={errors} trigger={trigger} />
           )}
           {errors.loginError && <p className="d-flex justify-content-center mt-3 text-danger">{errors.loginError.message}</p>}
-
-          <Button disabled={!isValid} type="submit" className="btn-block mb-4">
+          <Button disabled={!isValid} type="submit" className="btn-block mb-4" isLoading={isAdminLoading || isStudentLoading}>
             {'Sign In'}
           </Button>
         </form>

@@ -4,7 +4,7 @@ module.exports = (app, mysqlConnection) => {
     const sanitizedQuery = `%${query}%`;
 
     mysqlConnection.query(
-      `SELECT * FROM Students2 INNER JOIN grades ON
+      `SELECT * FROM stevegel_students.students2 INNER JOIN grades ON
         students2.students_number = grades.students_number 
         WHERE students2.students_number = ? OR students2.students_name LIKE ?`,
       [query, sanitizedQuery],

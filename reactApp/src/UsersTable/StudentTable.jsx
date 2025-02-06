@@ -5,5 +5,5 @@ import { useSelector } from 'react-redux';
 export const StudentTable = () => {
   const { userData } = useSelector((state) => state.students.student);
 
-  return <Table state={userData} permission={false} />;
+  return <Table state={userData} />;
 };
