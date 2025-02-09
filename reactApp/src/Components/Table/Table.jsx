@@ -5,6 +5,7 @@ import { EditUserModal } from '../../UsersActionsModal/EditUserModal';
 import { useDeleteUser } from '../../UsersActionsModal/UserActionsModal.hooks';
 import { Button } from '../Buttons/Button';
 import { Favorites } from '../Favorites/Favorites';
+import { useUpdateFavorites } from '../Favorites/Favorites.hooks';
 import { Pagination } from '../Pagination/pagination';
 import { SearchInput } from '../Search/Search';
 
@@ -23,6 +24,7 @@ export const Table = ({
   const [deletingUserId, setDeletingUserId] = useState(null); // Track the user being deleted
   const userRole = useSelector((state) => state.role.roles);
   const permission = userRole === 'admin';
+
 
   const containerClass = {
     display: 'flex',
@@ -77,6 +79,8 @@ export const Table = ({
       )
     );
   };
+
+  const { mutate: toggleFavorite, isLoading: isFavortiesLoading } = useUpdateFavorites(handleFavoriteToggle)
 
   const handleState = state;
   return (
@@ -140,7 +144,8 @@ export const Table = ({
                       <td>
                         <Favorites
                           user={user}
-                          onFavoriteToggle={handleFavoriteToggle}
+                          toggleFavorite={toggleFavorite}
+                          isLoading={isFavortiesLoading}
                         />
                       </td>
                     </>

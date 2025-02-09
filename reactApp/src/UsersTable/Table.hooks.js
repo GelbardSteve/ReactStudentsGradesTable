@@ -29,9 +29,9 @@ export const useSortedData = (currentPage, pageSize) => {
   };
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['sortedData', currentPage, pageSize],
+    queryKey: ['sortedData', currentPage, pageSize], // Include state in dependencies
     queryFn: fetchSortedData,
-    keepPreviousData: true, // Helps prevent UI flickers when changing pages
+    keepPreviousData: true,
   });
 
   return {

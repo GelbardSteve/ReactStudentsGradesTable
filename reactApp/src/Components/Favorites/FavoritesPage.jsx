@@ -1,15 +1,37 @@
 import { LinearProgress } from '@mui/material';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSortedData } from '../../UsersTable/Table.hooks';
 import { EmptyPage } from '../EmptyPage/Empty';
 import { Favorites } from './Favorites';
+import { useUpdateFavorites } from './Favorites.hooks';
 import { StyleFavoritesContainer } from './Favorites.styles';
 
 export const FavoritesPage = () => {
-  const { state, isLoading, refetch } = useSortedData();
+  const { state, setState, isLoading, originalState } = useSortedData();
+  const [favoriteUsers, setFavoriteUsers] = useState(state.filter((user) => user.favorites === 1))
 
-  // Filter the users to get only favorites
-  const favoriteUsers = state.filter((user) => user.favorites === 1);
+  useEffect(() => {
+    setFavoriteUsers(state.filter((user) => user.favorites === 1))
+  }, [state])
+
+  const handleFavoriteToggle = (students_number, favorites, students_name) => {
+      setFavoriteUsers(() => originalState.filter((user) => 
+        !favorites 
+          ? user.students_number !== students_number
+          : user
+    ));
+    
+    setState((prevState) =>
+      prevState.map((student) =>
+        student.students_number === students_number
+          ? { ...student, favorites }
+          : student
+      )
+    );
+  };
+
+  const { mutate: toggleFavorite, isLoading: isFavortiesLoading } = useUpdateFavorites(handleFavoriteToggle)
+
 
   if (isLoading) return <LinearProgress />;
 
@@ -23,7 +45,8 @@ export const FavoritesPage = () => {
             <div key={students_number} className="card border-info m-4" style={{ width: '18rem' }}>
               <div className="card-header d-flex justify-content-between">
                 <div>{students_name}</div>
-                <Favorites user={user} refetch={refetch} />
+                {/* Pass refetch as onFavoriteToggle */}
+                <Favorites user={user} toggleFavorite={toggleFavorite} isLoading={isFavortiesLoading} />
               </div>
               <div className="card-body">
                 <h5 className="card-title">{`Student number: ${students_number}`}</h5>

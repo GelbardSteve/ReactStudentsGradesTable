@@ -78,7 +78,7 @@ export const LoginPage = () => {
           <Button disabled={!isValid} type="submit" className="btn-block mb-4" isLoading={isAdminLoading || isStudentLoading}>
             {'Sign In'}
           </Button>
-          {error ? <p>{error.message}</p> : ''}
+          {error ? <p className='p-1 alert-danger' >{error.message === 'Network Error' ? `There is a ${error.message.toLowerCase()} please try again later.` : error.message}</p> : ''}
         </form>
         <div>
           <img src={'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp'} className="img-fluid" alt="Login Illustration" />
