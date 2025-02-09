@@ -4,7 +4,7 @@ import { setStudent } from '../../Components/store/actions/studentActions';
 import { authenticateStudent, authenticateUser } from './LoginPage.helper';
 
 export const useLoginAdmin = (setError, navigate, dispatch) => {
-    const { mutate: loginAdmin, isLoading: isAdminLoading } = useMutation(authenticateUser, {
+    const { mutate: loginAdmin, isLoading: isAdminLoading, error } = useMutation(authenticateUser, {
         onSuccess: (data) => {
           if (data === 401) {
             setError('loginError', { type: 'manual', message: 'Invalid username or password' });
@@ -16,7 +16,7 @@ export const useLoginAdmin = (setError, navigate, dispatch) => {
         },
       });
 
-      return { loginAdmin, isAdminLoading };
+      return { loginAdmin, isAdminLoading, error };
 }
   
 export const useLoginStudent = (setError, navigate, dispatch) => {

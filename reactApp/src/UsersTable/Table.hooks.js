@@ -1,11 +1,14 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { clearRoles } from '../Components/store/actions/roleActions';
 import { clearStudent } from '../Components/store/actions/studentActions';
 
 export const useSortedData = (currentPage, pageSize) => {
+  const [state, setState] = useState([]); // Store the state
+
   const fetchSortedData = async () => {
     const shouldUpdatePage = pageSize !== undefined;
     const url = shouldUpdatePage 
@@ -18,6 +21,7 @@ export const useSortedData = (currentPage, pageSize) => {
     const totalPages = data.totalPages > 3 ? data.totalPages : 3;
     localStorage.setItem('totalPages', totalPages);
 
+    setState(data.items);
     return {
       items: data.items,
       totalPages,
@@ -31,8 +35,9 @@ export const useSortedData = (currentPage, pageSize) => {
   });
 
   return {
-    state: data?.items || [],
-    originalData: data?.items || [],
+    state: state || [],
+    setState,
+    originalState: data?.items || [],
     studentsCount: data?.totalPages || 3,
     isLoading,
     isError,

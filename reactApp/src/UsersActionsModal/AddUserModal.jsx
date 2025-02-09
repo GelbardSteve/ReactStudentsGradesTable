@@ -6,7 +6,7 @@ import { CustomModal } from '../Components/Modal/Modal';
 import { StyledFotter } from './UserActions.styles';
 import { useCreateUser } from './UserActionsModal.hooks';
 
-export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
+export const AddUserModal = ({ onCreate, isModalOpen, closeModal, setTableState }) => {
   const [isUserExist, setIsUserExist] = useState(false);
   const [userExistError, setUserExistError] = useState();
 
@@ -44,6 +44,9 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
     reset();
     closeModal();
     onCreate(user);
+
+    // Update table state with the new user
+    setTableState((prev) => [user, ...prev]);
   }
 
   const { mutate: onCreateUser, isLoading: isCreateUserLoading } = useCreateUser(onSuccess)
@@ -68,7 +71,7 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
           </>
         }
       >
-        <form onSubmit={handleSubmit((user) => handleSubmitCreateNewUser(user))}>
+        <form key={isModalOpen ? 'open' : 'closed'} onSubmit={handleSubmit((user) => handleSubmitCreateNewUser(user))}>
           <div className="form-group">
             <div className="form-outline mb-4">
               <label htmlFor="studentName">Students Name</label>

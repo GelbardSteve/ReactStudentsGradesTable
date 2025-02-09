@@ -5,7 +5,7 @@ import { CustomModal } from '../Components/Modal/Modal';
 import { StyledFotter } from './UserActions.styles';
 import { useUpdateUser } from './UserActionsModal.hooks';
 
-export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable }) => {
+export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable, setTableState }) => {
   const {
     control,
     handleSubmit,
@@ -21,8 +21,11 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
     setValue('studentsGrades', user.studentsGrades);
   }, [user, setValue]);
 
-  const onSuccess = (userName) => {
-      handleUpdateTable(userName);
+  const onSuccess = (updatedStudent) => {
+    setTableState(prev => prev.map(student =>
+        student.students_id === updatedStudent.students_id ? updatedStudent : student
+      ));
+      handleUpdateTable(updatedStudent);
       closeModal();
   }
 

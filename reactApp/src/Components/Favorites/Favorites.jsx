@@ -1,12 +1,10 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import React from 'react';
 import { toast } from 'react-toastify';
 import { Button } from '../Buttons/Button';
 
 export const Favorites = ({ user, onFavoriteToggle }) => {
-  const queryClient = useQueryClient();
-
   const updateFavorites = async (students_number, favorites) => {
     const response = await axios.post('https://node-4-pdlj.onrender.com/favorites', {
       id: students_number,
@@ -20,8 +18,6 @@ export const Favorites = ({ user, onFavoriteToggle }) => {
     async ({ students_number, favorites }) => updateFavorites(students_number, favorites),
     {
       onSuccess: (_, { students_number, favorites, students_name }) => {
-        queryClient.invalidateQueries(['sortedData']);
-
         // Notify the parent component to update the UI
         onFavoriteToggle(students_number, favorites);
 

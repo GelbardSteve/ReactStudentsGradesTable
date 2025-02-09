@@ -1,16 +1,11 @@
 import React from 'react';
+import { StyledInput, StyledWrapper } from './Search.styles';
 
 export const SearchInput = ({ value, handleSearchDara }) => {
-  const customStyles = {
-    width: '300px',
-    marginLeft: '30px',
-    marginBottom: '30px',
-  };
-
   return (
-    <div style={customStyles}>
+    <StyledWrapper>
       <label htmlFor="searchInput">Search Student</label>
-      <input
+      <StyledInput
         id="searchInput"
         name="searchInput"
         value={value} // Bind to the value prop passed from the parent
@@ -19,6 +14,6 @@ export const SearchInput = ({ value, handleSearchDara }) => {
         type="text"
         className={'form-control border border-dark'}
       />
-    </div>
+    </StyledWrapper>
   );
 };

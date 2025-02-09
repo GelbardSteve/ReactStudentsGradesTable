@@ -6,6 +6,7 @@ import { AdminLoginForm } from '../../UsersLoginForm/AdminLoginForm/AdminLoginFo
 import { StudentLoginForm } from '../../UsersLoginForm/StudentLoginForm/StudentLoginForm';
 import { Button } from '../Buttons/Button';
 import { useLoginAdmin, useLoginStudent } from './Login.hooks';
+import { StyledForm, StyledLi, StyledWrapper } from './Login.styles';
 import { verifyAuthentication } from './LoginPage.helper';
 
 export const LoginPage = () => {
@@ -20,16 +21,8 @@ export const LoginPage = () => {
     setError,
     clearErrors,
   } = useForm();
-  const { loginAdmin, isAdminLoading } = useLoginAdmin(setError, navigate, dispatch);
+  const { loginAdmin, isAdminLoading, error } = useLoginAdmin(setError, navigate, dispatch);
   const { loginStudent, isStudentLoading } = useLoginStudent(setError, navigate, dispatch);
-
-  const customStyles = {
-    width: '34%',
-    margin: '40px auto 0 auto',
-    pointer: {
-      cursor: 'pointer',
-    },
-  };
   
   // Submit handlers
   const onAdminSubmitForm = (data) => loginAdmin(data);
@@ -58,17 +51,17 @@ export const LoginPage = () => {
 
   return (
     <>
-      <div style={customStyles}>
+      <StyledWrapper>
         <ul className="list-group list-group-flush">
-          <li style={customStyles.pointer} onClick={() => handleChangeComponent('admin')} className={`list-group-item ${studentComponent === 'admin' && 'active'}`}>
+          <StyledLi onClick={() => handleChangeComponent('admin')} className={`list-group-item ${studentComponent === 'admin' && 'active'}`}>
             Login as an Admin
-          </li>
-          <li style={customStyles.pointer} onClick={() => handleChangeComponent('student')} className={`list-group-item ${studentComponent === 'student' && 'active'}`}>
+          </StyledLi>
+          <StyledLi onClick={() => handleChangeComponent('student')} className={`list-group-item ${studentComponent === 'student' && 'active'}`}>
             Login as a Student
-          </li>
+          </StyledLi>
         </ul>
-      </div>
-      <div className=" d-flex justify-content-center align-items-center h-100">
+      </StyledWrapper>
+      <StyledForm className=" d-flex justify-content-center align-items-center h-100">
         <form
           className="w-25"
           onSubmit={handleSubmit(studentComponent === 'admin' ? onAdminSubmitForm : onStudentSubmitForm)}
@@ -85,11 +78,12 @@ export const LoginPage = () => {
           <Button disabled={!isValid} type="submit" className="btn-block mb-4" isLoading={isAdminLoading || isStudentLoading}>
             {'Sign In'}
           </Button>
+          {error ? <p>{error.message}</p> : ''}
         </form>
         <div>
           <img src={'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp'} className="img-fluid" alt="Login Illustration" />
         </div>
-      </div>
+      </StyledForm>
     </>
   );
 };

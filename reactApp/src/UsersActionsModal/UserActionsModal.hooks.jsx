@@ -40,7 +40,7 @@ const updateUser = async (user, data) => {
   };
 
   await axios.put(`${baseUrl}/grades`, forGradesTable);
-  return user.students_name;
+  return forGradesTable;
 }
 
 export const useUpdateUser = (onSuccess) => {
@@ -63,17 +63,15 @@ export const useUpdateUser = (onSuccess) => {
     return student;
   };
 
-  export const useDeleteUser = (onSuccess, setFilteredData) => {
+  export const useDeleteUser = (onSuccess) => {
     return useMutation(async (data) => {
       return deleteUser(data);
     }, {
       onSuccess: (data) => {
         onSuccess?.(data);
-        setFilteredData((previous) => previous.filter(previu => previu.students_id !== data?.student?.students_id));
-
       },
       onError: (error) => {
-        console.error('Error delete user:', error);
+        console.error('Error deleting user:', error);
       }
-    })
-  }
+    });
+  };
