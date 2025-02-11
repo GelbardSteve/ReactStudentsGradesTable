@@ -2,7 +2,7 @@ import { LinearProgress } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { addUsers } from '../Components/store/actions/manageData';
+import { addUsers, removeUser } from '../Components/store/actions/manageData';
 import { Table } from '../Components/Table/Table';
 import { AddUserModal } from '../UsersActionsModal/AddUserModal';
 import { useSortedData } from './Table.hooks';
@@ -42,12 +42,13 @@ export const AdminTable = () => {
   }, []);
 
   const handleDelete = useCallback(async (student) => {
+      dispatch(removeUser(student.students_name)); // Ensure users are added
         toast.success(`User ${student.students_name} was deleted`);
         if (state.length === 1) {
           const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
           handlePageChange(newPage);
         }
-  }, [state, currentPage, handlePageChange]);
+  }, [dispatch, state.length, currentPage, handlePageChange]);
 
   const handleCreate = useCallback(
     async (data) => {
