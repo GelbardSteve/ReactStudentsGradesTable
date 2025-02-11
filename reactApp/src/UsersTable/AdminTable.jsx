@@ -40,17 +40,18 @@ export const AdminTable = () => {
 
   const handleDelete = useCallback(async (student) => {
         toast.success(`User ${student.students_name} was deleted`);
+        refetch();
 
         if (state.length === 1) {
           const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
           handlePageChange(newPage);
         }
-        refetch();
-  }, [state, currentPage, handlePageChange, refetch]);
+  }, [refetch, state, currentPage, handlePageChange]);
 
   const handleCreate = useCallback(
     async (data) => {
-      setState((prev) => [data, ...prev]); // Add user locally
+      refetch();
+  
       // Check if we need to update pagination
       if (state.length >= pageSize) {
         const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
@@ -58,7 +59,7 @@ export const AdminTable = () => {
       }
       toast.success(`User ${data.students_name} was added`);
     },
-    [pageSize, setState, state.length, studentsCount]
+    [pageSize, refetch, state, studentsCount]
   );
 
   const handleUpdateTable = (user) => {

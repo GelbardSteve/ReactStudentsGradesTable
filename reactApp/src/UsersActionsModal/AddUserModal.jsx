@@ -1,17 +1,14 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 import { Button } from '../Components/Buttons/Button';
 import { CustomModal } from '../Components/Modal/Modal';
-import { addUsers } from '../Components/store/actions/manageData';
 import { StyledFotter } from './UserActions.styles';
 import { useCreateUser } from './UserActionsModal.hooks';
 
 export const AddUserModal = ({ onCreate, isModalOpen, closeModal, setTableState }) => {
   const [isUserExist, setIsUserExist] = useState(false);
   const [userExistError, setUserExistError] = useState();
-  const dispatch = useDispatch();
 
   const {
     control,
@@ -44,13 +41,9 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal, setTableState 
   };
 
   const onSuccess = (user) => {
-    dispatch(addUsers([user]))
     reset();
     closeModal();
     onCreate(user);
-
-    // Update table state with the new user
-    setTableState((prev) => [user, ...prev]);
   }
 
   const { mutate: onCreateUser, isLoading: isCreateUserLoading } = useCreateUser(onSuccess)

@@ -24,7 +24,7 @@ export const useSortedData = (currentPage, pageSize) => {
     };
   
     fetchUsers();
-  }, [dispatch]);
+  }, [dispatch, state]);
 
 
   const fetchSortedData = async () => {
