@@ -45,6 +45,7 @@ export const useSortedData = (currentPage, pageSize) => {
   return {
     state: state || [],
     setState,
+    fetchSortedData,
     originalState: data?.items || [],
     studentsCount: data?.totalPages || 3,
     isLoading,

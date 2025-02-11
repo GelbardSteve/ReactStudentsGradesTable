@@ -14,7 +14,7 @@ export const AdminTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedColumn, setSortedColumn] = useState('asc');
 
-  const { state, setState, studentsCount, isLoading, isError, originalState, refetch } = useSortedData(currentPage, pageSize);
+  const { state, setState, studentsCount, isLoading, isError, originalState, fetchSortedData } = useSortedData(currentPage, pageSize);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -56,8 +56,8 @@ export const AdminTable = () => {
 
     // Delay refetch to allow local state update to be visible
    
-        refetch();
-}, [setState, state.length, dispatch, currentPage, handlePageChange, refetch]);
+    fetchSortedData();
+}, [setState, state, dispatch, currentPage, handlePageChange, fetchSortedData]);
 
 
   const handleCreate = useCallback(
@@ -68,11 +68,11 @@ export const AdminTable = () => {
         const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
         setCurrentPage(pagesCount);
       }
-      refetch();
       dispatch(addUsers([...originalState, data])); // Ensure users are added
       toast.success(`User ${data.students_name} was added`);
+      fetchSortedData();
     },
-    [dispatch, originalState, pageSize, refetch, state.length, studentsCount]
+    [dispatch, originalState, pageSize, fetchSortedData, state, studentsCount]
   );
 
   const handleUpdateTable = (user) => {
