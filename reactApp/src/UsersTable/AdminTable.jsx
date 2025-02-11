@@ -42,14 +42,23 @@ export const AdminTable = () => {
   }, []);
 
   const handleDelete = useCallback(async (student) => {
-        toast.success(`User ${student.students_name} was deleted`);
-        if (state.length === 1) {
-          const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
-          handlePageChange(newPage);
-        }
-        dispatch(removeUser(student.students_name)); // Ensure users are added
+    toast.success(`User ${student.students_name} was deleted`);
+
+    // Optimistically update local state before refetching
+    setState(prevState => prevState.filter(user => user.students_name !== student.students_name));
+
+    if (state.length === 1) {
+        const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
+        handlePageChange(newPage);
+    }
+
+    dispatch(removeUser(student.students_name));
+
+    // Delay refetch to allow local state update to be visible
+   
         refetch();
-  }, [dispatch, state.length, refetch, currentPage, handlePageChange]);
+}, [setState, state.length, dispatch, currentPage, handlePageChange, refetch]);
+
 
   const handleCreate = useCallback(
     async (data) => {

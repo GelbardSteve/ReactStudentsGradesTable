@@ -36,12 +36,20 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal, setTableState 
 
   const handleCloseTheModal = () => {
     setIsUserExist(false);
-    reset();
+    reset({
+  studentName: '',
+  studentsNumber: '',
+  studentsGrades: '',
+});
     closeModal();
   };
 
   const onSuccess = (user) => {
-    reset();
+    reset({
+  studentName: '',
+  studentsNumber: '',
+  studentsGrades: '',
+});
     closeModal();
     onCreate(user);
   }

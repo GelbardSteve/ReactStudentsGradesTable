@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { addUsers } from '../Components/store/actions/manageData';
@@ -28,6 +28,7 @@ export const useSortedData = (currentPage, pageSize) => {
     localStorage.setItem('totalPages', totalPages);
     
     setState(data.items);
+    dispatch(addUsers(data.items));
 
     return {
       items: data.items,
@@ -40,15 +41,6 @@ export const useSortedData = (currentPage, pageSize) => {
     queryFn: fetchSortedData,
     keepPreviousData: true,
   });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data: allStudents } = await axios.get('https://node-4-pdlj.onrender.com/students2');
-      dispatch(addUsers(allStudents.items));
-    }
-    fetchData();
-     // Ensure users are added
-  }, [dispatch, data?.totalPages]);
 
   return {
     state: state || [],
