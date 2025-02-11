@@ -19,7 +19,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
     setValue('studentName', user.students_name);
     setValue('studentsNumber', user.students_number);
     setValue('studentsGrades', user.studentsGrades);
-  }, [user, setValue]);
+  }, [setValue, user.studentsGrades, user.students_name, user.students_number]);
 
   const onSuccess = (updatedStudent) => {
     setTableState(prev => prev.map(student =>
@@ -82,6 +82,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
                     id="studentsGrades"
                     name="studentsGrades"
                     required
+                    onChange={(e) => field.onChange(e.target.value)} // Ensure value updates
                     className={`form-control ${errors.studentsGrades ? 'is-invalid' : ''}`}
                     onBlur={() => trigger('studentsGrades')}
                   />
