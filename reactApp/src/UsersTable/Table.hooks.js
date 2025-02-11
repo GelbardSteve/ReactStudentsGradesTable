@@ -42,7 +42,7 @@ export const useSortedData = (currentPage, pageSize) => {
 
   useEffect(() => {
       refetch();
-  }, [data.items, refetch]);
+  }, [data?.items, refetch]);
 
   return {
     state: state || [],
