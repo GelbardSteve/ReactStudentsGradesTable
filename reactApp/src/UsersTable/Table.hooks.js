@@ -21,13 +21,14 @@ export const useSortedData = (currentPage, pageSize) => {
       : 'https://node-4-pdlj.onrender.com/students2';
 
     const { data } = await axios.get(url);
+
     
     // Save total pages locally
     const totalPages = data.totalPages > 3 ? data.totalPages : 3;
     localStorage.setItem('totalPages', totalPages);
     
     setState(data.items);
-    dispatch(addUsers(data.items)); // Ensure users are added
+
     return {
       items: data.items,
       totalPages,
@@ -41,8 +42,13 @@ export const useSortedData = (currentPage, pageSize) => {
   });
 
   useEffect(() => {
-      refetch();
-  }, [data?.items, refetch]);
+    const fetchData = async () => {
+      const { data: allStudents } = await axios.get('https://node-4-pdlj.onrender.com/students2');
+      dispatch(addUsers(allStudents.items));
+    }
+    fetchData();
+     // Ensure users are added
+  }, [dispatch, state]);
 
   return {
     state: state || [],

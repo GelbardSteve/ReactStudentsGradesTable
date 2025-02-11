@@ -1,11 +1,14 @@
 import { LinearProgress } from '@mui/material';
 import React, { useCallback, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
+import { addUsers } from '../Components/store/actions/manageData';
 import { Table } from '../Components/Table/Table';
 import { AddUserModal } from '../UsersActionsModal/AddUserModal';
 import { useSortedData } from './Table.hooks';
 
 export const AdminTable = () => {
+  const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('inputValue')) || 1);
   const [pageSize] = useState(3);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,16 +53,16 @@ export const AdminTable = () => {
 
   const handleCreate = useCallback(
     async (data) => {
-      refetch();
-  
+      dispatch(addUsers([...originalState, data])); // Ensure users are added
       // Check if we need to update pagination
       if (state.length >= pageSize) {
         const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
         setCurrentPage(pagesCount);
       }
+      refetch();
       toast.success(`User ${data.students_name} was added`);
     },
-    [pageSize, refetch, state, studentsCount]
+    [dispatch, originalState, pageSize, refetch, state.length, studentsCount]
   );
 
   const handleUpdateTable = (user) => {
