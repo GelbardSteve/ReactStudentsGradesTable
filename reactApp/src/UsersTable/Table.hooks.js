@@ -11,20 +11,7 @@ export const useSortedData = (currentPage, pageSize) => {
   const [state, setState] = useState([]); // Store the state
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get('https://node-4-pdlj.onrender.com/students2');
-        const users = response.data.items;
-
-        dispatch(addUsers(users)); // Ensure users are added
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-  
-    fetchUsers();
-  }, [dispatch, state]);
+ 
 
 
   const fetchSortedData = async () => {
@@ -40,7 +27,7 @@ export const useSortedData = (currentPage, pageSize) => {
     localStorage.setItem('totalPages', totalPages);
     
     setState(data.items);
-
+    dispatch(addUsers(data.items)); // Ensure users are added
     return {
       items: data.items,
       totalPages,
@@ -52,6 +39,10 @@ export const useSortedData = (currentPage, pageSize) => {
     queryFn: fetchSortedData,
     keepPreviousData: true,
   });
+
+  useEffect(() => {
+      refetch();
+  }, [data.items, refetch]);
 
   return {
     state: state || [],
