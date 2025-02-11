@@ -43,13 +43,11 @@ export const AdminTable = () => {
 
   const handleDelete = useCallback(async (student) => {
         toast.success(`User ${student.students_name} was deleted`);
-        refetch();
-
         if (state.length === 1) {
           const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
           handlePageChange(newPage);
         }
-  }, [refetch, state, currentPage, handlePageChange]);
+  }, [state, currentPage, handlePageChange]);
 
   const handleCreate = useCallback(
     async (data) => {
