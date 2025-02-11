@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSearchParams } from 'react-router-dom';
 import { EditUserModal } from '../../UsersActionsModal/EditUserModal';
 import { useDeleteUser } from '../../UsersActionsModal/UserActionsModal.hooks';
 import { Button } from '../Buttons/Button';
@@ -8,7 +7,7 @@ import { Favorites } from '../Favorites/Favorites';
 import { useUpdateFavorites } from '../Favorites/Favorites.hooks';
 import { Pagination } from '../Pagination/pagination';
 import { SearchInput } from '../Search/Search';
-import { setFavorites } from '../store/actions/manageData';
+import { removeUser, setFavorites } from '../store/actions/manageData';
 
 
 export const Table = ({
@@ -26,7 +25,6 @@ export const Table = ({
   const [deletingUserId, setDeletingUserId] = useState(null); // Track the user being deleted
   const userRole = useSelector((state) => state.role.roles);
   const permission = userRole === 'admin';
-  const [, setSearchParams] = useSearchParams();
   const allUsers = useSelector((state) => state.manageData.users);
 
   useEffect(() => {
@@ -63,7 +61,6 @@ export const Table = ({
       const { value } = e.target;
   
       setSearchQuery(value);
-      setSearchParams({ q: value });
   
       if (value !== '') {
         const studentSearch = allUsers.find((user) => {
@@ -88,7 +85,7 @@ export const Table = ({
         })
       );      
     },
-    [setSearchParams, setTableState, allUsers, originalState]
+    [setTableState, allUsers, originalState]
   );
   
   
@@ -102,6 +99,8 @@ export const Table = ({
   const { mutate: onUserDelete } = useDeleteUser(onSuccessDelete);
 
   const handleDeleteUser = (data) => {
+    dispatch(removeUser(data.students_number));
+
     setDeletingUserId(data.students_id); // Set deleting user ID before calling delete
     onUserDelete(data);
   };

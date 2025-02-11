@@ -1,4 +1,4 @@
-import { ADD_USERS, SET_FAVORITES } from "../actions/manageData";
+import { ADD_USERS, REMOVE_USERS, SET_FAVORITES } from "../actions/manageData";
 
 const initialState = {
     users: []
@@ -19,6 +19,12 @@ export const manageData = (state = initialState, action) => {
                         ? { ...user, favorites: action.payload.favorites ? 1 : 0 } 
                         : user
             }),
+            };
+        case REMOVE_USERS:
+            console.log(action.payload);
+            return {
+                ...state,
+                users: state.users?.filter(user => user.students_number !== action.payload)
             };  
         default:
             return state;
