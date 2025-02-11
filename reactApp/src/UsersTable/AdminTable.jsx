@@ -63,6 +63,7 @@ export const AdminTable = () => {
   const handleCreate = useCallback(
     async (data) => {
 
+      setState((prevState) => [...prevState, data]); // Optimistically update local state before refetching
       // Check if we need to update pagination
       if (state.length >= pageSize) {
         const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
@@ -70,9 +71,8 @@ export const AdminTable = () => {
       }
       dispatch(addUsers([...originalState, data])); // Ensure users are added
       toast.success(`User ${data.students_name} was added`);
-      fetchSortedData();
     },
-    [dispatch, originalState, pageSize, fetchSortedData, state, studentsCount]
+    [dispatch, originalState, pageSize, setState, state.length, studentsCount]
   );
 
   const handleUpdateTable = (user) => {
