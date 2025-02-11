@@ -50,15 +50,15 @@ export const AdminTable = () => {
 
   const handleCreate = useCallback(
     async (data) => {
+      setState((prev) => [data, ...prev]); // Add user locally
       // Check if we need to update pagination
       if (state.length >= pageSize) {
         const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
         setCurrentPage(pagesCount);
-        // setStudentsCount(studentsCount + 1);
       }
       toast.success(`User ${data.students_name} was added`);
     },
-    [pageSize, state.length, studentsCount]
+    [pageSize, setState, state.length, studentsCount]
   );
 
   const handleUpdateTable = (user) => {
