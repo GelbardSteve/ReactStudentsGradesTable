@@ -48,7 +48,7 @@ export const useSortedData = (currentPage, pageSize) => {
     }
     fetchData();
      // Ensure users are added
-  }, [dispatch, state]);
+  }, [dispatch, data?.totalPages]);
 
   return {
     state: state || [],
