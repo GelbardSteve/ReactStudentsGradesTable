@@ -18,10 +18,20 @@ export const AdminTable = () => {
   };
 
   const handleColumnHeaderClick = (column) => {
-    if (!state) return; // Prevent sorting if state is empty
-    const howToSort = sortedColumn === 'asc' ? 'desc' : 'asc';
-    setSortedColumn(howToSort);
+    if (!state || state.length === 0) return; // Prevent sorting if state is empty
+  
+    const newSortOrder = sortedColumn === 'asc' ? 'desc' : 'asc';
+    setSortedColumn(newSortOrder);
+  
+    const sortedData = [...state].sort((a, b) => {
+      if (a[column] < b[column]) return newSortOrder === 'asc' ? -1 : 1;
+      if (a[column] > b[column]) return newSortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+  
+    setState(sortedData);
   };
+  
 
   const handlePageChange = useCallback((page) => {
     setCurrentPage(page);

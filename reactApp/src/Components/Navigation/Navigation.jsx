@@ -1,12 +1,12 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Navigate, Route, HashRouter as Router, Routes } from 'react-router-dom';
+import { FavoritesPage } from '../../Components/Favorites/FavoritesPage';
 import { AdminTable } from '../../UsersTable/AdminTable';
 import { StudentTable } from '../../UsersTable/StudentTable';
+import { EmptyPage } from '../EmptyPage/Empty';
 import { LoginPage } from '../Login/LoginPage';
 import { PageLayout } from '../PageLayout/PageLayout';
-import { FavoritesPage } from '../../Components/Favorites/FavoritesPage';
-import { EmptyPage } from '../EmptyPage/Empty';
-import { useSelector } from 'react-redux';
 
 export const Home = () => {
   const userRole = useSelector((state) => state.role.roles);

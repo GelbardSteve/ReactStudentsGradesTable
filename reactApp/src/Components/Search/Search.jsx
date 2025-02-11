@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyledInput, StyledWrapper } from './Search.styles';
 
-export const SearchInput = ({ value, handleSearchDara }) => {
+export const SearchInput = ({ value, handleSearchDara, isDisabled }) => {
   return (
     <StyledWrapper>
       <label htmlFor="searchInput">Search Student</label>
@@ -13,6 +13,7 @@ export const SearchInput = ({ value, handleSearchDara }) => {
         placeholder="Search student by name or number"
         type="text"
         className={'form-control border border-dark'}
+        disabled={isDisabled} // Disable the input if needed
       />
     </StyledWrapper>
   );

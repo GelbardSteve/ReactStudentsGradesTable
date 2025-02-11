@@ -1,6 +1,6 @@
-import axios from 'axios';
-import React, { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import { EditUserModal } from '../../UsersActionsModal/EditUserModal';
 import { useDeleteUser } from '../../UsersActionsModal/UserActionsModal.hooks';
 import { Button } from '../Buttons/Button';
@@ -8,6 +8,8 @@ import { Favorites } from '../Favorites/Favorites';
 import { useUpdateFavorites } from '../Favorites/Favorites.hooks';
 import { Pagination } from '../Pagination/pagination';
 import { SearchInput } from '../Search/Search';
+import { setFavorites } from '../store/actions/manageData';
+
 
 export const Table = ({
   state,
@@ -24,7 +26,19 @@ export const Table = ({
   const [deletingUserId, setDeletingUserId] = useState(null); // Track the user being deleted
   const userRole = useSelector((state) => state.role.roles);
   const permission = userRole === 'admin';
+  const [, setSearchParams] = useSearchParams();
+  const allUsers = useSelector((state) => state.manageData.users);
 
+  useEffect(() => {
+    setTableState?.((prevState) =>
+      prevState.map((user) => ({
+        ...user,
+        favorites: allUsers.find((u) => u.students_number === user.students_number)?.favorites || false
+      }))
+    );
+  }, [allUsers, setTableState]);
+
+  const dispatch = useDispatch();
 
   const containerClass = {
     display: 'flex',
@@ -47,18 +61,38 @@ export const Table = ({
   const handleSearchInputChange = useCallback(
     async (e) => {
       const { value } = e.target;
+  
       setSearchQuery(value);
-
+      setSearchParams({ q: value });
+  
       if (value !== '') {
-        const studentSearch = await axios.get(`https://node-4-pdlj.onrender.com/students2/search/${value}`);
-        if (studentSearch?.data !== 'NotFound') {
-          return setTableState(studentSearch.data);
+        const studentSearch = allUsers.find((user) => {
+          const studentName = user?.students_name?.toLowerCase() || '';
+          const studentNumber = String(user?.students_number || '');
+  
+          return studentName.includes(value.toLowerCase()) || studentNumber.includes(value);
+        });
+  
+        if (studentSearch !== undefined) {
+          return setTableState([studentSearch]);
         }
       }
-
-      return setTableState(originalState);
+  
+      setTableState(
+        originalState.map(user => {
+          const matchingUser = allUsers.find(u => u.students_number === user.students_number);
+          return {
+            ...user,
+            favorites: matchingUser ? matchingUser.favorites : false, // Ensure it defaults to `false` if no match
+          };
+        })
+      );      
     },
-    [setTableState, originalState]);
+    [setSearchParams, setTableState, allUsers, originalState]
+  );
+  
+  
+  
 
   const onSuccessDelete = (data) => {
     handleDelete(data);
@@ -72,17 +106,20 @@ export const Table = ({
     onUserDelete(data);
   };
 
-  const handleFavoriteToggle = (students_number, favorites) => {
+  const handleFavoriteToggle = useCallback((students_number, favorites) => {
+    dispatch(setFavorites({ students_number, favorites }));
+
     setTableState((pre) =>
       pre.map((u) =>
         u.students_number === students_number ? { ...u, favorites: favorites } : u
       )
     );
-  };
+  }, [dispatch, setTableState]);
 
   const { mutate: toggleFavorite, isLoading: isFavortiesLoading } = useUpdateFavorites(handleFavoriteToggle)
 
   const handleState = state;
+
   return (
     <div className="m-4">
       {permission && (
@@ -91,6 +128,7 @@ export const Table = ({
             {'Create new user'}
           </Button>
           <SearchInput
+          isDisabled={handleState.length === 0} // Disable the input if there are no users
   value={searchQuery} // Bind the value to the searchQuery state
   handleSearchDara={handleSearchInputChange} 
 />
@@ -143,6 +181,7 @@ export const Table = ({
                       </td>
                       <td>
                         <Favorites
+                          allUsers={allUsers}
                           user={user}
                           toggleFavorite={toggleFavorite}
                           isLoading={isFavortiesLoading}

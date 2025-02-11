@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import React from 'react';
 import { toast } from 'react-toastify';
@@ -13,8 +13,7 @@ export const updateFavorites = async (students_number, favorites) => {
   };
 
 
-  export const useUpdateFavorites = (onFavoriteToggle) => {
-    const queryClient = useQueryClient();
+  export const useUpdateFavorites = (onFavoriteToggle) => {    
     const { mutate: toggleFavorite, isLoading } = useMutation(
       async ({ students_number, favorites }) => updateFavorites(students_number, favorites),
       {
@@ -24,7 +23,11 @@ export const updateFavorites = async (students_number, favorites) => {
           const undoAction = (
             <Button
               className="btn-sm ml-2"
-              onClick={() => toggleFavorite({ students_number, favorites: !favorites })}
+              onClick={() => toggleFavorite({
+                students_number,
+                favorites: !favorites, // Toggle the favorite status
+                students_name,
+              })}
             >
               Undo
             </Button>
@@ -38,14 +41,9 @@ export const updateFavorites = async (students_number, favorites) => {
         },
         onError: () => {
           toast.error('Failed to update favorites');
-        },
-        onSettled: () => {
-          queryClient.invalidateQueries(["sortedData"]); // Re-fetch data after mutation
-        },
+        }
       }
     );
   
-    // Return the necessary values
     return { mutate: toggleFavorite, isLoading };
   };
-  

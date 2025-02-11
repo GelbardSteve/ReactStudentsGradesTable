@@ -1,39 +1,29 @@
-import { LinearProgress } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useSortedData } from '../../UsersTable/Table.hooks';
+import { useDispatch, useSelector } from 'react-redux';
 import { EmptyPage } from '../EmptyPage/Empty';
+import { SET_FAVORITES } from '../store/actions/manageData';
 import { Favorites } from './Favorites';
 import { useUpdateFavorites } from './Favorites.hooks';
 import { StyleFavoritesContainer } from './Favorites.styles';
 
 export const FavoritesPage = () => {
-  const { state, setState, isLoading, originalState } = useSortedData();
-  const [favoriteUsers, setFavoriteUsers] = useState(state.filter((user) => user.favorites === 1))
+  const users = useSelector((state) => state.manageData.users);
+
+  const [favoriteUsers, setFavoriteUsers] = useState(users.filter((user) => user.favorites === 1))
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    setFavoriteUsers(state.filter((user) => user.favorites === 1))
-  }, [state])
+    setFavoriteUsers(users.filter((user) => user.favorites === 1))
+  }, [users]);
 
   const handleFavoriteToggle = (students_number, favorites, students_name) => {
-      setFavoriteUsers(() => originalState.filter((user) => 
-        !favorites 
-          ? user.students_number !== students_number
-          : user
-    ));
-    
-    setState((prevState) =>
-      prevState.map((student) =>
-        student.students_number === students_number
-          ? { ...student, favorites }
-          : student
-      )
-    );
+    dispatch({
+      type: SET_FAVORITES,
+      payload: { students_number, favorites },
+    });
   };
 
   const { mutate: toggleFavorite, isLoading: isFavortiesLoading } = useUpdateFavorites(handleFavoriteToggle)
-
-
-  if (isLoading) return <LinearProgress />;
 
   return (
     <StyleFavoritesContainer>

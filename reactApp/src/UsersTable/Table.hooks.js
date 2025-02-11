@@ -1,13 +1,31 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { addUsers } from '../Components/store/actions/manageData';
 import { clearRoles } from '../Components/store/actions/roleActions';
 import { clearStudent } from '../Components/store/actions/studentActions';
 
 export const useSortedData = (currentPage, pageSize) => {
   const [state, setState] = useState([]); // Store the state
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('https://node-4-pdlj.onrender.com/students2');
+        const users = response.data.items;
+
+        dispatch(addUsers(users)); // Ensure users are added
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+  
+    fetchUsers();
+  }, [dispatch]);
+
 
   const fetchSortedData = async () => {
     const shouldUpdatePage = pageSize !== undefined;
@@ -20,8 +38,9 @@ export const useSortedData = (currentPage, pageSize) => {
     // Save total pages locally
     const totalPages = data.totalPages > 3 ? data.totalPages : 3;
     localStorage.setItem('totalPages', totalPages);
-
+    
     setState(data.items);
+
     return {
       items: data.items,
       totalPages,

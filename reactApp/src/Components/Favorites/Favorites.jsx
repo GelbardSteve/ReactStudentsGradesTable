@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '../Buttons/Button';
 
-export const Favorites = ({ user, toggleFavorite, isLoading }) => {
+export const Favorites = ({ user, toggleFavorite }) => {
   const handleUserFavorites = () => {
     toggleFavorite({
       students_number: user.students_number,
@@ -15,7 +15,6 @@ export const Favorites = ({ user, toggleFavorite, isLoading }) => {
       onClick={handleUserFavorites}
       buttonType="link"
       className="text-dark"
-      disabled={isLoading}
     >
       <i className={`fa-${user.favorites ? 'solid' : 'regular'} fa-star`}></i>
     </Button>
