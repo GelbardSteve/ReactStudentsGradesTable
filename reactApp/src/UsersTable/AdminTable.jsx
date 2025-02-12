@@ -40,27 +40,35 @@ export const AdminTable = () => {
     localStorage.setItem('inputValue', page);
   }, []);
   
-  const handleDelete = useCallback(async (student) => {
-    toast.success(`User ${student.students_name} was deleted`);
-
-    // Optimistically update local state before refetching
-    setState(prevState => prevState.filter(user => user.students_name !== student.students_name));
-    const updatedState = state.filter(user => user.students_name !== student.students_name).length;
-
-    if (updatedState === 0) {
-        const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
-        handlePageChange(newPage);
-    }
-
-    dispatch(removeUser(student.students_name));
-
-    // Delay refetch to allow local state update to be visible
+  const handleDelete = useCallback(
+    async (id) => {
+      setState((prevState) => {
+        const updatedState = prevState.filter((user) => user.id !== id);
+  
+        // Only move to the previous page if this was the last item on the current page
+        if (updatedState.length === 1) {
+          const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
     
-    if (currentPage !== studentsCount) {
-      refetch();
-    }
-}, [setState, state, dispatch, currentPage, studentsCount, handlePageChange, refetch]);
-
+          handlePageChange(newPage);
+        }
+  
+        return updatedState;
+      });
+  
+      dispatch(removeUser(id));
+      toast.success(`User was deleted`);
+  
+      // Only refetch if the deleted user count changes total pagination
+      if (state.length <= pageSize) {
+        refetch();
+      }
+    },
+    [setState, dispatch, state.length, pageSize, currentPage, handlePageChange, refetch]
+  );
+  
+  
+  
+  
 
 const handleCreate = useCallback(
   async (data) => {
