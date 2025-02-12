@@ -14,7 +14,7 @@ export const AdminTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedColumn, setSortedColumn] = useState('asc');
 
-  const { state, setState, studentsCount, isLoading, isError, originalState, fetchSortedData } = useSortedData(currentPage, pageSize);
+  const { state, setState, studentsCount, isLoading, isError, originalState, refetch } = useSortedData(currentPage, pageSize);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -56,8 +56,10 @@ export const AdminTable = () => {
 
     // Delay refetch to allow local state update to be visible
    
-    fetchSortedData();
-}, [setState, state, dispatch, currentPage, handlePageChange, fetchSortedData]);
+    if (currentPage !== studentsCount) {
+      refetch();
+    }
+}, [setState, state.length, dispatch, currentPage, studentsCount, handlePageChange, refetch]);
 
 
   const handleCreate = useCallback(

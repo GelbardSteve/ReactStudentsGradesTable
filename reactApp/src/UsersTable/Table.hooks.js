@@ -11,9 +11,6 @@ export const useSortedData = (currentPage, pageSize) => {
   const [state, setState] = useState([]); // Store the state
   const dispatch = useDispatch();
 
- 
-
-
   const fetchSortedData = async () => {
     const shouldUpdatePage = pageSize !== undefined;
     const url = shouldUpdatePage 
@@ -22,7 +19,6 @@ export const useSortedData = (currentPage, pageSize) => {
 
     const { data } = await axios.get(url);
 
-    
     // Save total pages locally
     const totalPages = data.totalPages > 3 ? data.totalPages : 3;
     localStorage.setItem('totalPages', totalPages);
@@ -45,7 +41,6 @@ export const useSortedData = (currentPage, pageSize) => {
   return {
     state: state || [],
     setState,
-    fetchSortedData,
     originalState: data?.items || [],
     studentsCount: data?.totalPages || 3,
     isLoading,
