@@ -44,11 +44,10 @@ export const AdminTable = () => {
     async (id) => {
       setState((prevState) => {
         const updatedState = prevState.filter((user) => user.id !== id);
+        const prevLength = prevState.length; // Get previous length before update
   
-        // Only move to the previous page if this was the last item on the current page
-        if (updatedState.length === 1) {
+        if (prevLength === 1) {
           const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
-    
           handlePageChange(newPage);
         }
   
@@ -58,9 +57,11 @@ export const AdminTable = () => {
       dispatch(removeUser(id));
       toast.success(`User was deleted`);
   
-      // Only refetch if the deleted user count changes total pagination
+      // Wait for state update before checking pagination size
+      await new Promise((resolve) => setTimeout(resolve, 0));
+  
       if (state.length <= pageSize) {
-        refetch();
+        await refetch();
       }
     },
     [setState, dispatch, state.length, pageSize, currentPage, handlePageChange, refetch]
