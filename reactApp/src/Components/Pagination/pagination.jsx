@@ -1,5 +1,5 @@
-import React from 'react';
 import { range } from 'lodash';
+import React from 'react';
 import { Button } from '../Buttons/Button';
 
 export const Pagination = ({ itemsCount, pageSize, onPageChange, currentPage }) => {

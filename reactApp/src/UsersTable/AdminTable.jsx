@@ -34,20 +34,20 @@ export const AdminTable = () => {
   
     setState(sortedData);
   };
-  
 
   const handlePageChange = useCallback((page) => {
     setCurrentPage(page);
     localStorage.setItem('inputValue', page);
   }, []);
-
+  
   const handleDelete = useCallback(async (student) => {
     toast.success(`User ${student.students_name} was deleted`);
 
     // Optimistically update local state before refetching
     setState(prevState => prevState.filter(user => user.students_name !== student.students_name));
+    const updatedState = state.filter(user => user.students_name !== student.students_name).length;
 
-    if (state.length === 1) {
+    if (updatedState === 0) {
         const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
         handlePageChange(newPage);
     }
@@ -55,27 +55,34 @@ export const AdminTable = () => {
     dispatch(removeUser(student.students_name));
 
     // Delay refetch to allow local state update to be visible
-   
+    
     if (currentPage !== studentsCount) {
       refetch();
     }
-}, [setState, state.length, dispatch, currentPage, studentsCount, handlePageChange, refetch]);
+}, [setState, state, dispatch, currentPage, studentsCount, handlePageChange, refetch]);
 
 
-  const handleCreate = useCallback(
-    async (data) => {
+const handleCreate = useCallback(
+  async (data) => {
+    setState((prevState) => {
+      const updatedState = [...prevState, data]; // Ensure new user is added
+      const updatedStateLength = updatedState.length;
 
-      setState((prevState) => [...prevState, data]); // Optimistically update local state before refetching
-      // Check if we need to update pagination
-      if (state.length >= pageSize) {
+      // If new user exceeds page size, move to the last page
+      if (updatedStateLength > pageSize) {
         const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
         setCurrentPage(pagesCount);
       }
-      dispatch(addUsers([...originalState, data])); // Ensure users are added
-      toast.success(`User ${data.students_name} was added`);
-    },
-    [dispatch, originalState, pageSize, setState, state.length, studentsCount]
-  );
+
+      return updatedState;
+    });
+
+    dispatch(addUsers([...originalState, data])); // Ensure users are added in Redux
+    toast.success(`User ${data.students_name} was added`);
+  },
+  [dispatch, originalState, pageSize, setState, studentsCount]
+);
+
 
   const handleUpdateTable = (user) => {
     toast.success(`User ${user.students_name} was updated`);
