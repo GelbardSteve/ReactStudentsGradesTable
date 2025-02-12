@@ -1,9 +1,16 @@
 import { range } from 'lodash';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useGetAllUsers } from '../../UsersTable/Table.hooks';
 import { Button } from '../Buttons/Button';
 
 export const Pagination = ({ itemsCount, pageSize, onPageChange, currentPage }) => {
-  const itemLength = itemsCount;
+  const { data: users, refetch } = useGetAllUsers()
+
+  useEffect(() => {
+    refetch();
+  }, [itemsCount, refetch, users.data.items.length]);
+
+  const itemLength = users?.data?.items?.length
   const pagesCount = Math.ceil(itemLength / pageSize);
   const pages = range(1, pagesCount + 1);
 

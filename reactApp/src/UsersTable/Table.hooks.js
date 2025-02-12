@@ -10,13 +10,13 @@ import { clearStudent } from '../Components/store/actions/studentActions';
 export const useGetAllUsers = () => {
   const dispatch = useDispatch();
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ['allUsers'], // Include state in dependencies
     queryFn: async () => await axios.get('https://node-4-pdlj.onrender.com/students2'),
     keepPreviousData: true,
   });
-
-  dispatch(addUsers(data?.data?.items));
+ 
+  return { data, refetch };
 }
 
 export const useSortedData = (currentPage, pageSize) => {
