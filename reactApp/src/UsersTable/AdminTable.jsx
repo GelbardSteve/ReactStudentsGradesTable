@@ -76,7 +76,7 @@ const handleCreate = useCallback(
     setState((prevState) => {
       const updatedState = [...prevState, data]; // Ensure new user is added
       const updatedStateLength = updatedState.length;
-
+      dispatch(addUsers(updatedState));
       // If new user exceeds page size, move to the last page
       if (updatedStateLength > pageSize) {
         const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
@@ -86,10 +86,9 @@ const handleCreate = useCallback(
       return updatedState;
     });
 
-    dispatch(addUsers([...originalState, data])); // Ensure users are added in Redux
     toast.success(`User ${data.students_name} was added`);
   },
-  [dispatch, originalState, pageSize, setState, studentsCount]
+  [dispatch, pageSize, setState, studentsCount]
 );
 
 

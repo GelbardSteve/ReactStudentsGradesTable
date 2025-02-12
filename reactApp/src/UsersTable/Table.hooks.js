@@ -7,9 +7,21 @@ import { addUsers } from '../Components/store/actions/manageData';
 import { clearRoles } from '../Components/store/actions/roleActions';
 import { clearStudent } from '../Components/store/actions/studentActions';
 
-export const useSortedData = (currentPage, pageSize) => {
-  const [state, setState] = useState([]); // Store the state
+export const useGetAllUsers = () => {
   const dispatch = useDispatch();
+
+  const { data } = useQuery({
+    queryKey: ['allUsers'], // Include state in dependencies
+    queryFn: async () => await axios.get('https://node-4-pdlj.onrender.com/students2'),
+    keepPreviousData: true,
+  });
+
+  dispatch(addUsers(data?.data?.items));
+}
+
+export const useSortedData = (currentPage, pageSize) => {
+  const dispatch = useDispatch();
+  const [state, setState] = useState([]); // Store the state
 
   const fetchSortedData = async () => {
     const shouldUpdatePage = pageSize !== undefined;
@@ -25,7 +37,6 @@ export const useSortedData = (currentPage, pageSize) => {
     
     setState(data.items);
     dispatch(addUsers(data.items));
-
     return {
       items: data.items,
       totalPages,
