@@ -7,7 +7,7 @@ import { Favorites } from '../Favorites/Favorites';
 import { useUpdateFavorites } from '../Favorites/Favorites.hooks';
 import { Pagination } from '../Pagination/pagination';
 import { SearchInput } from '../Search/Search';
-import { removeUser, setFavorites } from '../store/actions/manageData';
+import { addAllUsers, removeUser, setFavorites } from '../store/actions/manageData';
 
 
 export const Table = ({
@@ -110,11 +110,14 @@ export const Table = ({
   const handleFavoriteToggle = useCallback((students_number, favorites) => {
     dispatch(setFavorites({ students_number, favorites }));
 
-    setTableState((pre) =>
-      pre.map((u) =>
-        u.students_number === students_number ? { ...u, favorites: favorites } : u
-      )
-    );
+  // Correctly update the local table state
+  setTableState((prevState) => 
+    prevState.map((u) => 
+      u.students_number === students_number ? { ...u, favorites } : u
+    )
+  );
+
+  
   }, [dispatch, setTableState]);
 
   const { mutate: toggleFavorite, isLoading: isFavortiesLoading } = useUpdateFavorites(handleFavoriteToggle)

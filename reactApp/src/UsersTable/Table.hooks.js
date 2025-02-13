@@ -20,7 +20,6 @@ export const useGetAllUsers = () => {
       return response.data?.items || [];
     },
     keepPreviousData: true,
-    enabled: false, // Prevents automatic fetching on mount
     onSuccess: (data) => {
       dispatch(addAllUsers(data));
     },

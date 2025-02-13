@@ -7,14 +7,15 @@ import { useUpdateFavorites } from './Favorites.hooks';
 import { StyleFavoritesContainer } from './Favorites.styles';
 
 export const FavoritesPage = () => {
-  const users = useSelector((state) => state.manageData.users);
+  const allUsers = useSelector((state) => state.manageData.allUsers);
+  
 
-  const [favoriteUsers, setFavoriteUsers] = useState(users.filter((user) => user.favorites === 1))
+  const [favoriteUsers, setFavoriteUsers] = useState(allUsers.filter((user) => user.favorites === 1))
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setFavoriteUsers(users.filter((user) => user.favorites === 1))
-  }, [users]);
+    setFavoriteUsers(allUsers.filter((user) => user.favorites === 1))
+  }, [allUsers]);
 
   const handleFavoriteToggle = (students_number, favorites, students_name) => {
     dispatch({
