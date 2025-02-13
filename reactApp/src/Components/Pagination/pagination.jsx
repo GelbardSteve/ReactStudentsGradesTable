@@ -16,7 +16,7 @@ export const Pagination = ({ pageSize, onPageChange, currentPage }) => {
 
   useEffect(() => {
       refreshUsers();
-  }, [allUsers.length, refreshUsers]);
+  }, [allUsers, refreshUsers]);
 
   return (
     <nav aria-label="Page navigation">
