@@ -11,10 +11,15 @@ export const StyledLi = styled.li`
     cursor: pointer;
 `;
 
-export const StyledForm = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    flex-wrap: wrap
+export const StyledFormWrapper = styled.div`
+   display: flex;
+   justify-content: center;
+   align-items: center; 
+   flex-wrap: wrap;
+`;
+
+export const StyledForm = styled.form`
+    & input {
+        width: 200px;
+    };
 `;

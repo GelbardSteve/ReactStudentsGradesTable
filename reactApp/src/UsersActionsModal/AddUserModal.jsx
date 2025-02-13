@@ -106,7 +106,13 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal, setTableState 
               <Controller
                 name="studentsNumber"
                 control={control}
-                rules={{ required: 'Number is required' }}
+                rules={{
+                  required: 'Number is required',
+                  maxLength: {
+                    value: 9,
+                    message: 'Number cannot exceed 9 digits',
+                  },
+                }}
                 defaultValue=""
                 render={({ field }) => (
                   <>

@@ -6,7 +6,7 @@ import { AdminLoginForm } from '../../UsersLoginForm/AdminLoginForm/AdminLoginFo
 import { StudentLoginForm } from '../../UsersLoginForm/StudentLoginForm/StudentLoginForm';
 import { Button } from '../Buttons/Button';
 import { useLoginAdmin, useLoginStudent } from './Login.hooks';
-import { StyledForm, StyledLi, StyledWrapper } from './Login.styles';
+import { StyledForm, StyledFormWrapper, StyledLi, StyledWrapper } from './Login.styles';
 import { verifyAuthentication } from './LoginPage.helper';
 
 export const LoginPage = () => {
@@ -61,9 +61,8 @@ export const LoginPage = () => {
           </StyledLi>
         </ul>
       </StyledWrapper>
-      <StyledForm className=" d-flex justify-content-center align-items-center h-100">
-        <form
-          className="w-25"
+      <StyledFormWrapper>
+        <StyledForm
           onSubmit={handleSubmit(studentComponent === 'admin' ? onAdminSubmitForm : onStudentSubmitForm)}
           onChange={() => {
             if (isDirty) clearErrors('loginError');
@@ -79,11 +78,9 @@ export const LoginPage = () => {
             {'Sign In'}
           </Button>
           {error ? <p className='p-1 alert-danger' >{error.message === 'Network Error' ? `There is a ${error.message.toLowerCase()} please try again later.` : error.message}</p> : ''}
-        </form>
-        <div>
-          <img src={'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp'} className="img-fluid" alt="Login Illustration" />
-        </div>
-      </StyledForm>
+        </StyledForm>
+        <img width={600} src={'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp'} className="img-fluid" alt="Login Illustration" />
+      </StyledFormWrapper>
     </>
   );
 };
