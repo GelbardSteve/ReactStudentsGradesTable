@@ -19,7 +19,7 @@ export const StyledFormWrapper = styled.div`
 `;
 
 export const StyledForm = styled.form`
-    & input {
+    & input button div {
         width: 200px;
     };
 `;
