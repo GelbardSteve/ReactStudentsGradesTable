@@ -11,8 +11,9 @@ import { verifyAuthentication } from './LoginPage.helper';
 
 export const LoginPage = () => {
   const dispatch = useDispatch();
-  const [studentComponent, setStudentComponent] = useState('admin');
+  const [selectedComponent, setSelectedComponent] = useState('admin');
   const navigate = useNavigate();
+
   const {
     control,
     handleSubmit,
@@ -21,65 +22,103 @@ export const LoginPage = () => {
     setError,
     clearErrors,
   } = useForm();
-  const { loginAdmin, isAdminLoading, error } = useLoginAdmin(setError, navigate, dispatch);
-  const { loginStudent, isStudentLoading } = useLoginStudent(setError, navigate, dispatch);
-  
-  // Submit handlers
-  const onAdminSubmitForm = (data) => loginAdmin(data);
-  const onStudentSubmitForm = (data) => loginStudent(data);
-  
+
+  const { loginAdmin, isAdminLoading, error: adminError } = useLoginAdmin(setError, navigate, dispatch);
+  const { loginStudent, isStudentLoading, error: studentError } = useLoginStudent(setError, navigate, dispatch);
+
+  // Get the correct error & loading state based on the selected form
+  const error = selectedComponent === 'admin' ? adminError : studentError;
+  const isLoading = selectedComponent === 'admin' ? isAdminLoading : isStudentLoading;
+
+  // Handle login submission dynamically
+  const onSubmit = (data) => {
+    if (selectedComponent === 'admin') {
+      loginAdmin(data);
+    } else {
+      loginStudent(data);
+    }
+  };
+
   // Auto-login effect
   useEffect(() => {
     const adminAuth = localStorage.getItem('adminAuthentication');
     const studentAuth = localStorage.getItem('studentAuthentication');
     if (!adminAuth && !studentAuth) return;
-  
+
     const userAuth = adminAuth || studentAuth;
     const url = adminAuth ? 'login' : 'students';
-  
+
     verifyAuthentication(userAuth, url).then((res) => {
       if (res !== 401) navigate(url === 'login' ? '/table' : '/studentTable');
     });
   }, [navigate]);
 
-  const handleChangeComponent = useCallback(
-    (componentState) => {
-      setStudentComponent(componentState);
-    },
-    [setStudentComponent]
-  );
+  const handleChangeComponent = useCallback((component) => {
+    setSelectedComponent(component);
+  }, []);
 
   return (
     <>
       <StyledWrapper>
         <ul className="list-group list-group-flush">
-          <StyledLi onClick={() => handleChangeComponent('admin')} className={`list-group-item ${studentComponent === 'admin' && 'active'}`}>
+          <StyledLi 
+            onClick={() => handleChangeComponent('admin')} 
+            className={`list-group-item ${selectedComponent === 'admin' ? 'active' : ''}`}
+          >
             Login as an Admin
           </StyledLi>
-          <StyledLi onClick={() => handleChangeComponent('student')} className={`list-group-item ${studentComponent === 'student' && 'active'}`}>
+          <StyledLi 
+            onClick={() => handleChangeComponent('student')} 
+            className={`list-group-item ${selectedComponent === 'student' ? 'active' : ''}`}
+          >
             Login as a Student
           </StyledLi>
         </ul>
       </StyledWrapper>
+
       <StyledFormWrapper>
-        <StyledForm
-          onSubmit={handleSubmit(studentComponent === 'admin' ? onAdminSubmitForm : onStudentSubmitForm)}
+        <StyledForm 
+          onSubmit={handleSubmit(onSubmit)}
           onChange={() => {
             if (isDirty) clearErrors('loginError');
           }}
         >
-          {studentComponent === 'admin' ? (
+          {selectedComponent === 'admin' ? (
             <AdminLoginForm Controller={Controller} control={control} errors={errors} trigger={trigger} />
           ) : (
             <StudentLoginForm Controller={Controller} control={control} errors={errors} trigger={trigger} />
           )}
-          {errors.loginError && <p className="d-flex justify-content-center mt-3 text-danger">{errors.loginError.message}</p>}
-          <Button disabled={!isValid} type="submit" className="btn-block mb-4" isLoading={isAdminLoading || isStudentLoading}>
-            {'Sign In'}
+
+          {errors.loginError && (
+            <p className="d-flex justify-content-center mt-3 text-danger">
+              {errors.loginError.message}
+            </p>
+          )}
+
+          <Button 
+            disabled={!isValid} 
+            type="submit" 
+            className="btn-block mb-4" 
+            isLoading={isLoading}
+          >
+            Sign In
           </Button>
-          {error ? <p className='p-1 alert-danger' >{error.message === 'Network Error' ? `There is a ${error.message.toLowerCase()} please try again later.` : error.message}</p> : ''}
+
+          {error && (
+            <p className='p-1 alert-danger'>
+              {error.message === 'Network Error' 
+                ? `There is a ${error.message.toLowerCase()}, please try again later.` 
+                : error.message}
+            </p>
+          )}
         </StyledForm>
-        <img width={600} src={'https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp'} className="img-fluid" alt="Login Illustration" />
+
+        <img 
+          width={600} 
+          src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" 
+          className="img-fluid" 
+          alt="Login Illustration" 
+        />
       </StyledFormWrapper>
     </>
   );
