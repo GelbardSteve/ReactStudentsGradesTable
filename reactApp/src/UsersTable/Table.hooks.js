@@ -3,21 +3,33 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { addUsers } from '../Components/store/actions/manageData';
+import { addAllUsers, addUsers } from '../Components/store/actions/manageData';
 import { clearRoles } from '../Components/store/actions/roleActions';
 import { clearStudent } from '../Components/store/actions/studentActions';
 
+import { useSelector } from 'react-redux';
+
 export const useGetAllUsers = () => {
   const dispatch = useDispatch();
+  const allUsers = useSelector((state) => state.manageData.allUsers);
 
-  const { data, refetch } = useQuery({
-    queryKey: ['allUsers'], // Include state in dependencies
-    queryFn: async () => await axios.get('https://node-4-pdlj.onrender.com/students2'),
+  const { refetch } = useQuery({
+    queryKey: ['allUsers'],
+    queryFn: async () => {
+      const response = await axios.get('https://node-4-pdlj.onrender.com/students2');
+      return response.data?.items || [];
+    },
     keepPreviousData: true,
+    enabled: false, // Prevents automatic fetching on mount
+    onSuccess: (data) => {
+      dispatch(addAllUsers(data));
+    },
   });
- 
-  return { data, refetch };
-}
+
+  return { allUsers, refreshUsers: refetch };
+};
+
+
 
 export const useSortedData = (currentPage, pageSize) => {
   const dispatch = useDispatch();

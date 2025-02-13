@@ -25,7 +25,9 @@ export const Table = ({
   const [deletingUserId, setDeletingUserId] = useState(null); // Track the user being deleted
   const userRole = useSelector((state) => state.role.roles);
   const permission = userRole === 'admin';
-  const allUsers = useSelector((state) => state.manageData.users);
+  const allUsers = useSelector((state) => state.manageData.allUsers);
+  const renderedUsers = useSelector((state) => state.manageData.users);
+
 
   useEffect(() => {
     setTableState?.((prevState) =>
@@ -34,7 +36,7 @@ export const Table = ({
         favorites: allUsers.find((u) => u.students_number === user.students_number)?.favorites || false
       }))
     );
-  }, [allUsers, setTableState]);
+  }, [renderedUsers, setTableState, allUsers]);
 
   const dispatch = useDispatch();
 
