@@ -7,7 +7,7 @@ import { Favorites } from '../Favorites/Favorites';
 import { useUpdateFavorites } from '../Favorites/Favorites.hooks';
 import { Pagination } from '../Pagination/pagination';
 import { SearchInput } from '../Search/Search';
-import { addAllUsers, removeUser, setFavorites } from '../store/actions/manageData';
+import { removeUser, setFavorites } from '../store/actions/manageData';
 
 
 export const Table = ({
