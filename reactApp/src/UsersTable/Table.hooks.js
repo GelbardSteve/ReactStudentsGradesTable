@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { addAllUsers, addUsers } from '../Components/store/actions/manageData';
@@ -32,7 +31,6 @@ export const useGetAllUsers = () => {
 
 export const useSortedData = (currentPage, pageSize) => {
   const dispatch = useDispatch();
-  const [state, setState] = useState([]); // Store the state
 
   const fetchSortedData = async () => {
     const shouldUpdatePage = pageSize !== undefined;
@@ -46,7 +44,6 @@ export const useSortedData = (currentPage, pageSize) => {
     const totalPages = data.totalPages > 3 ? data.totalPages : 3;
     localStorage.setItem('totalPages', totalPages);
     
-    setState(data.items);
     dispatch(addUsers(data.items));
     return {
       items: data.items,
@@ -54,19 +51,18 @@ export const useSortedData = (currentPage, pageSize) => {
     };
   };
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, refetch, error } = useQuery({
     queryKey: ['sortedData', currentPage, pageSize], // Include state in dependencies
     queryFn: fetchSortedData,
     keepPreviousData: true,
   });
 
   return {
-    state: state || [],
-    setState,
+    data: data?.items || [],
     originalState: data?.items || [],
     studentsCount: data?.totalPages || 3,
     isLoading,
-    isError,
+    error,
     refetch, // Function to manually trigger a refetch if needed
   };
 };

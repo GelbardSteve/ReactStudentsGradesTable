@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { addAllUsers, addUsers, removeUser } from '../Components/store/actions/manageData';
@@ -13,7 +13,12 @@ export const AdminTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedColumn, setSortedColumn] = useState('asc');
 
-  const { state, setState, studentsCount, isLoading, isError, originalState, refetch } = useSortedData(currentPage, pageSize);
+  const { data, studentsCount, isLoading, error, originalState, refetch } = useSortedData(currentPage, pageSize);
+  const [state, setState] = useState(data); 
+
+  useEffect(() => {
+    setState(data);
+  }, [data]);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -97,11 +102,11 @@ const handleCreate = useCallback(
   }
 
 
-  if (isError) return (
+  if (error) return (
     <p className='p-1 alert-danger'>
-      {isError.message === 'Network Error' 
-        ? `There is a ${isError.message.toLowerCase()}, please try again later.` 
-        : isError.message}
+      {error.message === 'Network Error' 
+        ? `There is a ${error.message.toLowerCase()}, please try again later.` 
+        : error.message}
     </p>
   );
 

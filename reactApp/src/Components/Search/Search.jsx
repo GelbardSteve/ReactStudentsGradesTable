@@ -1,11 +1,11 @@
 import React from 'react';
-import { StyledWrapper } from './Search.styles';
+import { StyledInput, StyledWrapper } from './Search.styles';
 
 export const SearchInput = ({ value, handleSearchDara, isDisabled }) => {
   return (
     <StyledWrapper>
       <label htmlFor="searchInput">Search Student</label>
-      <input
+      <StyledInput
         id="searchInput"
         name="searchInput"
         value={value} // Bind to the value prop passed from the parent
