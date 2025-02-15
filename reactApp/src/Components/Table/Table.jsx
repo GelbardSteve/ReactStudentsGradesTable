@@ -10,6 +10,7 @@ import { Pagination } from '../Pagination/pagination';
 import { usePagesCount } from '../Pagination/pagination.hooks';
 import { SearchInput } from '../Search/Search';
 import { removeUser, setFavorites } from '../store/actions/manageData';
+import { TableActionWrapper } from './Table.styles';
 
 
 export const Table = ({
@@ -43,11 +44,6 @@ export const Table = ({
   }, [renderedUsers, setTableState, allUsers]);
 
   const dispatch = useDispatch();
-
-  const containerClass = {
-    display: 'flex',
-    alignItems: 'center',
-  };
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -134,7 +130,7 @@ export const Table = ({
   return (
     <div className="m-4">
       {permission && (
-        <div style={containerClass}>
+        <TableActionWrapper>
           <Button onClick={openModal} buttonType="outline-primary">
             {'Create new user'}
           </Button>
@@ -143,7 +139,7 @@ export const Table = ({
   value={searchQuery} // Bind the value to the searchQuery state
   handleSearchDara={handleSearchInputChange} 
 />
-        </div>
+        </TableActionWrapper>
       )}
       <div
   className="table-responsive"
