@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useLogout } from '../../UsersTable/Table.hooks';
@@ -9,6 +9,12 @@ export const Header = () => {
   const { loginAdmin, isAdminLoading } = useLogout();
   const navigate = useNavigate();
   const userRole = useSelector((state) => state.role.roles);
+  const [activeComponent, setActiveComponent] = useState('table');
+
+  const handleNavigate = (path, component) => {
+    navigate(path);
+    setActiveComponent(component);
+  };
 
   return (
     <header>
@@ -16,10 +22,18 @@ export const Header = () => {
         <div>
           {userRole === 'admin' && (
             <>
-              <Button className="mr-2" onClick={() => navigate('/favorites')}>
+              <Button
+                className={`mr-2 ${activeComponent === 'favorites' ? 'active' : ''}`}
+                onClick={() => handleNavigate('/favorites', 'favorites')}
+              >
                 {'Favorites'}
               </Button>
-              <Button onClick={() => navigate('/table')}>{'Table'}</Button>
+              <Button
+                className={activeComponent === 'table' ? 'active' : ''}
+                onClick={() => handleNavigate('/table', 'table')}
+              >
+                {'Table'}
+              </Button>
             </>
           )}
         </div>
@@ -27,6 +41,16 @@ export const Header = () => {
           {'Log out'}
         </Button>
       </StyleHeader>
+
+      {/* Add styles */}
+      <style>
+        {`
+          .active {
+            background-color: #007bff;
+            color: white;
+          }
+        `}
+      </style>
     </header>
   );
 };
