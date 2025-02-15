@@ -31,7 +31,7 @@ export const Table = ({
   const permission = userRole === 'admin';
   const allUsers = useSelector((state) => state.manageData.allUsers);
   const renderedUsers = useSelector((state) => state.manageData.users);
-  const pages = usePagesCount(allUsers, paginationProps.pageSize)
+  const pages = usePagesCount(allUsers, paginationProps?.pageSize)
 
 
   useEffect(() => {
