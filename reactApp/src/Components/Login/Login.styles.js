@@ -19,7 +19,8 @@ export const StyledFormWrapper = styled.div`
 `;
 
 export const StyledForm = styled.form`
-    & input button div {
-        width: 200px;
-    };
+        margin: 0 1rem;
+        width: 30%;
+        max-width: 400px;
+        min-width: 200px;
 `;

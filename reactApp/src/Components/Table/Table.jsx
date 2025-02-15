@@ -1,3 +1,4 @@
+import { LinearProgress } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { EditUserModal } from '../../UsersActionsModal/EditUserModal';
@@ -6,6 +7,7 @@ import { Button } from '../Buttons/Button';
 import { Favorites } from '../Favorites/Favorites';
 import { useUpdateFavorites } from '../Favorites/Favorites.hooks';
 import { Pagination } from '../Pagination/pagination';
+import { usePagesCount } from '../Pagination/pagination.hooks';
 import { SearchInput } from '../Search/Search';
 import { removeUser, setFavorites } from '../store/actions/manageData';
 
@@ -14,11 +16,12 @@ export const Table = ({
   state,
   setTableState,
   handleColumnHeaderClick,
+  isLoading,
   setIsModalOpen,
   handleDelete,
   handleUpdateTable,
   paginationProps,
-  originalState
+  originalState,
 }) => {
   const [selectedStudentId, setSelectedStudentId] = useState(null); // Initialize as null
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,6 +30,7 @@ export const Table = ({
   const permission = userRole === 'admin';
   const allUsers = useSelector((state) => state.manageData.allUsers);
   const renderedUsers = useSelector((state) => state.manageData.users);
+  const pages = usePagesCount(allUsers, paginationProps.pageSize)
 
 
   useEffect(() => {
@@ -95,6 +99,7 @@ export const Table = ({
 
   const onSuccessDelete = (data) => {
     handleDelete(data);
+    setDeletingUserId(null);
     setTableState((pre) => pre?.filter(user => user.students_id !== data.students_id))
   }
 
@@ -123,6 +128,8 @@ export const Table = ({
   const { mutate: toggleFavorite, isLoading: isFavortiesLoading } = useUpdateFavorites(handleFavoriteToggle)
 
   const handleState = state;
+  const isPageChange = ((state.length === 0 || state.length === 4) && pages.length !== 0) || isLoading;
+
 
   return (
     <div className="m-4">
@@ -138,7 +145,11 @@ export const Table = ({
 />
         </div>
       )}
-      <table className="table table-hover table-fixed">
+      <div
+  className="table-responsive"
+  style={{ height: '280px', overflowY: 'auto' }}
+>
+<table className="table table-hover table-fixed">
         <thead>
           <tr>
             <th style={{ cursor: 'pointer' }} scope="col" onClick={() => handleColumnHeaderClick?.('students_name')}>
@@ -156,49 +167,65 @@ export const Table = ({
           </tr>
         </thead>
         <tbody>
-          {handleState?.map((user) => {
-            return (
-              <React.Fragment key={user?.students_id}>
-                {selectedStudentId === user?.students_id && ( // Show modal only for the selected student ID
-                  <EditUserModal handleUpdateTable={handleUpdateTable} user={user} isModalOpen={true} closeModal={closeEditModal} setTableState={setTableState}/>
-                )}
-                <tr>
-                  <td>{user?.students_name}</td>
-                  <td>{user?.students_number}</td>
-                  <td>{user?.studentsGrades}</td>
-                  {permission && (
-                    <>
-                      <td>
-                        <Button onClick={() => openEditModal(user.students_id)} buttonType="outline-secondary">
-                          {'Update'}
-                        </Button>
-                      </td>
-                      <td>
-                        <Button
-                          onClick={() => handleDeleteUser(user)} // Use the modified handleDelete
-                          buttonType="outline-danger"
-                          disabled={deletingUserId === user?.students_id} // Disable button after deleting
-                          isLoading={deletingUserId === user?.students_id}
-                        >
-                          {'Delete'}
-                        </Button>
-                      </td>
-                      <td>
-                        <Favorites
-                          allUsers={allUsers}
-                          user={user}
-                          toggleFavorite={toggleFavorite}
-                          isLoading={isFavortiesLoading}
-                        />
-                      </td>
-                    </>
-                  )}
-                </tr>
-              </React.Fragment>
-            );
-          })}
-        </tbody>
+  {isPageChange ? (
+    <tr>
+      <td colSpan={permission ? 6 : 3} style={{ padding: 0 }}>
+        <LinearProgress style={{ width: "100%" }} />
+      </td>
+    </tr>
+  ) : (
+    handleState?.map((user) => (
+      <React.Fragment key={user?.students_id}>
+        {selectedStudentId === user?.students_id && (
+          <EditUserModal
+            handleUpdateTable={handleUpdateTable}
+            user={user}
+            isModalOpen={true}
+            closeModal={closeEditModal}
+            setTableState={setTableState}
+          />
+        )}
+        <tr>
+          <td>{user?.students_name}</td>
+          <td>{user?.students_number}</td>
+          <td>{user?.studentsGrades}</td>
+          {permission && (
+            <>
+              <td>
+                <Button onClick={() => openEditModal(user.students_id)} buttonType="outline-secondary">
+                  {'Update'}
+                </Button>
+              </td>
+              <td>
+  <Button
+    onClick={() => handleDeleteUser(user)}
+    buttonType="outline-danger"
+    disabled={deletingUserId !== null && deletingUserId !== user?.students_id} // Disable all delete buttons when a delete is in progress
+    isLoading={deletingUserId === user?.students_id}
+  >
+    {'Delete'}
+  </Button>
+</td>
+              <td>
+                <Favorites
+                  allUsers={allUsers}
+                  user={user}
+                  toggleFavorite={toggleFavorite}
+                  isLoading={isFavortiesLoading}
+                />
+              </td>
+            </>
+          )}
+        </tr>
+      </React.Fragment>
+    ))
+  )}
+</tbody>
+
       </table>
+
+</div>
+   
       {searchQuery === '' && paginationProps && paginationProps.studentsCount > 0 && (
         <Pagination itemsCount={paginationProps.studentsCount} pageSize={paginationProps.pageSize} currentPage={paginationProps.currentPage} onPageChange={paginationProps.handlePageChange} />
       )}

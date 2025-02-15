@@ -1,6 +1,6 @@
-import axios from 'axios';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 import { Button } from '../Components/Buttons/Button';
 import { CustomModal } from '../Components/Modal/Modal';
 import { StyledFotter } from './UserActions.styles';
@@ -9,6 +9,7 @@ import { useCreateUser } from './UserActionsModal.hooks';
 export const AddUserModal = ({ onCreate, isModalOpen, closeModal, setTableState }) => {
   const [isUserExist, setIsUserExist] = useState(false);
   const [userExistError, setUserExistError] = useState();
+  const allUsers = useSelector((state) => state.manageData.allUsers);
 
   const {
     control,
@@ -18,20 +19,14 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal, setTableState 
     reset,
   } = useForm();
 
-  const baseUrl = 'https://node-4-pdlj.onrender.com';
 
-  const handleInputChange = async (value) => {
-    setIsUserExist(false);
-    if (value) {
-      await axios.get(`${baseUrl}/students2/search/${value}`).then((res) => {
-        if (res.data !== 'NotFound') {
-          setIsUserExist(true);
-          setUserExistError('User number already exists');
-        } else {
-          setIsUserExist(false);
-        }
-      });
-    }
+  const handleInputChange = (value) => {
+    if (!value) return;
+  
+    const userExists = allUsers.some(user => user.students_number === parseInt(value));
+
+    setIsUserExist(userExists);
+    setUserExistError(userExists ? 'User number already exists' : '');
   };
 
   const handleCloseTheModal = () => {

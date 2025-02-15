@@ -1,18 +1,14 @@
-import { range } from 'lodash';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useGetAllUsers } from '../../UsersTable/Table.hooks';
 import { Button } from '../Buttons/Button';
+import { usePagesCount } from './pagination.hooks';
 
 export const Pagination = ({ pageSize, onPageChange, currentPage }) => {
   const { refreshUsers } = useGetAllUsers();
   const allUsers = useSelector((state) => state.manageData.allUsers);
 
-  const pagesCount = useCallback(() => {
-    return Math.ceil((allUsers?.length || 0) / pageSize);
-  }, [allUsers, pageSize]);
-
-  const pages = range(1, pagesCount() + 1);
+  const pages = usePagesCount(allUsers, pageSize)
 
   useEffect(() => {
       refreshUsers();

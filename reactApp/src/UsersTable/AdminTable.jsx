@@ -1,4 +1,3 @@
-import { LinearProgress } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -56,7 +55,6 @@ export const AdminTable = () => {
       });
   
       dispatch(removeUser(id));
-      toast.success(`User was deleted`);
   
       // Wait for state update before checking pagination size
       await new Promise((resolve) => setTimeout(resolve, 0));
@@ -98,8 +96,14 @@ const handleCreate = useCallback(
     toast.success(`User ${user.students_name} was updated`);
   }
 
-  if (isLoading) return <LinearProgress />;
-  if (isError) return <p>Error fetching data</p>;
+
+  if (isError) return (
+    <p className='p-1 alert-danger'>
+      {isError.message === 'Network Error' 
+        ? `There is a ${isError.message.toLowerCase()}, please try again later.` 
+        : isError.message}
+    </p>
+  );
 
   return (
     <>
@@ -108,6 +112,7 @@ const handleCreate = useCallback(
         state={state}
         setTableState={setState}
         originalState={originalState}
+        isLoading={isLoading}
         handleColumnHeaderClick={handleColumnHeaderClick}
         handleDelete={handleDelete}
         handleUpdateTable={handleUpdateTable}

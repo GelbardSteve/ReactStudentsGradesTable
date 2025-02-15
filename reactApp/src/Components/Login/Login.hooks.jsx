@@ -20,7 +20,7 @@ export const useLoginAdmin = (setError, navigate, dispatch) => {
 }
   
 export const useLoginStudent = (setError, navigate, dispatch) => {
-  const { mutate: loginStudent, isLoading: isStudentLoading } = useMutation(authenticateStudent, {
+  const { mutate: loginStudent, isLoading: isStudentLoading, error } = useMutation(authenticateStudent, {
     onSuccess: (data) => {
       if (data === 'NotFound') {
         setError('loginError', { type: 'manual', message: 'Invalid student number' });
@@ -32,5 +32,5 @@ export const useLoginStudent = (setError, navigate, dispatch) => {
     },
   });
 
-  return { loginStudent, isStudentLoading }
+  return { loginStudent, isStudentLoading, error }
 }

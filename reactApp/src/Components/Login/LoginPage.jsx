@@ -21,6 +21,7 @@ export const LoginPage = () => {
     trigger,
     setError,
     clearErrors,
+    reset,
   } = useForm();
 
   const { loginAdmin, isAdminLoading, error: adminError } = useLoginAdmin(setError, navigate, dispatch);
@@ -55,7 +56,9 @@ export const LoginPage = () => {
 
   const handleChangeComponent = useCallback((component) => {
     setSelectedComponent(component);
-  }, []);
+    if (isDirty) clearErrors('loginError');
+    reset();
+  }, [clearErrors, isDirty, reset]);
 
   return (
     <>
