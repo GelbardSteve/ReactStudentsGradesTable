@@ -13,7 +13,6 @@ export const Header = () => {
   const path = window.location.href;
 
   useEffect(() => {
-    console.log(path)
     if (path.includes('favorites')) {
       setActiveComponent('favorites');
     } else if (path.includes('table')) {

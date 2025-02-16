@@ -46,9 +46,9 @@ export const LoginPage = () => {
   }, [verifyAuthentication]);
 
   const handleChangeComponent = useCallback((component) => {
-    setSelectedComponent(component);
     if (isDirty) clearErrors('loginError');
     reset();
+    setSelectedComponent(component);
   }, [clearErrors, isDirty, reset]);
 
   return (

@@ -30,6 +30,7 @@ export const useLoginStudent = (setError, navigate, dispatch) => {
       if (data === 'NotFound') {
         setError('loginError', { type: 'manual', message: 'Invalid student number' });
       } else {
+        dispatch(setRoles('student'));
         dispatch(setStudent({ userData: data.userData, authentication: data.authentication }));
         localStorage.setItem('studentAuthentication', data.authentication);
         navigate('/studentTable');
@@ -47,10 +48,19 @@ export const useVerifyAuthenticationFromLoginPage = (fromLoginPage) => {
 
     const adminAuth = localStorage.getItem('adminAuthentication');
     const studentAuth = localStorage.getItem('studentAuthentication');
-    if (!adminAuth && !studentAuth) navigate('/');
-    
+
     const authToken = adminAuth || studentAuth;
+
     const url = adminAuth ? 'login' : 'students';
+    const user = adminAuth ? 'admin' : 'student';
+
+    const userAuthenticationToken = `${user}Authentication`;
+    if (!adminAuth && !studentAuth) {
+      navigate('/');
+      localStorage.removeItem(userAuthenticationToken);
+    }
+    
+
 
     try {
       const response = await axios.post(`${API_BASE_URL}/${url}/authentication`, {
@@ -60,7 +70,10 @@ export const useVerifyAuthenticationFromLoginPage = (fromLoginPage) => {
       if (fromLoginPage) {
         response.data !== 401 && navigate(url === 'login' ? '/table' : '/studentTable');
       } else {
-        response.data === 401 && navigate('/');
+        if (response.data === 401) {
+          navigate('/');
+          localStorage.removeItem(userAuthenticationToken);
+        }
       }
     } catch (error) {
       console.error("Error in authentication request:", error);
