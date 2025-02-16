@@ -10,11 +10,11 @@ export const FavoritesPage = () => {
   const allUsers = useSelector((state) => state.manageData.allUsers);
   
 
-  const [favoriteUsers, setFavoriteUsers] = useState(allUsers.filter((user) => user.favorites === 1))
+  const [favoriteUsers, setFavoriteUsers] = useState(allUsers.filter((user) => user.favorites === 1 || user.favorites === true))
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setFavoriteUsers(allUsers.filter((user) => user.favorites === 1))
+    setFavoriteUsers(allUsers.filter((user) => user.favorites === 1 || user.favorites === true))
   }, [allUsers]);
 
   const handleFavoriteToggle = (students_number, favorites, students_name) => {

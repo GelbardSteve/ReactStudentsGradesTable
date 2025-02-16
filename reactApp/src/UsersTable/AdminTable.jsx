@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { addAllUsers, addUsers, removeUser } from '../Components/store/actions/manageData';
+import { useVerifyAuthenticationFromLoginPage } from '../Components/Login/Login.hooks';
+import { addAllUsers, addUsers, removeAllUsers, removeUser } from '../Components/store/actions/manageData';
 import { Table } from '../Components/Table/Table';
 import { AddUserModal } from '../UsersActionsModal/AddUserModal';
 import { useSortedData } from './Table.hooks';
@@ -12,13 +13,20 @@ export const AdminTable = () => {
   const [pageSize] = useState(3);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedColumn, setSortedColumn] = useState('asc');
+  const verifyAuthentication = useVerifyAuthenticationFromLoginPage(false);
 
   const { data, studentsCount, isLoading, error, originalState, refetch } = useSortedData(currentPage, pageSize);
   const [state, setState] = useState(data); 
 
   useEffect(() => {
+    verifyAuthentication();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  useEffect(() => {
     setState(data);
-  }, [data]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -54,12 +62,11 @@ export const AdminTable = () => {
           const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
           handlePageChange(newPage);
         }
+        dispatch(removeUser(id));
+        dispatch(removeAllUsers(id))
 
-        dispatch(addAllUsers(updatedState));
         return updatedState;
       });
-  
-      dispatch(removeUser(id));
   
       // Wait for state update before checking pagination size
       await new Promise((resolve) => setTimeout(resolve, 0));

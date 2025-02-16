@@ -1,18 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useGetAllUsers } from '../../UsersTable/Table.hooks';
 import { Button } from '../Buttons/Button';
 import { usePagesCount } from './pagination.hooks';
 
 export const Pagination = ({ pageSize, onPageChange, currentPage }) => {
-  const { refreshUsers } = useGetAllUsers();
   const allUsers = useSelector((state) => state.manageData.allUsers);
-
-  const pages = usePagesCount(allUsers, pageSize)
+  const [updatedAllUsers, setUpdatedAllUsers] = useState(allUsers);
+  const pages = usePagesCount(updatedAllUsers, pageSize);
 
   useEffect(() => {
-      refreshUsers();
-  }, [allUsers, refreshUsers]);
+    setUpdatedAllUsers(allUsers);
+  }, [allUsers]);
 
   return (
     <nav aria-label="Page navigation">

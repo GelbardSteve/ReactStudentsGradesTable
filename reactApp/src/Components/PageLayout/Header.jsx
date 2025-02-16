@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useLogout } from '../../UsersTable/Table.hooks';
@@ -10,6 +10,16 @@ export const Header = () => {
   const navigate = useNavigate();
   const userRole = useSelector((state) => state.role.roles);
   const [activeComponent, setActiveComponent] = useState('table');
+  const path = window.location.href;
+
+  useEffect(() => {
+    console.log(path)
+    if (path.includes('favorites')) {
+      setActiveComponent('favorites');
+    } else if (path.includes('table')) {
+      setActiveComponent('table');
+    }
+  }, [path]);
 
   const handleNavigate = (path, component) => {
     navigate(path);

@@ -1,7 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { setRoles } from '../../Components/store/actions/roleActions';
 import { setStudent } from '../../Components/store/actions/studentActions';
 import { authenticateStudent, authenticateUser } from './LoginPage.helper';
+
+const API_BASE_URL = 'https://node-4-pdlj.onrender.com';
 
 export const useLoginAdmin = (setError, navigate, dispatch) => {
     const { mutate: loginAdmin, isLoading: isAdminLoading, error } = useMutation(authenticateUser, {
@@ -34,3 +39,31 @@ export const useLoginStudent = (setError, navigate, dispatch) => {
 
   return { loginStudent, isStudentLoading, error }
 }
+
+export const useVerifyAuthenticationFromLoginPage = (fromLoginPage) => {
+  const navigate = useNavigate();
+
+  return useCallback(async () => {
+
+    const adminAuth = localStorage.getItem('adminAuthentication');
+    const studentAuth = localStorage.getItem('studentAuthentication');
+    if (!adminAuth && !studentAuth) navigate('/');
+    
+    const authToken = adminAuth || studentAuth;
+    const url = adminAuth ? 'login' : 'students';
+
+    try {
+      const response = await axios.post(`${API_BASE_URL}/${url}/authentication`, {
+        authentication: authToken,
+      });
+
+      if (fromLoginPage) {
+        response.data !== 401 && navigate(url === 'login' ? '/table' : '/studentTable');
+      } else {
+        response.data === 401 && navigate('/');
+      }
+    } catch (error) {
+      console.error("Error in authentication request:", error);
+    }
+  }, [navigate, fromLoginPage]); // Add dependencies
+};

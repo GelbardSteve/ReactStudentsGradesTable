@@ -124,7 +124,7 @@ export const Table = ({
   const { mutate: toggleFavorite, isLoading: isFavortiesLoading } = useUpdateFavorites(handleFavoriteToggle)
 
   const handleState = state;
-  const isPageChange = ((state.length === 0 || state.length === 4) && pages.length !== 0) || isLoading;
+  const isPageChange = ((state?.length === 0 || state?.length === 4) && pages.length !== 0) || isLoading;
 
 
   return (

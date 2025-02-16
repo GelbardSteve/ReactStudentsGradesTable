@@ -5,14 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import { AdminLoginForm } from '../../UsersLoginForm/AdminLoginForm/AdminLoginForm';
 import { StudentLoginForm } from '../../UsersLoginForm/StudentLoginForm/StudentLoginForm';
 import { Button } from '../Buttons/Button';
-import { useLoginAdmin, useLoginStudent } from './Login.hooks';
+import { useLoginAdmin, useLoginStudent, useVerifyAuthenticationFromLoginPage } from './Login.hooks';
 import { StyledForm, StyledFormWrapper, StyledLi, StyledWrapper } from './Login.styles';
-import { verifyAuthentication } from './LoginPage.helper';
 
 export const LoginPage = () => {
   const dispatch = useDispatch();
   const [selectedComponent, setSelectedComponent] = useState('admin');
   const navigate = useNavigate();
+  const verifyAuthentication = useVerifyAuthenticationFromLoginPage(true);
 
   const {
     control,
@@ -42,17 +42,8 @@ export const LoginPage = () => {
 
   // Auto-login effect
   useEffect(() => {
-    const adminAuth = localStorage.getItem('adminAuthentication');
-    const studentAuth = localStorage.getItem('studentAuthentication');
-    if (!adminAuth && !studentAuth) return;
-
-    const userAuth = adminAuth || studentAuth;
-    const url = adminAuth ? 'login' : 'students';
-
-    verifyAuthentication(userAuth, url).then((res) => {
-      if (res !== 401) navigate(url === 'login' ? '/table' : '/studentTable');
-    });
-  }, [navigate]);
+    verifyAuthentication()
+  }, [verifyAuthentication]);
 
   const handleChangeComponent = useCallback((component) => {
     setSelectedComponent(component);
