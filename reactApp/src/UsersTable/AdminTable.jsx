@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useVerifyAuthenticationFromLoginPage } from '../Components/Login/Login.hooks';
 import { addAllUsers, addUsers, removeAllUsers, removeUser } from '../Components/store/actions/manageData';
@@ -14,6 +14,7 @@ export const AdminTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedColumn, setSortedColumn] = useState('asc');
   const verifyAuthentication = useVerifyAuthenticationFromLoginPage(false);
+  const allUsers = useSelector((state) => state.manageData.allUsers);
 
   const { data, studentsCount, isLoading, error, originalState, refetch } = useSortedData(currentPage, pageSize);
   const [state, setState] = useState(data); 
@@ -87,7 +88,7 @@ const handleCreate = useCallback(
       const updatedState = [...prevState, data]; // Ensure new user is added
       const updatedStateLength = updatedState.length;
       dispatch(addUsers(updatedState));
-      dispatch(addAllUsers(updatedState));
+      dispatch(addAllUsers([...allUsers, data]));
       // If new user exceeds page size, move to the last page
       if (updatedStateLength > pageSize) {
         const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
@@ -99,7 +100,7 @@ const handleCreate = useCallback(
 
     toast.success(`User ${data.students_name} was added`);
   },
-  [dispatch, pageSize, setState, studentsCount]
+  [dispatch, pageSize, setState, studentsCount, allUsers]
 );
 
 
