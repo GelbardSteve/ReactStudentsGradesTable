@@ -10,7 +10,7 @@ export const SearchInput = ({ value, handleSearchDara, isDisabled }) => {
         name="searchInput"
         value={value} // Bind to the value prop passed from the parent
         onChange={handleSearchDara} // Use the passed handler
-        placeholder="Search student by name or number"
+        placeholder="By name or number"
         type="text"
         className={'form-control border border-dark'}
         disabled={isDisabled} // Disable the input if needed
