@@ -25,8 +25,7 @@ export const AdminTable = () => {
   
   useEffect(() => {
     setState(data);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [data]);
 
   const closeModal = () => {
     setIsModalOpen(false);
