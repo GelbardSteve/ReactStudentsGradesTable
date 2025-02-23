@@ -22,7 +22,7 @@ export const Table = ({
   handleDelete,
   handleUpdateTable,
   paginationProps,
-  originalState,
+  refetch
 }) => {
   const [selectedStudentId, setSelectedStudentId] = useState(null); // Initialize as null
   const [searchQuery, setSearchQuery] = useState('');
@@ -77,17 +77,9 @@ export const Table = ({
         }
       }
   
-      setTableState(
-        originalState.map(user => {
-          const matchingUser = allUsers.find(u => u.students_number === user.students_number);
-          return {
-            ...user,
-            favorites: matchingUser ? matchingUser.favorites : false, // Ensure it defaults to `false` if no match
-          };
-        })
-      );      
+      await refetch();  
     },
-    [setTableState, allUsers, originalState]
+    [setTableState, allUsers, refetch]
   );
   
   

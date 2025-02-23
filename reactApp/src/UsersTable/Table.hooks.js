@@ -59,7 +59,6 @@ export const useSortedData = (currentPage, pageSize) => {
 
   return {
     data: data?.items || [],
-    originalState: data?.items || [],
     studentsCount: data?.totalPages || 3,
     isLoading,
     error,
