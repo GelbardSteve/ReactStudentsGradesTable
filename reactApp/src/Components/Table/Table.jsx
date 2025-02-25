@@ -18,14 +18,14 @@ export const Table = ({
   setTableState,
   handleColumnHeaderClick,
   isLoading,
+  setSearch,
   setIsModalOpen,
   handleDelete,
   handleUpdateTable,
   paginationProps,
-  refetch
+  originalState,
 }) => {
   const [selectedStudentId, setSelectedStudentId] = useState(null); // Initialize as null
-  const [searchQuery, setSearchQuery] = useState('');
   const [deletingUserId, setDeletingUserId] = useState(null); // Track the user being deleted
   const userRole = useSelector((state) => state.role.roles);
   const permission = userRole === 'admin';
@@ -61,25 +61,15 @@ export const Table = ({
   const handleSearchInputChange = useCallback(
     async (e) => {
       const { value } = e.target;
-  
-      setSearchQuery(value);
-  
+
+      console.log(value)
       if (value !== '') {
-        const studentSearch = allUsers.find((user) => {
-          const studentName = user?.students_name?.toLowerCase() || '';
-          const studentNumber = String(user?.students_number || '');
-  
-          return studentName.includes(value.toLowerCase()) || studentNumber.includes(value);
-        });
-  
-        if (studentSearch !== undefined) {
-          return setTableState([studentSearch]);
-        }
+        setSearch(value)
+      } else {
+        setSearch('')    
       }
-  
-      await refetch();  
     },
-    [setTableState, allUsers, refetch]
+    [setSearch]
   );
   
   
@@ -128,7 +118,6 @@ export const Table = ({
           </Button>
           <SearchInput
           isDisabled={handleState.length === 0} // Disable the input if there are no users
-  value={searchQuery} // Bind the value to the searchQuery state
   handleSearchDara={handleSearchInputChange} 
 />
         </TableActionWrapper>
@@ -214,7 +203,7 @@ export const Table = ({
 
 </div>
    
-      {searchQuery === '' && paginationProps && paginationProps.studentsCount > 0 && (
+      {paginationProps && paginationProps.studentsCount > 0 && (
         <Pagination itemsCount={paginationProps.studentsCount} pageSize={paginationProps.pageSize} currentPage={paginationProps.currentPage} onPageChange={paginationProps.handlePageChange} />
       )}
     </div>
