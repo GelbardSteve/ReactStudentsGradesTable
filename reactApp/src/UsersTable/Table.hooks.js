@@ -7,6 +7,7 @@ import { clearRoles } from '../Components/store/actions/roleActions';
 import { clearStudent } from '../Components/store/actions/studentActions';
 
 import { useSelector } from 'react-redux';
+import { useState, useMemo } from 'react';
 
 export const useGetAllUsers = () => {
   const dispatch = useDispatch();
@@ -31,6 +32,8 @@ export const useGetAllUsers = () => {
 
 export const useSortedData = (currentPage, pageSize) => {
   const dispatch = useDispatch();
+  const [search, setSearch] = useState('');
+  const allUsers = useSelector((state) => state.manageData.allUsers);
 
   const fetchSortedData = async () => {
     const shouldUpdatePage = pageSize !== undefined;
@@ -57,8 +60,24 @@ export const useSortedData = (currentPage, pageSize) => {
     keepPreviousData: true,
   });
 
+  const filteredData = useMemo(() => {
+    const changeAllUsersToArray = Array.isArray(allUsers) ? allUsers : [allUsers];
+    const filteredUsers = changeAllUsersToArray?.filter(user => data?.items.find(u => u.students_number === user.students_number));
+    if (!search) return  filteredUsers;
+  
+    const results = allUsers?.filter(item =>
+      item.students_name?.toLowerCase().includes(search.toLowerCase()) ||
+      String(item.students_number)?.toLowerCase().includes(search.toLowerCase())
+    );
+  
+    return results.length > 0 ? results : filteredUsers;
+  }, [search, data, allUsers]);
+  
+  
   return {
-    data: data?.items || [],
+    data: filteredData || [],
+    setSearch,
+    originalState: data?.items || [],
     studentsCount: data?.totalPages || 3,
     isLoading,
     error,
