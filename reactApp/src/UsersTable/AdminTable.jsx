@@ -16,7 +16,7 @@ export const AdminTable = () => {
   const verifyAuthentication = useVerifyAuthenticationFromLoginPage(false);
   const allUsers = useSelector((state) => state.manageData.allUsers);
 
-  const { data, studentsCount, isLoading, error, refetch } = useSortedData(currentPage, pageSize);
+  const { data, studentsCount, isLoading, error, originalState, refetch, setSearch } = useSortedData(currentPage, pageSize);
   const [state, setState] = useState(data); 
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export const AdminTable = () => {
   }, []);
   
   useEffect(() => {
-    setState(data);
+      setState(data);
   }, [data]);
 
   const closeModal = () => {
@@ -123,7 +123,8 @@ const handleCreate = useCallback(
       <Table
         state={state}
         setTableState={setState}
-        refetch={refetch}
+        setSearch={setSearch}
+        originalState={originalState}
         isLoading={isLoading}
         handleColumnHeaderClick={handleColumnHeaderClick}
         handleDelete={handleDelete}
