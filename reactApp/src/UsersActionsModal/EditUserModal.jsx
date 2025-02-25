@@ -4,6 +4,8 @@ import { Button } from '../Components/Buttons/Button';
 import { CustomModal } from '../Components/Modal/Modal';
 import { StyledFotter } from './UserActions.styles';
 import { useUpdateUser } from './UserActionsModal.hooks';
+import { useDispatch, useSelector } from 'react-redux';
+import { addAllUsers } from '../Components/store/actions/manageData';
 
 export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable, setTableState }) => {
   const {
@@ -13,6 +15,8 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
     formState: { errors, isValid },
     trigger,
   } = useForm();
+  const dispatch = useDispatch();
+  const allUsers = useSelector((state) => state.manageData.allUsers);
 
   // Set default values when the component mounts
   useEffect(() => {
@@ -22,12 +26,20 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
   }, [setValue, user.studentsGrades, user.students_name, user.students_number]);
 
   const onSuccess = (updatedStudent) => {
-    setTableState(prev => prev.map(student =>
-        student.students_id === updatedStudent.students_id ? updatedStudent : student
-      ));
-      handleUpdateTable(updatedStudent);
-      closeModal();
-  }
+    setTableState(prev => prev.map(student => {
+        const updatedState = student.students_id === updatedStudent.students_id ? updatedStudent : student;
+  
+        dispatch(addAllUsers(allUsers.map(user => 
+          user.students_id === updatedStudent.students_id ? updatedStudent : user
+        )));
+  
+        return updatedState;
+    }));
+  
+    handleUpdateTable(updatedStudent);
+    closeModal();
+  };
+  
 
   const {mutate: onUpdateUser, isLoading: isUpdateUserLoading } = useUpdateUser(onSuccess);
 
