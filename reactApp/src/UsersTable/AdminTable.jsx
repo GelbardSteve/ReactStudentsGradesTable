@@ -87,7 +87,7 @@ const handleCreate = useCallback(
     setState((prevState) => {
       const updatedState = [...prevState, data]; // Ensure new user is added
       const updatedStateLength = updatedState.length;
-      dispatch(addUsers(updatedState));
+      dispatch(addUsers(data));
       dispatch(addAllUsers([...allUsers, data]));
       // If new user exceeds page size, move to the last page
       if (updatedStateLength > pageSize) {
