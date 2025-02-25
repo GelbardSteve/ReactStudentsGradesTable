@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useVerifyAuthenticationFromLoginPage } from '../Components/Login/Login.hooks';
@@ -14,10 +14,11 @@ export const AdminTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedColumn, setSortedColumn] = useState('asc');
   const verifyAuthentication = useVerifyAuthenticationFromLoginPage(false);
-  const allUsers = useSelector((state) => state.manageData.allUsers);
-
-  const { data, studentsCount, isLoading, error, originalState, refetch, setSearch } = useSortedData(currentPage, pageSize);
+  const allUsers = useSelector((state) => state.manageData.allUsers);  
+  const { data, studentsCount, isLoading, error, originalState, refetch } = useSortedData(currentPage, pageSize);
   const [state, setState] = useState(data); 
+  const [search, setSearch] = useState('');
+
 
   useEffect(() => {
     verifyAuthentication();
@@ -25,8 +26,21 @@ export const AdminTable = () => {
   }, []);
   
   useEffect(() => {
-      setState(data);
+    setState(data)
   }, [data]);
+
+  const filteredData = useMemo(() => {
+    const changeAllUsersToArray = Array.isArray(allUsers) ? allUsers : [allUsers];
+    const filteredUsers = changeAllUsersToArray?.filter(user => state.find(u => u.students_number === user.students_number));
+    if (!search) return  filteredUsers;
+  
+    const results = allUsers?.filter(item =>
+      item.students_name?.toLowerCase().includes(search.toLowerCase()) ||
+      String(item.students_number)?.toLowerCase().includes(search.toLowerCase())
+    );
+  
+    return results.length > 0 ? results : filteredUsers;
+  }, [allUsers, search, state]);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -87,8 +101,10 @@ const handleCreate = useCallback(
     setState((prevState) => {
       const updatedState = [...prevState, data]; // Ensure new user is added
       const updatedStateLength = updatedState.length;
-      dispatch(addUsers(data));
-      dispatch(addAllUsers([...allUsers, data]));
+      dispatch(addUsers([data])); // Dispatch only the new user
+      dispatch(addAllUsers([...allUsers, data])); // Append to existing users in Redux
+      setState((prevState) => [...prevState, data]); // Update local state
+      
       // If new user exceeds page size, move to the last page
       if (updatedStateLength > pageSize) {
         const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
@@ -121,7 +137,7 @@ const handleCreate = useCallback(
     <>
       <AddUserModal isModalOpen={isModalOpen} closeModal={closeModal} onCreate={handleCreate} setTableState={setState} />
       <Table
-        state={state}
+        state={filteredData}
         setTableState={setState}
         setSearch={setSearch}
         originalState={originalState}
