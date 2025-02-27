@@ -107,7 +107,7 @@ const handleCreate = useCallback(
       
       // If new user exceeds page size, move to the last page
       if (updatedStateLength > pageSize) {
-        const pagesCount = Math.ceil((studentsCount + 1) / pageSize);
+        const pagesCount = Math.ceil((allUsers.length + 1) / pageSize);
         setCurrentPage(pagesCount);
       }
 
