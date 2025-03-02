@@ -4,7 +4,7 @@ import { Button } from '../Buttons/Button';
 import { usePagesCount } from './pagination.hooks';
 import { StyledNav, StyledShowPage } from './Pagination.styles';
 
-export const Pagination = ({ pageSize, onPageChange, currentPage, isTableChanged }) => {
+export const Pagination = ({ pageSize, onPageChange, currentPage, isTableChanged, searchQuery }) => {
   const allUsers = useSelector((state) => state.manageData.allUsers);
   const users = useSelector((state) => state.manageData.users);
   const [updatedAllUsers, setUpdatedAllUsers] = useState(allUsers);
@@ -30,10 +30,10 @@ export const Pagination = ({ pageSize, onPageChange, currentPage, isTableChanged
       handleDecreaseShowMorePages();
     }
 
-    if (isTableChanged && pages.slice(fromPage, toPage).length === 3) {
+    if (isTableChanged && pages.slice(fromPage, toPage).length === 3 && searchQuery === '') {
       handleIncreaseShowMorePages();
     }
-  }, [fromPage, handleDecreaseShowMorePages, handleIncreaseShowMorePages, isTableChanged, onPageChange, pages, toPage, users.length]);
+  }, [fromPage, handleDecreaseShowMorePages, handleIncreaseShowMorePages, isTableChanged, onPageChange, pages, searchQuery, toPage, users.length]);
 
   useEffect(() => {
     setUpdatedAllUsers(allUsers);

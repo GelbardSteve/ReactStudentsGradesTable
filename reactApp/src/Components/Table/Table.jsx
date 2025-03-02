@@ -32,7 +32,7 @@ export const Table = ({
   const allUsers = useSelector((state) => state.manageData.allUsers);
   const renderedUsers = useSelector((state) => state.manageData.users);
   const pages = usePagesCount(allUsers, paginationProps?.pageSize)
-
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setTableState?.((prevState) =>
@@ -62,11 +62,12 @@ export const Table = ({
     async (e) => {
       const { value } = e.target;
 
-      console.log(value)
       if (value !== '') {
         setSearch(value)
+        setSearchQuery(value)
       } else {
-        setSearch('')    
+        setSearch('')
+        setSearchQuery('')    
       }
     },
     [setSearch]
@@ -106,7 +107,7 @@ export const Table = ({
   const { mutate: toggleFavorite, isLoading: isFavortiesLoading } = useUpdateFavorites(handleFavoriteToggle)
 
   const handleState = state;
-  const isPageChange = ((state?.length === 0 || state?.length === 4) && pages.length !== 0) || isLoading;
+  const isPageChange = ((state?.length === 0 || state?.length === 4) && searchQuery === '' && pages.length !== 0) || isLoading;
 
   return (
     <div className="m-4">
@@ -203,7 +204,7 @@ export const Table = ({
 </div>
    
       {paginationProps && paginationProps.studentsCount > 0 && (
-        <Pagination isTableChanged={state?.length === 4} itemsCount={paginationProps.studentsCount} pageSize={paginationProps.pageSize} currentPage={paginationProps.currentPage} onPageChange={paginationProps.handlePageChange} />
+        <Pagination searchQuery={searchQuery} isTableChanged={state?.length === 4} itemsCount={paginationProps.studentsCount} pageSize={paginationProps.pageSize} currentPage={paginationProps.currentPage} onPageChange={paginationProps.handlePageChange} />
       )}
     </div>
   );

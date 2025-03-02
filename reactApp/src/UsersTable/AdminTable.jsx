@@ -38,7 +38,7 @@ export const AdminTable = () => {
       item.students_name?.toLowerCase().includes(search.toLowerCase()) ||
       String(item.students_number)?.toLowerCase().includes(search.toLowerCase())
     );
-  
+
     return results.length > 0 ? results : filteredUsers;
   }, [allUsers, search, state]);
 
