@@ -9,7 +9,7 @@ import { useSortedData } from './Table.hooks';
 
 export const AdminTable = () => {
   const dispatch = useDispatch();
-  const [currentPage, setCurrentPage] = useState(parseInt(localStorage.getItem('inputValue')) || 1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(3);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedColumn, setSortedColumn] = useState('asc');
@@ -63,7 +63,6 @@ export const AdminTable = () => {
 
   const handlePageChange = useCallback((page) => {
     setCurrentPage(page);
-    localStorage.setItem('inputValue', page);
   }, []);
   
   const handleDelete = useCallback(
@@ -116,7 +115,7 @@ const handleCreate = useCallback(
 
     toast.success(`User ${data.students_name} was added`);
   },
-  [dispatch, pageSize, setState, studentsCount, allUsers]
+  [dispatch, pageSize, setState, allUsers]
 );
 
 

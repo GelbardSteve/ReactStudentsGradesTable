@@ -31,9 +31,6 @@ export const manageData = (state = initialState, action) => {
                 users: state.users?.filter(user => user.students_number !== action.payload)
             };
         case REMOVE_USER_ALL_USERS:
-            console.log('state.allUsers', state.allUsers);
-            console.log('action.payload', action.payload);
-
             return {
                 ...state,
                 allUsers: state.allUsers?.filter(user => user.students_number !== action.payload?.students_number)

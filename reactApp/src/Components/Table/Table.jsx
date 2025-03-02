@@ -204,7 +204,7 @@ export const Table = ({
 </div>
    
       {paginationProps && paginationProps.studentsCount > 0 && (
-        <Pagination itemsCount={paginationProps.studentsCount} pageSize={paginationProps.pageSize} currentPage={paginationProps.currentPage} onPageChange={paginationProps.handlePageChange} />
+        <Pagination isPageChange={isPageChange} itemsCount={paginationProps.studentsCount} pageSize={paginationProps.pageSize} currentPage={paginationProps.currentPage} onPageChange={paginationProps.handlePageChange} />
       )}
     </div>
   );
