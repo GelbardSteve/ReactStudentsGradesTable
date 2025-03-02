@@ -4,20 +4,18 @@ import { Button } from '../Buttons/Button';
 import { usePagesCount } from './pagination.hooks';
 import { StyledNav, StyledShowPage } from './Pagination.styles';
 
-export const Pagination = ({ pageSize, onPageChange, currentPage, isPageChange }) => {
+export const Pagination = ({ pageSize, onPageChange, currentPage, isTableChanged }) => {
   const allUsers = useSelector((state) => state.manageData.allUsers);
   const users = useSelector((state) => state.manageData.users);
   const [updatedAllUsers, setUpdatedAllUsers] = useState(allUsers);
   const pages = usePagesCount(updatedAllUsers, pageSize);
   const [fromPage, setFromPage] = useState(0);
-  const [toPage, setToPage] = useState(3);
+  const [toPage, setToPage] = useState(Math.min(3, pages.length));
 
   const handleIncreaseShowMorePages = useCallback(() => {
-    if (toPage >= pages.length) return;
-    
     setFromPage(fromPage + 3)
     setToPage(toPage + 3)
-  }, [fromPage, pages.length, toPage]);
+  }, [fromPage, toPage]);
 
 
   const handleDecreaseShowMorePages = useCallback(() => {
@@ -32,16 +30,14 @@ export const Pagination = ({ pageSize, onPageChange, currentPage, isPageChange }
       handleDecreaseShowMorePages();
     }
 
-    if (isPageChange && pages.slice(fromPage, toPage).length === 3) {
+    if (isTableChanged && pages.slice(fromPage, toPage).length === 3) {
       handleIncreaseShowMorePages();
     }
-  }, [fromPage, handleDecreaseShowMorePages, handleIncreaseShowMorePages, isPageChange, pages, toPage, users.length]);
+  }, [fromPage, handleDecreaseShowMorePages, handleIncreaseShowMorePages, isTableChanged, onPageChange, pages, toPage, users.length]);
 
   useEffect(() => {
     setUpdatedAllUsers(allUsers);
   }, [allUsers]);
-
-  console.log('pages.slice(fromPage, toPage)', pages.slice(fromPage, toPage));
 
   return (
     <StyledNav aria-label="Page navigation">

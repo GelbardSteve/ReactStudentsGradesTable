@@ -108,7 +108,6 @@ export const Table = ({
   const handleState = state;
   const isPageChange = ((state?.length === 0 || state?.length === 4) && pages.length !== 0) || isLoading;
 
-
   return (
     <div className="m-4">
       {permission && (
@@ -204,7 +203,7 @@ export const Table = ({
 </div>
    
       {paginationProps && paginationProps.studentsCount > 0 && (
-        <Pagination isPageChange={isPageChange} itemsCount={paginationProps.studentsCount} pageSize={paginationProps.pageSize} currentPage={paginationProps.currentPage} onPageChange={paginationProps.handlePageChange} />
+        <Pagination isTableChanged={state?.length === 4} itemsCount={paginationProps.studentsCount} pageSize={paginationProps.pageSize} currentPage={paginationProps.currentPage} onPageChange={paginationProps.handlePageChange} />
       )}
     </div>
   );
