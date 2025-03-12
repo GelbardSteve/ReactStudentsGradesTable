@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '../Components/Buttons/Button';
 import { CustomModal } from '../Components/Modal/Modal';
+import { addAllUsers } from '../Components/store/actions/manageData';
 import { StyledFotter } from './UserActions.styles';
 import { useUpdateUser } from './UserActionsModal.hooks';
-import { useDispatch, useSelector } from 'react-redux';
-import { addAllUsers } from '../Components/store/actions/manageData';
 
 export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable, setTableState }) => {
   const {
@@ -26,16 +26,9 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
   }, [setValue, user.studentsGrades, user.students_name, user.students_number]);
 
   const onSuccess = (updatedStudent) => {
-    setTableState(prev => prev.map(student => {
-        const updatedState = student.students_id === updatedStudent.students_id ? updatedStudent : student;
-  
-        dispatch(addAllUsers(allUsers.map(user => 
-          user.students_id === updatedStudent.students_id ? updatedStudent : user
-        )));
-  
-        return updatedState;
-    }));
-  
+    dispatch(addAllUsers(allUsers.map(user => 
+      user.students_id === updatedStudent.students_id ? updatedStudent : user
+    )));
     handleUpdateTable(updatedStudent);
     closeModal();
   };

@@ -6,7 +6,7 @@ import { CustomModal } from '../Components/Modal/Modal';
 import { StyledFotter } from './UserActions.styles';
 import { useCreateUser } from './UserActionsModal.hooks';
 
-export const AddUserModal = ({ onCreate, isModalOpen, closeModal, setTableState }) => {
+export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
   const [isUserExist, setIsUserExist] = useState(false);
   const [userExistError, setUserExistError] = useState();
   const allUsers = useSelector((state) => state.manageData.allUsers);
