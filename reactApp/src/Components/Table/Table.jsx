@@ -14,6 +14,7 @@ export const Table = ({
   state,
   handleColumnHeaderClick,
   setSearch,
+  sortedColumn,
   setIsModalOpen,
   handleDelete,
   handleUpdateTable,
@@ -99,10 +100,10 @@ export const Table = ({
         <table className="table table-hover table-fixed">
           <thead>
             <tr>
-              <th style={{ cursor: 'pointer' }} scope="col" onClick={() => handleColumnHeaderClick?.('students_name')}>
-                {'Student name'}
+              <th scope="col">{'Student name'}</th>
+              <th scope="col" style={{ cursor: 'pointer' }} onClick={() => handleColumnHeaderClick?.('students_number')}>
+                Student Number {sortedColumn === 'asc' ? '↓' : '↑'}
               </th>
-              <th scope="col">{'Student number'}</th>
               <th scope="col">{'Students grades | info'}</th>
               {permission && (
                 <>

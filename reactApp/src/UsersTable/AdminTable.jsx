@@ -47,11 +47,13 @@ export const AdminTable = () => {
     const newSortOrder = sortedColumn === 'asc' ? 'desc' : 'asc';
     setSortedColumn(newSortOrder);
   
-    return [...allUsers].sort((a, b) => {
+    const sortedData = [...allUsers].sort((a, b) => {
       if (a[column] < b[column]) return newSortOrder === 'asc' ? -1 : 1;
       if (a[column] > b[column]) return newSortOrder === 'asc' ? 1 : -1;
       return 0;
     });
+  
+    dispatch(addAllUsers(sortedData)); // Update the Redux state with sorted data
   };
 
   const handlePageChange = useCallback((page) => {
@@ -101,6 +103,7 @@ const handleCreate = useCallback(
     <>
       <AddUserModal isModalOpen={isModalOpen} closeModal={closeModal} onCreate={handleCreate} />
       <Table
+        sortedColumn={sortedColumn}
         showStudentFrom={showStudentFrom}
         setShowStudentFrom={setShowStudentFrom}
         showStudentTo={showStudentTo}
