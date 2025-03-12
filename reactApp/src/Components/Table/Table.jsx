@@ -27,7 +27,7 @@ export const Table = ({
   const [searchQuery, setSearchQuery] = useState('');
 
   const userRole = useSelector((state) => state.role.roles);
-  const permission = userRole === 'admin';
+  const hasPermission = userRole === 'admin';
   const allUsers = useSelector((state) => state.manageData.allUsers);
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export const Table = ({
 
   return (
     <div className="m-4">
-      {permission && (
+      {hasPermission && (
         <TableActionWrapper>
           <Button onClick={openModal} buttonType="outline-primary">
             {'Create new user'}
@@ -101,11 +101,11 @@ export const Table = ({
           <thead>
             <tr>
               <th scope="col">{'Student name'}</th>
-              <th scope="col" style={{ cursor: 'pointer' }} onClick={() => handleColumnHeaderClick?.('students_number')}>
-                Student Number {sortedColumn === 'asc' ? '↓' : '↑'}
+              <th scope="col" style={{ cursor: hasPermission ? 'pointer' : '' }} onClick={() => handleColumnHeaderClick?.('students_number')}>
+                Student Number {hasPermission ? sortedColumn === 'asc' ? '↓' : '↑' : ''}
               </th>
               <th scope="col">{'Students grades | info'}</th>
-              {permission && (
+              {hasPermission && (
                 <>
                   <th scope="col">{'Edit Student'}</th>
                   <th scope="col">{'Delete Student'}</th>
@@ -129,7 +129,7 @@ export const Table = ({
                   <td>{user?.students_name}</td>
                   <td>{user?.students_number}</td>
                   <td>{user?.studentsGrades}</td>
-                  {permission && (
+                  {hasPermission && (
                     <>
                       <td>
                         <Button onClick={() => openEditModal(user.students_id)} buttonType="outline-secondary">
