@@ -26,13 +26,13 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
   }, [setValue, user.studentsGrades, user.students_name, user.students_number]);
 
   const onSuccess = (updatedStudent) => {
-    dispatch(addAllUsers(allUsers.map(user => 
+    dispatch(addAllUsers(allUsers.map(user =>
       user.students_id === updatedStudent.students_id ? updatedStudent : user
     )));
     handleUpdateTable(updatedStudent);
     closeModal();
   };
-  
+
 
   const {mutate: onUpdateUser, isLoading: isUpdateUserLoading } = useUpdateUser(onSuccess);
 
@@ -51,7 +51,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
         <form onSubmit={handleSubmit((data) => onUpdateUser({ user, data }))}>
           <div className="form-group">
             <label htmlFor="studentName" className="col-form-label">
-              Students Name
+              Task Name
             </label>
             <Controller
               name="studentName"
@@ -62,7 +62,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
           </div>
           <div className="form-group">
             <label htmlFor="studentsNumber" className="col-form-label">
-              Students Number
+              Task Number
             </label>
             <Controller
               name="studentsNumber"
@@ -73,13 +73,13 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
           </div>
           <div className="form-group">
             <label htmlFor="studentsGrades" className="col-form-label">
-              Students Grades | info
+              Task info
             </label>
             <Controller
               name="studentsGrades"
               control={control}
               defaultValue={user.studentsGrades}
-              rules={{ required: 'Grades | info is required' }}
+              rules={{ required: 'Task info is required' }}
               render={({ field }) => (
                 <>
                   <textarea
@@ -98,7 +98,7 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
           </div>
           <StyledFotter className="modal-footer">
             <Button disabled={!isValid} type="submit" isLoading={isUpdateUserLoading}>
-              {'Update student'}
+              {'Update Task'}
             </Button>
           </StyledFotter>
         </form>

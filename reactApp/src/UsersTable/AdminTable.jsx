@@ -1,45 +1,33 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { Button } from '../Components/Buttons/Button';
 import { useVerifyAuthenticationFromLoginPage } from '../Components/Login/Login.hooks';
-import { usePagesCount } from '../Components/Pagination/pagination.hooks';
-import { addAllUsers, addUsers, removeAllUsers, removeUser } from '../Components/store/actions/manageData';
+import { Pagination } from '../Components/Pagination/pagination';
+import { SearchInput } from '../Components/Search/Search';
+import { addAllUsers, addUsers } from '../Components/store/actions/manageData';
 import { Table } from '../Components/Table/Table';
 import { AddUserModal } from '../UsersActionsModal/AddUserModal';
+import { EditUserModal } from '../UsersActionsModal/EditUserModal';
+import { useDeleteUser, useModal } from './Table.hooks';
+import { TableActionWrapper, TableWrapper } from './Table.styles';
 
 export const AdminTable = () => {
   const dispatch = useDispatch();
+  const numberTableRows = 5;
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 3;
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortedColumn, setSortedColumn] = useState('asc');
+  const [searchValue, setSearchValue] = useState('');
+  const [deletedUserId, setDeletedUserId] = useState(null);
+
+  const { isCreateOpen, isEditOpen, selectedUser, openCreate, closeCreate, openEdit, closeEdit } = useModal();
+
   const verifyAuthentication = useVerifyAuthenticationFromLoginPage(false);
-  const allUsers = useSelector((state) => state.manageData.allUsers);  
-  const [search, setSearch] = useState('');
-  const [showStudentFrom, setShowStudentFrom] = useState(0);
-  const [showStudentTo, setShowStudentTo] = useState(3);
-  const { pages } = usePagesCount(allUsers, pageSize);
+  const { deleteUser } = useDeleteUser();
 
-  useEffect(() => {
-    verifyAuthentication();
-  }, [verifyAuthentication]);
-  
-  const filteredData = useMemo(() => {
-    const changeAllUsersToArray = Array.isArray(allUsers) ? allUsers : [allUsers];
-    const filteredUsers = changeAllUsersToArray?.filter(user => allUsers.find(u => u.students_number === user.students_number));
-    if (!search) return  filteredUsers;
-  
-    const results = allUsers?.filter(item =>
-      item.students_name?.toLowerCase().includes(search.toLowerCase()) ||
-      String(item.students_number)?.toLowerCase().includes(search.toLowerCase())
-    );
-   
-    return results.length > 0 ? results : filteredUsers;
-  }, [allUsers, search]);
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  const userRole = useSelector((state) => state.role.roles);
+  const hasPermission = userRole === 'admin';
+  const allUsers = useSelector((state) => state.manageData.allUsers);
 
   const handleColumnHeaderClick = (column) => {
     if (!allUsers || allUsers.length === 0) return; // Prevent sorting if state is empty
@@ -52,75 +40,99 @@ export const AdminTable = () => {
       if (a[column] > b[column]) return newSortOrder === 'asc' ? 1 : -1;
       return 0;
     });
-  
+
     dispatch(addAllUsers(sortedData)); // Update the Redux state with sorted data
   };
+  
+  const tableData = useMemo(() => {
+    // Start with the sorted Redux state.
+    let processedUsers = [...allUsers];
+  
+    // Apply search filter if there's a search value.
+    if (searchValue) {
+      processedUsers = processedUsers.filter(user =>
+        String(user.students_number || '').includes(searchValue) ||
+        (user.students_name || '').toLowerCase().includes(searchValue.toLowerCase())
+      );
+    }
+  
+    // Apply pagination on the sorted (and filtered) data.
+    const startIndex = (currentPage - 1) * numberTableRows;
+    return processedUsers.slice(startIndex, startIndex + numberTableRows);
+  }, [allUsers, searchValue, currentPage, numberTableRows]);
+
+  useEffect(() => {
+    verifyAuthentication();
+  }, [verifyAuthentication]);
+
+  const handleSearchInputChange = useCallback((e) => {
+    setSearchValue(e.target.value);
+  }, []);
 
   const handlePageChange = useCallback((page) => {
-    setShowStudentFrom((page - 1) * pageSize);
-    setShowStudentTo(((page - 1) * pageSize) + pageSize);
     setCurrentPage(page);
-  }, [pageSize]);
-  
-  const handleDelete = useCallback(
-    async (id) => {
-        const updatedState = allUsers.filter((user) => user.students_number !== id.students_number);
-        const newPage = currentPage - 1 === 0 ? 1 : currentPage - 1;
-        const newPagesCount = Math.ceil(updatedState.length / pageSize);
-       
-        if (newPagesCount !== pages.length) handlePageChange(newPage);
-       
-        dispatch(removeUser(id));
-        dispatch(removeAllUsers(id))
+  }, []);
+
+  const handleDeleteUser = useCallback(
+    async ({ students_id }) => {
+      setDeletedUserId(students_id);
+      deleteUser(students_id, {
+        onSuccess: () => {
+          const updatedUsers = allUsers.filter(user => user.students_id !== students_id);
+          dispatch(addAllUsers(updatedUsers));
+          if (tableData.filter(user => user.students_id !== students_id).length === 0 && currentPage > 1) {
+            setCurrentPage(prev => prev - 1);
+          }
+          setDeletedUserId(null);
+        },
+      });
     },
-    [allUsers, currentPage, pageSize, pages, handlePageChange, dispatch]
+    [allUsers, deleteUser, dispatch, tableData, currentPage]
   );
 
-const handleCreate = useCallback(
-  async (data) => {
-      const updatedState = [...allUsers, data]; // Ensure new user is added
-      dispatch(addUsers([data])); // Dispatch only the new user
-      dispatch(addAllUsers([...allUsers, data])); // Append to existing users in Redux
- 
-      const newPagesCount = Math.ceil(updatedState.length / pageSize);
-    
-      // If new user exceeds page size, move to the last page
-      if (newPagesCount > pages.length) {
-          handlePageChange(newPagesCount);
-      }
+  const handleCreate = useCallback(
+    async (newUser) => {
+      dispatch(addUsers([newUser]));
+      dispatch(addAllUsers([...allUsers, newUser]));
+    },
+    [allUsers, dispatch]
+  );
 
-    toast.success(`User ${allUsers.students_name} was added`);
-  },
-  [allUsers, dispatch, pages.length, pageSize, handlePageChange]
-);
-
-
-  const handleUpdateTable = (user) => {
-    toast.success(`User ${user.students_name} was updated`);
-  }
+  const handleUpdateTable = useCallback((updatedUser) => {
+    const updatedAllUsers = allUsers.map(user =>
+      user.students_id === updatedUser.students_id ? updatedUser : user
+    );
+    dispatch(addAllUsers(updatedAllUsers));
+    toast.success(`User ${updatedUser.students_name} was updated`);
+  }, [allUsers, dispatch]);
 
   return (
-    <>
-      <AddUserModal isModalOpen={isModalOpen} closeModal={closeModal} onCreate={handleCreate} />
+    <TableWrapper>
+      <AddUserModal isModalOpen={isCreateOpen} closeModal={closeCreate} onCreate={handleCreate} />
+      {selectedUser && (
+        <EditUserModal handleUpdateTable={handleUpdateTable} user={selectedUser} isModalOpen={isEditOpen} closeModal={closeEdit} />
+      )}
+      {hasPermission && (
+        <TableActionWrapper>
+          <Button onClick={openCreate} buttonType="outline-primary">
+            Create New Task
+          </Button>
+          <SearchInput handleSearchDara={handleSearchInputChange} />
+        </TableActionWrapper>
+      )}
       <Table
-        sortedColumn={sortedColumn}
-        showStudentFrom={showStudentFrom}
-        setShowStudentFrom={setShowStudentFrom}
-        showStudentTo={showStudentTo}
-        setShowStudentTo={setShowStudentTo}
-        state={filteredData}
-        setSearch={setSearch}
+        tableData={tableData}
         handleColumnHeaderClick={handleColumnHeaderClick}
-        handleDelete={handleDelete}
-        handleUpdateTable={handleUpdateTable}
-        setIsModalOpen={setIsModalOpen}
-        paginationProps={{
-          studentsCount: allUsers.length,
-          pageSize,
-          currentPage,
-          handlePageChange,
-        }}
+        sortedColumn={sortedColumn}
+        openEditModal={openEdit}
+        handleDeleteUser={handleDeleteUser}
+        isEditUserModalOpen={isEditOpen}
+        hasPermission={hasPermission}
+        deletedUserId={deletedUserId}
       />
-    </>
+      {tableData.length > 0 && !searchValue && (
+        <Pagination numberOfRows={numberTableRows} currentPage={currentPage} onPageChange={handlePageChange}/>
+      )}
+    </TableWrapper>
   );
 };

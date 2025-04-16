@@ -4,7 +4,7 @@ import { StyledInput, StyledWrapper } from './Search.styles';
 export const SearchInput = ({ value, handleSearchDara, isDisabled }) => {
   return (
     <StyledWrapper>
-      <label htmlFor="searchInput">Search Student</label>
+      <label htmlFor="searchInput">Search Task</label>
       <StyledInput
         id="searchInput"
         name="searchInput"

@@ -1,7 +1,21 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { Button } from '../Buttons/Button';
+import { setFavorites } from '../store/actions/manageData';
+import { useUpdateFavorites } from './Favorites.hooks';
 
-export const Favorites = ({ user, toggleFavorite }) => {
+export const Favorites = ({ user }) => {
+  const dispatch = useDispatch();
+
+  const handleFavoriteToggle = useCallback(
+    (students_number, favorites) => {
+      dispatch(setFavorites({ students_number, favorites }));
+    },
+    [dispatch]
+  );
+
+  const { mutate: toggleFavorite, isLoading: isFavoritesLoading } = useUpdateFavorites(handleFavoriteToggle);
+
   const handleUserFavorites = () => {
     toggleFavorite({
       students_number: user.students_number,
@@ -9,6 +23,9 @@ export const Favorites = ({ user, toggleFavorite }) => {
       students_name: user.students_name, // Needed for toast message
     });
   };
+
+  if (isFavoritesLoading) return 'Loading...'
+
 
   return (
     <Button

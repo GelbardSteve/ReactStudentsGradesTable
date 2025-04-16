@@ -23,7 +23,7 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
   const handleInputChange = (value) => {
     if (!value) return;
   
-    const userExists = allUsers.some(user => user.students_number === parseInt(value));
+    const userExists = allUsers?.some(user => user.students_number === parseInt(value));
 
     setIsUserExist(userExists);
     setUserExistError(userExists ? 'User number already exists' : '');
@@ -32,10 +32,10 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
   const handleCloseTheModal = () => {
     setIsUserExist(false);
     reset({
-  studentName: '',
-  studentsNumber: '',
-  studentsGrades: '',
-});
+      studentName: '',
+      studentsNumber: '',
+      studentsGrades: '',
+    });
     closeModal();
   };
 
@@ -74,11 +74,11 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
         <form key={isModalOpen ? 'open' : 'closed'} onSubmit={handleSubmit((user) => handleSubmitCreateNewUser(user))}>
           <div className="form-group">
             <div className="form-outline mb-4">
-              <label htmlFor="studentName">Students Name</label>
+              <label htmlFor="studentName">Task Name</label>
               <Controller
                 name="studentName"
                 control={control}
-                rules={{ required: 'Name is required' }}
+                rules={{ required: 'Task name is required' }}
                 defaultValue=""
                 render={({ field }) => (
                   <>
@@ -97,12 +97,12 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
               />
             </div>
             <div className="form-outline mb-4">
-              <label htmlFor="studentsNumber">Students Number</label>
+              <label htmlFor="studentsNumber">Task Number</label>
               <Controller
                 name="studentsNumber"
                 control={control}
                 rules={{
-                  required: 'Number is required',
+                  required: 'Task Number is required',
                   maxLength: {
                     value: 9,
                     message: 'Number cannot exceed 9 digits',
@@ -131,11 +131,11 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
               />
             </div>
             <div className="form-outline mb-4">
-              <label htmlFor="studentsGrades">Students Grades | info</label>
+              <label htmlFor="studentsGrades">Task Info</label>
               <Controller
                 name="studentsGrades"
                 control={control}
-                rules={{ required: 'Grades | info is required' }}
+                rules={{ required: 'Task Info is required' }}
                 defaultValue=""
                 render={({ field }) => (
                   <>
@@ -156,7 +156,7 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
 
           <StyledFotter className="modal-footer">
             <Button disabled={!isValid || isUserExist} type="submit" isLoading={isCreateUserLoading}>
-              {'Create a user'}
+              {'Create a Task'}
             </Button>
           </StyledFotter>
         </form>

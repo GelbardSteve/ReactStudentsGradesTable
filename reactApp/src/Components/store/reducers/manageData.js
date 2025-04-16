@@ -33,7 +33,7 @@ export const manageData = (state = initialState, action) => {
         case REMOVE_USER_ALL_USERS:
             return {
                 ...state,
-                allUsers: state.allUsers?.filter(user => user.students_number !== action.payload?.students_number)
+                allUsers: state.allUsers?.filter(user => user.students_id !== action.payload?.students_id)
             };  
         default:
             return state;

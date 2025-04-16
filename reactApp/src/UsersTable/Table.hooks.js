@@ -1,7 +1,9 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { addAllUsers } from '../Components/store/actions/manageData';
 import { clearRoles } from '../Components/store/actions/roleActions';
 import { clearStudent } from '../Components/store/actions/studentActions';
@@ -58,4 +60,38 @@ export const useLogout = () => {
   );
 
   return { loginAdmin, isAdminLoading };
+};
+
+export const useDeleteUser = () => {
+  const { mutate: deleteUser, isLoading, error } = useMutation(
+    async (userId) => {
+      return axios.delete(`https://node-4-pdlj.onrender.com/students2/${userId}`);
+    },
+    {
+      onSuccess: () => {
+        toast.success(`User was deleted`);
+      },
+    }
+  );
+
+  return { deleteUser, isLoading, error };
+};
+
+
+// Custom hook for managing modal states (create & edit)
+export const useModal = () => {
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const openCreate = useCallback(() => setIsCreateOpen(true), []);
+  const closeCreate = useCallback(() => setIsCreateOpen(false), []);
+
+  const openEdit = useCallback((user) => {
+    setSelectedUser(user);
+    setIsEditOpen(true);
+  }, []);
+  const closeEdit = useCallback(() => setIsEditOpen(false), []);
+
+  return { isCreateOpen, isEditOpen, selectedUser, openCreate, closeCreate, openEdit, closeEdit };
 };

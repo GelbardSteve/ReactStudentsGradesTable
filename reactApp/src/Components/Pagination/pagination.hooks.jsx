@@ -1,17 +1,16 @@
 import { range } from 'lodash';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
 
-export const usePagesCount = (allUsers, pageSize) => {
-    const previousPagesCountRef = useRef(null);
+export const usePagesCount = (numberOfRows) => {
+    const allUsers = useSelector((state) => state.manageData.allUsers);
 
     const pages = useMemo(() => {
-        const count = Math.ceil((allUsers?.length || 0) / pageSize);
+        const count = Math.ceil(allUsers.length / numberOfRows);
         return range(1, count + 1);
-    }, [allUsers, pageSize]);
+    }, [allUsers.length, numberOfRows]);
 
-    const hasPageChanged = previousPagesCountRef.current !== null && previousPagesCountRef.current !== pages.length;
 
-    previousPagesCountRef.current = pages.length;
 
-    return { pages, hasPageChanged };
+    return { pages };
 };
