@@ -9,7 +9,7 @@ import { addAllUsers, addUsers } from '../Components/store/actions/manageData';
 import { Table } from '../Components/Table/Table';
 import { AddUserModal } from '../UsersActionsModal/AddUserModal';
 import { EditUserModal } from '../UsersActionsModal/EditUserModal';
-import { useDeleteUser, useModal } from './Table.hooks';
+import { useDeleteUser, useGetAllUsers, useModal } from './Table.hooks';
 import { TableActionWrapper, TableWrapper } from './Table.styles';
 
 export const AdminTable = () => {
@@ -21,13 +21,14 @@ export const AdminTable = () => {
   const [deletedUserId, setDeletedUserId] = useState(null);
 
   const { isCreateOpen, isEditOpen, selectedUser, openCreate, closeCreate, openEdit, closeEdit } = useModal();
-
+  const { isLoading, error } = useGetAllUsers();
   const verifyAuthentication = useVerifyAuthenticationFromLoginPage(false);
   const { deleteUser } = useDeleteUser();
 
   const userRole = useSelector((state) => state.role.roles);
   const hasPermission = userRole === 'admin';
   const allUsers = useSelector((state) => state.manageData.allUsers);
+
 
   const handleColumnHeaderClick = (column) => {
     if (!allUsers || allUsers.length === 0) return; // Prevent sorting if state is empty
@@ -106,6 +107,10 @@ export const AdminTable = () => {
     toast.success(`User ${updatedUser.students_name} was updated`);
   }, [allUsers, dispatch]);
 
+  if (error) {
+    return <h1 className='text-danger'>{error.message}</h1>
+  }
+
   return (
     <TableWrapper>
       <AddUserModal isModalOpen={isCreateOpen} closeModal={closeCreate} onCreate={handleCreate} />
@@ -129,6 +134,7 @@ export const AdminTable = () => {
         isEditUserModalOpen={isEditOpen}
         hasPermission={hasPermission}
         deletedUserId={deletedUserId}
+        isLoading={isLoading}
       />
       {tableData.length > 0 && !searchValue && (
         <Pagination numberOfRows={numberTableRows} currentPage={currentPage} onPageChange={handlePageChange}/>
