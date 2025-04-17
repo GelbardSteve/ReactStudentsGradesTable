@@ -1,4 +1,5 @@
 import React from 'react';
+import { LinearProgress } from '@mui/material';
 import { Button } from '../Buttons/Button';
 import { Favorites } from '../Favorites/Favorites';
 
@@ -9,10 +10,12 @@ export const Table = ({
   openEditModal,
   handleDeleteUser,
   hasPermission,
-  deletedUserId
+  deletedUserId,
+  isLoading
 }) => {
+
   return (
-      <div className="table-responsive" style={{ height: 'autox', overflowY: 'auto' }}>
+      <div className="table-responsive" style={{ height: '380px', overflowY: 'auto' }}>
         <table className="table table-hover table-fixed">
           <thead>
             <tr>
@@ -31,7 +34,14 @@ export const Table = ({
             </tr>
           </thead>
           <tbody>
-            {tableData?.map((user) => (
+            
+            {isLoading ? ( 
+              <tr>
+                <td colSpan={6} style={{ padding: 0 }}>
+                  <LinearProgress style={{ width: "100%" }} />
+                </td>
+              </tr>
+            ) : tableData?.map((user) => (
               <React.Fragment key={user?.students_id}>
                 <tr>
                   <td>{user?.students_name}</td>
