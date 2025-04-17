@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const TableWrapper = styled.div`
-    margin-left: 2rem;
+    margin: 3rem;
 `;
 
 export const TableActionWrapper = styled.div`

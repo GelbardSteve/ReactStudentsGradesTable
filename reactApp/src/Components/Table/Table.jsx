@@ -1,5 +1,5 @@
-import React from 'react';
 import { LinearProgress } from '@mui/material';
+import React from 'react';
 import { Button } from '../Buttons/Button';
 import { Favorites } from '../Favorites/Favorites';
 
