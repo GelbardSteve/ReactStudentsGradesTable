@@ -1,11 +1,6 @@
 import React from 'react';
+import { StyledEmptyPage } from './EmptyPage.styles';
 
-export const EmptyPage = ({ text }) => {
-  const styles = {
-    transform: 'translate(-50%, -50%)',
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-  };
-  return <div style={styles}>{text}</div>;
-};
+export const EmptyPage = ({ text }) => (
+  <StyledEmptyPage>{text}</StyledEmptyPage>
+);
