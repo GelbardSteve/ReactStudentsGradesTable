@@ -14,5 +14,5 @@ export const StudentTable = () => {
     verifyAuthentication()
   }, [verifyAuthentication]);
 
-  return <Table state={userData} hasPermission={hasPermission} />;
+  return <Table tableData={userData} hasPermission={hasPermission} />;
 };
