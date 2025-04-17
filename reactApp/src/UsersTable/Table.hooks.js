@@ -11,7 +11,7 @@ import { clearStudent } from '../Components/store/actions/studentActions';
 export const useGetAllUsers = () => {
   const dispatch = useDispatch();
   
-  useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['allUsers'],
     queryFn: async () => {
       const response = await axios.get('https://node-4-pdlj.onrender.com/students2');
@@ -22,6 +22,12 @@ export const useGetAllUsers = () => {
       dispatch(addAllUsers(data));
     },
   });
+
+  return {
+    data, 
+    isLoading,
+    error
+  }
 };
 
 export const useLogout = () => {
