@@ -1,53 +1,146 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAuth } from '../../hooks/useAuth';
+import { useStudents } from '../../hooks/useStudents';
+import { EditUserModal } from '../../UsersActionsModal/EditUserModal';
+import { Button } from '../Buttons/Button';
 import { EmptyPage } from '../EmptyPage/Empty';
-import { SET_FAVORITES } from '../store/actions/manageData';
 import { Favorites } from './Favorites';
-import { useUpdateFavorites } from './Favorites.hooks';
-import { StyleFavoritesContainer } from './Favorites.styles';
+import {
+    ActionButtons,
+    CardHeader,
+    EmptyState,
+    FavoriteCard,
+    FavoritesGrid,
+    FavoritesHeader,
+    GradesInfo,
+    StudentName,
+    StudentNumber,
+    StyleFavoritesContainer
+} from './Favorites.styles';
 
 export const FavoritesPage = () => {
-  const allUsers = useSelector((state) => state.manageData.allUsers);
-  
+  const { allStudents, deleteStudent } = useStudents();
+  const { userRole, verifyAuth } = useAuth();
+  const [favoriteUsers, setFavoriteUsers] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  const [favoriteUsers, setFavoriteUsers] = useState(allUsers.filter((user) => user.favorites === 1 || user.favorites === true))
-  const dispatch = useDispatch();
+  // Check authentication on component mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        await verifyAuth(false); // false means not from login page
+      } catch (error) {
+        console.error('Auth check error:', error);
+        // Don't redirect on network errors to prevent infinite loops
+        if (error.code === 'NETWORK_ERROR' || error.message?.includes('Network Error')) {
+          console.log('Network error detected, skipping auth check');
+          return;
+        }
+      }
+    };
+    
+    // Always check auth on mount, regardless of userRole
+    checkAuth();
+  }, []); // Empty dependency array to run only on mount
 
   useEffect(() => {
-    setFavoriteUsers(allUsers.filter((user) => user.favorites === 1 || user.favorites === true))
-  }, [allUsers]);
+    setFavoriteUsers(allStudents.filter((user) => user.favorites === 1 || user.favorites === true));
+  }, [allStudents]);
 
-  const handleFavoriteToggle = (students_number, favorites, students_name) => {
-    dispatch({
-      type: SET_FAVORITES,
-      payload: { students_number, favorites },
-    });
+  const handleEdit = (user) => {
+    setSelectedUser(user);
+    setShowEditModal(true);
   };
 
-  const { mutate: toggleFavorite, isLoading: isFavortiesLoading } = useUpdateFavorites(handleFavoriteToggle)
+  const handleDelete = async (students_id) => {
+    if (window.confirm('Are you sure you want to delete this student?')) {
+      try {
+        await deleteStudent(students_id);
+      } catch (error) {
+        console.error('Error deleting student:', error);
+      }
+    }
+  };
+
+  const handleUpdate = async (updatedData) => {
+    try {
+      // The update is handled by the EditUserModal
+      setShowEditModal(false);
+      setSelectedUser(null);
+    } catch (error) {
+      console.error('Error updating student:', error);
+    }
+  };
+
+  // Check if user has permission to access favorites
+  if (userRole !== 'admin') {
+    return <EmptyPage text="Access denied" />;
+  }
 
   return (
     <StyleFavoritesContainer>
-      {favoriteUsers.length > 0 ? (
-        favoriteUsers.map((user) => {
-          const { students_name, students_number, studentsGrades } = user;
+      <FavoritesHeader>
+        <h1>⭐ Favorites</h1>
+        <p>Your favorite students at a glance</p>
+      </FavoritesHeader>
 
-          return (
-            <div key={students_number} className="card border-info m-4" style={{ width: '18rem' }}>
-              <div className="card-header d-flex justify-content-between">
-                <div>{students_name}</div>
-                {/* Pass refetch as onFavoriteToggle */}
-                <Favorites user={user} toggleFavorite={toggleFavorite} isLoading={isFavortiesLoading} />
-              </div>
-              <div className="card-body">
-                <h5 className="card-title">{`Student number: ${students_number}`}</h5>
-                <p className="card-text">{`Students info: ${studentsGrades}`}</p>
-              </div>
-            </div>
-          );
-        })
+      {favoriteUsers.length > 0 ? (
+        <FavoritesGrid>
+          {favoriteUsers.map((user) => {
+            const { students_name, students_number, studentsGrades, students_id } = user;
+
+            return (
+              <FavoriteCard key={students_number}>
+                <CardHeader>
+                  <StudentName>{students_name}</StudentName>
+                  <Favorites user={user} />
+                </CardHeader>
+                
+                <StudentNumber>
+                  Student {students_number}
+                </StudentNumber>
+                
+                <GradesInfo>
+                  <h4>Academic Information</h4>
+                  <p>{studentsGrades || 'No grades available'}</p>
+                </GradesInfo>
+
+                <ActionButtons>
+                  <Button 
+                    onClick={() => handleEdit(user)} 
+                    buttonType="outline-secondary"
+                    title="Edit student information"
+                  >
+                    Update
+                  </Button>
+                  <Button
+                    onClick={() => handleDelete(students_id)}
+                    buttonType="outline-danger"
+                    title="Delete student"
+                  >
+                    Delete
+                  </Button>
+                </ActionButtons>
+              </FavoriteCard>
+            );
+          })}
+        </FavoritesGrid>
       ) : (
-        <EmptyPage text="No favorites were added" />
+        <EmptyState>
+          <h2>🌟 No Favorites Yet</h2>
+          <p>Start adding students to your favorites to see them here!</p>
+        </EmptyState>
+      )}
+
+      {showEditModal && selectedUser && (
+        <EditUserModal
+          user={selectedUser}
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedUser(null);
+          }}
+        />
       )}
     </StyleFavoritesContainer>
   );

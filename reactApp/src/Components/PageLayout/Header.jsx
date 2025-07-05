@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useLogout } from '../../UsersTable/Table.hooks';
+import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../Buttons/Button';
 import { StyleHeader } from './Layout.styles';
 
 export const Header = () => {
-  const { loginAdmin, isAdminLoading } = useLogout();
+  const { userRole, logout, isLogoutLoading } = useAuth();
   const navigate = useNavigate();
-  const userRole = useSelector((state) => state.role.roles);
   const [activeComponent, setActiveComponent] = useState('table');
   const path = window.location.href;
 
@@ -25,11 +23,14 @@ export const Header = () => {
     setActiveComponent(component);
   };
 
+  // Only show navigation buttons for admin users
+  const showNavigationButtons = userRole === 'admin';
+
   return (
     <header>
       <StyleHeader>
         <div>
-          {userRole === 'admin' && (
+          {showNavigationButtons && (
             <>
               <Button
                 className={`mr-2 ${activeComponent === 'favorites' ? 'active' : ''}`}
@@ -46,7 +47,7 @@ export const Header = () => {
             </>
           )}
         </div>
-        <Button buttonType="danger" onClick={loginAdmin} isLoading={isAdminLoading}>
+        <Button buttonType="danger" onClick={logout} isLoading={isLogoutLoading}>
           {'Log out'}
         </Button>
       </StyleHeader>

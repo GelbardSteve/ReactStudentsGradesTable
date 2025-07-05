@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
-import { Button } from '../Components/Buttons/Button';
 import { CustomModal } from '../Components/Modal/Modal';
-import { StyledFotter } from './UserActions.styles';
-import { useCreateUser } from './UserActionsModal.hooks';
+import { useStudents } from '../hooks/useStudents';
+import { ModalForm } from './UserActions.styles';
 
-export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
+export const AddUserModal = ({ onClose, onSuccess }) => {
   const [isUserExist, setIsUserExist] = useState(false);
   const [userExistError, setUserExistError] = useState();
-  const allUsers = useSelector((state) => state.manageData.allUsers);
+  const { allStudents, createStudent, isCreating } = useStudents();
 
   const {
     control,
@@ -19,11 +17,10 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
     reset,
   } = useForm();
 
-
   const handleInputChange = (value) => {
     if (!value) return;
   
-    const userExists = allUsers?.some(user => user.students_number === parseInt(value));
+    const userExists = allStudents?.some(user => user.students_number === parseInt(value));
 
     setIsUserExist(userExists);
     setUserExistError(userExists ? 'User number already exists' : '');
@@ -36,49 +33,54 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
       studentsNumber: '',
       studentsGrades: '',
     });
-    closeModal();
+    onClose();
   };
 
-  const onSuccess = (user) => {
-    reset({
-  studentName: '',
-  studentsNumber: '',
-  studentsGrades: '',
-});
-    closeModal();
-    onCreate(user);
-  }
-
-  const { mutate: onCreateUser, isLoading: isCreateUserLoading } = useCreateUser(onSuccess)
-
-  const handleSubmitCreateNewUser = (data) => {
+  const handleSubmitCreateNewUser = async (data) => {
     if (isUserExist) {
       return;
     }
 
-    onCreateUser(data)
+    // Transform data to match the expected format
+    const userData = {
+      studentName: data.studentName,
+      studentsNumber: parseInt(data.studentsNumber), // Ensure it's a number
+      studentsGrades: data.studentsGrades
+    };
+
+    console.log('Form data being sent:', userData); // Debug log
+
+    try {
+      await createStudent(userData);
+      
+      // Reset form and close modal after successful creation
+      reset({
+        studentName: '',
+        studentsNumber: '',
+        studentsGrades: '',
+      });
+      onClose();
+    } catch (error) {
+      // Error is already handled by the mutation
+      console.error('Error in form submission:', error);
+    }
   }
 
   return (
     <div>
       <CustomModal
-        isModalOpen={isModalOpen}
+        isModalOpen={true}
         handleCloseTheModal={handleCloseTheModal}
-        header={
-          <>
-            <h5 className="modal-title">Create User</h5>
-            <Button onClick={handleCloseTheModal}>{<span aria-hidden="true">&times;</span>}</Button>
-          </>
-        }
+        header="Create New Student"
       >
-        <form key={isModalOpen ? 'open' : 'closed'} onSubmit={handleSubmit((user) => handleSubmitCreateNewUser(user))}>
-          <div className="form-group">
-            <div className="form-outline mb-4">
-              <label htmlFor="studentName">Task Name</label>
+        <ModalForm>
+          <form onSubmit={handleSubmit((user) => handleSubmitCreateNewUser(user))}>
+            <div className="form-group">
+              <label htmlFor="studentName">Student Name</label>
               <Controller
                 name="studentName"
                 control={control}
-                rules={{ required: 'Task name is required' }}
+                rules={{ required: 'Student name is required' }}
                 defaultValue=""
                 render={({ field }) => (
                   <>
@@ -88,21 +90,23 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
                       name="studentName"
                       required
                       type="text"
-                      className={`form-control ${errors.studentName ? 'is-invalid' : ''}`}
+                      placeholder="Enter student name"
+                      className={errors.studentName ? 'error' : ''}
                       onBlur={() => trigger('studentName')}
                     />
-                    {errors.studentName && <p className="invalid-feedback">{errors.studentName.message}</p>}
+                    {errors.studentName && <div className="error-message">{errors.studentName.message}</div>}
                   </>
                 )}
               />
             </div>
-            <div className="form-outline mb-4">
-              <label htmlFor="studentsNumber">Task Number</label>
+            
+            <div className="form-group">
+              <label htmlFor="studentsNumber">Student Number</label>
               <Controller
                 name="studentsNumber"
                 control={control}
                 rules={{
-                  required: 'Task Number is required',
+                  required: 'Student Number is required',
                   maxLength: {
                     value: 9,
                     message: 'Number cannot exceed 9 digits',
@@ -117,7 +121,8 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
                       name="studentsNumber"
                       required
                       type="number"
-                      className={`form-control ${errors.studentsNumber || isUserExist ? 'is-invalid' : ''}`}
+                      placeholder="Enter student number"
+                      className={errors.studentsNumber || isUserExist ? 'error' : ''}
                       onChange={(e) => {
                         const { value } = e.target;
                         field.onChange(value);
@@ -125,17 +130,22 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
                       }}
                       onBlur={() => trigger('studentsNumber')}
                     />
-                    {(errors.studentsNumber || isUserExist) && <p className="invalid-feedback">{isUserExist ? userExistError : errors.studentsNumber.message}</p>}
+                    {(errors.studentsNumber || isUserExist) && (
+                      <div className="error-message">
+                        {isUserExist ? userExistError : errors.studentsNumber.message}
+                      </div>
+                    )}
                   </>
                 )}
               />
             </div>
-            <div className="form-outline mb-4">
-              <label htmlFor="studentsGrades">Task Info</label>
+            
+            <div className="form-group">
+              <label htmlFor="studentsGrades">Student Info</label>
               <Controller
                 name="studentsGrades"
                 control={control}
-                rules={{ required: 'Task Info is required' }}
+                rules={{ required: 'Student Info is required' }}
                 defaultValue=""
                 render={({ field }) => (
                   <>
@@ -144,22 +154,34 @@ export const AddUserModal = ({ onCreate, isModalOpen, closeModal }) => {
                       id="studentsGrades"
                       name="studentsGrades"
                       required
-                      className={`form-control ${errors.studentsGrades ? 'is-invalid' : ''}`}
+                      placeholder="Enter student information"
+                      className={errors.studentsGrades ? 'error' : ''}
                       onBlur={() => trigger('studentsGrades')}
                     />
-                    {errors.studentsGrades && <p className="invalid-feedback">{errors.studentsGrades.message}</p>}
+                    {errors.studentsGrades && <div className="error-message">{errors.studentsGrades.message}</div>}
                   </>
                 )}
               />
             </div>
-          </div>
 
-          <StyledFotter className="modal-footer">
-            <Button disabled={!isValid || isUserExist} type="submit" isLoading={isCreateUserLoading}>
-              {'Create a Task'}
-            </Button>
-          </StyledFotter>
-        </form>
+            <div className="form-actions">
+              <button 
+                type="button" 
+                className="btn-secondary" 
+                onClick={handleCloseTheModal}
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                className="btn-success" 
+                disabled={!isValid || isUserExist || isCreating}
+              >
+                {isCreating ? 'Creating...' : 'Create Student'}
+              </button>
+            </div>
+          </form>
+        </ModalForm>
       </CustomModal>
     </div>
   );

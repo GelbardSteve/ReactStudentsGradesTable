@@ -2,8 +2,6 @@ import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { setRoles } from '../../Components/store/actions/roleActions';
-import { setStudent } from '../../Components/store/actions/studentActions';
 import { authenticateStudent, authenticateUser } from './LoginPage.helper';
 
 const API_BASE_URL = 'https://node-4-pdlj.onrender.com';
@@ -14,7 +12,7 @@ export const useLoginAdmin = (setError, navigate, dispatch) => {
           if (data === 401) {
             setError('loginError', { type: 'manual', message: 'Invalid username or password' });
           } else {
-            dispatch(setRoles(data.userRole));
+            localStorage.setItem('userRole', data.userRole);
             localStorage.setItem('adminAuthentication', data.authentication);
             navigate('/table');
           }
@@ -30,8 +28,8 @@ export const useLoginStudent = (setError, navigate, dispatch) => {
       if (data === 'NotFound') {
         setError('loginError', { type: 'manual', message: 'Invalid student number' });
       } else {
-        dispatch(setRoles('student'));
-        dispatch(setStudent({ userData: data.userData, authentication: data.authentication }));
+        localStorage.setItem('userRole', 'student');
+        localStorage.setItem('studentData', JSON.stringify(data.userData));
         localStorage.setItem('studentAuthentication', data.authentication);
         navigate('/studentTable');
       }

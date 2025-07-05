@@ -1,39 +1,31 @@
 import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { Button } from '../Buttons/Button';
-import { setFavorites } from '../store/actions/manageData';
-import { useUpdateFavorites } from './Favorites.hooks';
+import { useStudents } from '../../hooks/useStudents';
+import { StyledFavoritesButton } from './Favorites.styles';
 
 export const Favorites = ({ user }) => {
-  const dispatch = useDispatch();
+  const { updateFavorites, isUpdatingFavorites } = useStudents();
 
-  const handleFavoriteToggle = useCallback(
-    (students_number, favorites) => {
-      dispatch(setFavorites({ students_number, favorites }));
-    },
-    [dispatch]
-  );
-
-  const { mutate: toggleFavorite, isLoading: isFavoritesLoading } = useUpdateFavorites(handleFavoriteToggle);
-
-  const handleUserFavorites = () => {
-    toggleFavorite({
+  const handleUserFavorites = useCallback(() => {
+    updateFavorites({
       students_number: user.students_number,
       favorites: !user.favorites, // Toggle the favorite status
-      students_name: user.students_name, // Needed for toast message
     });
-  };
+  }, [user.students_number, user.favorites, updateFavorites]);
 
-  if (isFavoritesLoading) return 'Loading...'
-
+  if (isUpdatingFavorites) {
+    return (
+      <StyledFavoritesButton disabled>
+        <i className="fas fa-spinner fa-spin"></i>
+      </StyledFavoritesButton>
+    );
+  }
 
   return (
-    <Button
+    <StyledFavoritesButton
       onClick={handleUserFavorites}
-      buttonType="link"
-      className="text-dark"
+      title={user.favorites ? 'Remove from favorites' : 'Add to favorites'}
     >
       <i className={`fa-${user.favorites ? 'solid' : 'regular'} fa-star`}></i>
-    </Button>
+    </StyledFavoritesButton>
   );
 };

@@ -4,31 +4,83 @@ import { Button } from '../Buttons/Button';
 import { Favorites } from '../Favorites/Favorites';
 
 export const Table = ({
-  tableData,
-  handleColumnHeaderClick,
-  sortedColumn,
-  openEditModal,
-  handleDeleteUser,
-  hasPermission,
-  deletedUserId,
-  isLoading
+  data,
+  onEdit,
+  onDelete,
+  isAdmin,
+  isLoading,
+  onSort,
+  sortField,
+  sortDirection,
+  onHeightChange,
+  currentHeight = 'auto'
 }) => {
 
+  const getSortIcon = (field) => {
+    // Only show sort icons for student numbers
+    if (field !== 'students_number') return '';
+    return sortDirection === 'asc' ? '↑' : '↓';
+  };
+
+  const handleHeaderClick = (field) => {
+    if (onSort) {
+      onSort(field);
+    }
+  };
+
+  const getRowStatus = (user) => {
+    // You can add logic here to determine row status based on data
+    // For example, based on grades, favorites, etc.
+    if (user.favorites) return 'favorite';
+    return 'normal';
+  };
+
   return (
-      <div className="table-responsive" style={{ height: '380px', overflowY: 'auto' }}>
+      <div className="table-responsive">
+        <div className="table-controls">
+          <div className="height-control">
+            <label htmlFor="tableHeight">Table Height:</label>
+            <select 
+              id="tableHeight" 
+              value={currentHeight}
+              onChange={(e) => onHeightChange && onHeightChange(e.target.value)}
+            >
+              <option value="auto">Auto (Full Screen)</option>
+              <option value="600px">Large (600px)</option>
+              <option value="700px">Extra Large (700px)</option>
+            </select>
+          </div>
+        </div>
+        
         <table className="table table-hover table-fixed">
           <thead>
             <tr>
-              <th scope="col">{'Task Name'}</th>
-              <th scope="col" style={{ cursor: hasPermission ? 'pointer' : '' }} onClick={() => handleColumnHeaderClick?.('students_number')}>
-                Task Number {hasPermission ? sortedColumn === 'asc' ? '↓' : '↑' : ''}
+              <th scope="col">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>Student Name</span>
+                </div>
               </th>
-              <th scope="col">{'Task Grades | info'}</th>
-              {hasPermission && (
+              <th 
+                scope="col" 
+                onClick={() => handleHeaderClick('students_number')}
+                style={{ cursor: 'pointer' }}
+                title="Click to sort by number"
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>Student Number</span>
+                  <span style={{ fontSize: '12px', opacity: 0.7 }}>{getSortIcon('students_number')}</span>
+                </div>
+              </th>
+              <th scope="col">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>Grades | Info</span>
+                </div>
+              </th>
+              {isAdmin && (
                 <>
-                  <th scope="col">{'Edit Task'}</th>
-                  <th scope="col">{'Delete Task'}</th>
-                  <th scope="col">{'Add to Favorites'}</th>
+                  <th scope="col">Edit Student</th>
+                  <th scope="col">Delete Student</th>
+                  <th scope="col">Add to Favorites</th>
                 </>
               )}
             </tr>
@@ -36,38 +88,69 @@ export const Table = ({
           <tbody>
             
             {isLoading ? ( 
-              <tr>
-                <td colSpan={6} style={{ padding: 0 }}>
+              <tr className="loading-row">
+                <td colSpan={isAdmin ? 6 : 3} style={{ padding: 0 }}>
                   <LinearProgress style={{ width: "100%" }} />
                 </td>
               </tr>
-            ) : tableData?.map((user) => (
-              <React.Fragment key={user?.students_id}>
-                <tr>
-                  <td>{user?.students_name}</td>
-                  <td>{user?.students_number}</td>
-                  <td>{user?.studentsGrades}</td>
-                  {hasPermission && (
+            ) : data?.length === 0 ? (
+              <tr>
+                <td colSpan={isAdmin ? 6 : 3} className="empty-state">
+                  <div className="empty-icon">📋</div>
+                  <div className="empty-text">No students found</div>
+                </td>
+              </tr>
+            ) : data?.map((user, index) => (
+              <React.Fragment key={user?.students_id || user?.students_number}>
+                <tr 
+                  className={`table-row ${getRowStatus(user)}`}
+                  style={{
+                    animationDelay: `${index * 0.05}s`,
+                    animation: 'fadeInUp 0.5s ease forwards'
+                  }}
+                >
+                  <td>
+                    {user?.students_name}
+                  </td>
+                  <td>
+                    <span style={{ 
+                      fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace'
+                    }}>
+                      {user?.students_number}
+                    </span>
+                  </td>
+                  <td>
+                    <div style={{ 
+                      maxWidth: '200px', 
+                      overflow: 'hidden', 
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      {user?.studentsGrades}
+                    </div>
+                  </td>
+                  {isAdmin && (
                     <>
                       <td>
-                        <Button onClick={() => openEditModal(user)} buttonType="outline-secondary">
-                          {'Update'}
+                        <Button 
+                          onClick={() => onEdit(user)} 
+                          buttonType="outline-secondary"
+                          title="Edit student information"
+                        >
+                          Update
                         </Button>
                       </td>
                       <td>
                         <Button
-                          onClick={() => handleDeleteUser(user)}
+                          onClick={() => onDelete(user.students_id)}
                           buttonType="outline-danger"
-                          disabled={deletedUserId !== null && deletedUserId !== user?.students_id}
-                          isLoading={deletedUserId === user?.students_id}
+                          title="Delete student"
                         >
-                          {'Delete'}
+                          Delete
                         </Button>
                       </td>
                       <td>
-                        <Favorites
-                          user={user}
-                        />
+                        <Favorites user={user} />
                       </td>
                     </>
                   )}
@@ -76,6 +159,31 @@ export const Table = ({
             ))}
           </tbody>
         </table>
+        
+        <style>{`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          
+          .table-row {
+            opacity: 0;
+          }
+          
+          .table-row.favorite {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.1) 100%);
+          }
+          
+          .table-row.favorite:hover {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.15) 100%);
+          }
+        `}</style>
       </div>
   );
 };

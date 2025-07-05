@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button } from '../Components/Buttons/Button';
 import { CustomModal } from '../Components/Modal/Modal';
-import { addAllUsers } from '../Components/store/actions/manageData';
-import { StyledFotter } from './UserActions.styles';
-import { useUpdateUser } from './UserActionsModal.hooks';
+import { useStudents } from '../hooks/useStudents';
+import { ModalForm } from './UserActions.styles';
 
-export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable, setTableState }) => {
+export const EditUserModal = ({ user, onClose }) => {
+  const { updateStudent, isUpdating } = useStudents();
+  
   const {
     control,
     handleSubmit,
@@ -15,8 +14,6 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
     formState: { errors, isValid },
     trigger,
   } = useForm();
-  const dispatch = useDispatch();
-  const allUsers = useSelector((state) => state.manageData.allUsers);
 
   // Set default values when the component mounts
   useEffect(() => {
@@ -25,83 +22,126 @@ export const EditUserModal = ({ user, isModalOpen, closeModal, handleUpdateTable
     setValue('studentsGrades', user.studentsGrades);
   }, [setValue, user.studentsGrades, user.students_name, user.students_number]);
 
-  const onSuccess = (updatedStudent) => {
-    dispatch(addAllUsers(allUsers.map(user =>
-      user.students_id === updatedStudent.students_id ? updatedStudent : user
-    )));
-    handleUpdateTable(updatedStudent);
-    closeModal();
+  const handleSubmitUpdate = async (data) => {
+    const updatedData = {
+      id: user.students_id,
+      data: {
+        studentsGrades: data.studentsGrades
+      }
+    };
+    
+    try {
+      await updateStudent(updatedData);
+      
+      // Close modal after successful update
+      onClose();
+    } catch (error) {
+      // Error is already handled by the mutation
+      console.error('Error in form submission:', error);
+    }
   };
-
-
-  const {mutate: onUpdateUser, isLoading: isUpdateUserLoading } = useUpdateUser(onSuccess);
 
   return (
     <div>
       <CustomModal
-        isModalOpen={isModalOpen}
-        onRequestClose={closeModal}
-        header={
-          <>
-            <h5 className="modal-title">Edit User</h5>
-            <Button onClick={closeModal}>{<span aria-hidden="true">&times;</span>}</Button>
-          </>
-        }
+        isModalOpen={true}
+        handleCloseTheModal={onClose}
+        header="Edit Student Grades"
       >
-        <form onSubmit={handleSubmit((data) => onUpdateUser({ user, data }))}>
-          <div className="form-group">
-            <label htmlFor="studentName" className="col-form-label">
-              Task Name
-            </label>
-            <Controller
-              name="studentName"
-              control={control}
-              defaultValue={user.students_name}
-              render={({ field }) => <input readOnly id="studentName" type="text" className="form-control" {...field} />}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="studentsNumber" className="col-form-label">
-              Task Number
-            </label>
-            <Controller
-              name="studentsNumber"
-              control={control}
-              defaultValue={user.students_number}
-              render={({ field }) => <input readOnly id="studentsNumber" type="number" className="form-control" {...field} />}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="studentsGrades" className="col-form-label">
-              Task info
-            </label>
-            <Controller
-              name="studentsGrades"
-              control={control}
-              defaultValue={user.studentsGrades}
-              rules={{ required: 'Task info is required' }}
-              render={({ field }) => (
-                <>
-                  <textarea
-                    {...field}
-                    id="studentsGrades"
-                    name="studentsGrades"
-                    required
-                    onChange={(e) => field.onChange(e.target.value)} // Ensure value updates
-                    className={`form-control ${errors.studentsGrades ? 'is-invalid' : ''}`}
-                    onBlur={() => trigger('studentsGrades')}
+        <ModalForm>
+          <form onSubmit={handleSubmit(handleSubmitUpdate)}>
+            <div className="form-group">
+              <label htmlFor="studentName">
+                Student Name
+              </label>
+              <Controller
+                name="studentName"
+                control={control}
+                defaultValue={user.students_name}
+                render={({ field }) => (
+                  <input 
+                    readOnly 
+                    id="studentName" 
+                    type="text" 
+                    {...field} 
                   />
-                  {errors.studentsGrades && <p className="invalid-feedback">{errors.studentsGrades.message}</p>}
-                </>
-              )}
-            />
-          </div>
-          <StyledFotter className="modal-footer">
-            <Button disabled={!isValid} type="submit" isLoading={isUpdateUserLoading}>
-              {'Update Task'}
-            </Button>
-          </StyledFotter>
-        </form>
+                )}
+              />
+              <small style={{ color: '#6c757d', fontSize: '12px', marginTop: '4px' }}>
+                Student name cannot be modified
+              </small>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="studentsNumber">
+                Student Number
+              </label>
+              <Controller
+                name="studentsNumber"
+                control={control}
+                defaultValue={user.students_number}
+                render={({ field }) => (
+                  <input 
+                    readOnly 
+                    id="studentsNumber" 
+                    type="number" 
+                    {...field} 
+                  />
+                )}
+              />
+              <small style={{ color: '#6c757d', fontSize: '12px', marginTop: '4px' }}>
+                Student number cannot be modified
+              </small>
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="studentsGrades">
+                Student Info
+              </label>
+              <Controller
+                name="studentsGrades"
+                control={control}
+                defaultValue={user.studentsGrades}
+                rules={{ required: 'Student info is required' }}
+                render={({ field }) => (
+                  <>
+                    <textarea
+                      {...field}
+                      id="studentsGrades"
+                      name="studentsGrades"
+                      required
+                      placeholder="Enter student information"
+                      onChange={(e) => field.onChange(e.target.value)}
+                      className={errors.studentsGrades ? 'error' : ''}
+                      onBlur={() => trigger('studentsGrades')}
+                    />
+                    {errors.studentsGrades && <div className="error-message">{errors.studentsGrades.message}</div>}
+                  </>
+                )}
+              />
+              <small style={{ color: '#6c757d', fontSize: '12px', marginTop: '4px' }}>
+                Only student info can be modified
+              </small>
+            </div>
+
+            <div className="form-actions">
+              <button 
+                type="button" 
+                className="btn-secondary" 
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                className="btn-primary" 
+                disabled={!isValid || isUpdating}
+              >
+                {isUpdating ? 'Updating...' : 'Update Student Info'}
+              </button>
+            </div>
+          </form>
+        </ModalForm>
       </CustomModal>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
-import { StyledModal, StyleHeader } from './Modal.styles';
 import Modal from 'react-modal';
+import { StyledModal } from './Modal.styles';
 
 export const CustomModal = ({ isModalOpen, handleCloseTheModal, header, children }) => {
   useEffect(() => {
@@ -9,9 +9,26 @@ export const CustomModal = ({ isModalOpen, handleCloseTheModal, header, children
 
   return (
     <div data-test="modal-create-user">
-      <StyledModal isOpen={isModalOpen} onRequestClose={handleCloseTheModal} contentLabel="Example Modal" className="modal-content" overlayClassName="modal-overlay">
-        <StyleHeader className="modal-header">{header}</StyleHeader>
-        <div className="modal-body">{children}</div>
+      <StyledModal 
+        isOpen={isModalOpen} 
+        onRequestClose={handleCloseTheModal} 
+        contentLabel="Modal"
+        className="modal-content" 
+        overlayClassName="modal-overlay"
+      >
+        <div className="modal-header">
+          <h2>{header}</h2>
+          <button 
+            className="close-button" 
+            onClick={handleCloseTheModal}
+            aria-label="Close modal"
+          >
+            ×
+          </button>
+        </div>
+        <div className="modal-body">
+          {children}
+        </div>
       </StyledModal>
     </div>
   );

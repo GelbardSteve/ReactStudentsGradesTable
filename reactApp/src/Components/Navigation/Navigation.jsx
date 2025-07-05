@@ -1,16 +1,12 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { Route, HashRouter as Router, Routes } from 'react-router-dom';
 import { FavoritesPage } from '../../Components/Favorites/FavoritesPage';
 import { AdminTable } from '../../UsersTable/AdminTable';
 import { StudentTable } from '../../UsersTable/StudentTable';
-import { EmptyPage } from '../EmptyPage/Empty';
 import { LoginPage } from '../Login/LoginPage';
 import { PageLayout } from '../PageLayout/PageLayout';
 
 export const Home = () => {
-  const userRole = useSelector((state) => state.role.roles);
-
   return (
     <Router>
       <Routes>
@@ -34,13 +30,9 @@ export const Home = () => {
         <Route
           path="/favorites"
           element={
-            userRole === 'admin' ? (
-              <PageLayout>
-                <FavoritesPage />
-              </PageLayout>
-            ) : (
-              <EmptyPage text="Access denied" />
-            )
+            <PageLayout>
+              <FavoritesPage />
+            </PageLayout>
           }
         />
       </Routes>

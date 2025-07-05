@@ -1,10 +1,21 @@
 import React from 'react';
 import { Button } from '../Buttons/Button';
-import { usePagesCount } from './pagination.hooks';
 import { StyledNav } from './Pagination.styles';
 
-export const Pagination = ({ numberOfRows, onPageChange, currentPage }) => {
-  const { pages } = usePagesCount(numberOfRows);
+export const Pagination = ({ numberOfRows, onPageChange, currentPage, totalItems }) => {
+  // Calculate total pages based on totalItems
+  const totalPages = Math.ceil(totalItems / numberOfRows);
+  
+  // Generate array of page numbers
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  console.log('Pagination Debug:', { 
+    numberOfRows, 
+    currentPage, 
+    totalItems, 
+    totalPages, 
+    pages 
+  });
 
   return (
     <StyledNav aria-label="Page navigation">
