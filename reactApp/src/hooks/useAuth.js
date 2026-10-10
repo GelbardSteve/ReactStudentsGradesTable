@@ -30,7 +30,6 @@ export const useAuth = () => {
       
       localStorage.setItem('userRole', data.userRole);
       localStorage.setItem('adminAuthentication', data.authentication);
-      console.log('Admin authentication stored, navigating to /table');
       navigate('/table');
     },
     onError: (error) => {
@@ -45,7 +44,6 @@ export const useAuth = () => {
       return response.data;
     },
     onSuccess: (data) => {
-      console.log('Student login onSuccess called with:', data);
       if (data === 'NotFound') {
         throw new Error('Invalid student number');
       }
@@ -53,7 +51,6 @@ export const useAuth = () => {
       localStorage.setItem('userRole', 'student');
       localStorage.setItem('studentData', JSON.stringify(data.userData));
       localStorage.setItem('studentAuthentication', data.authentication);
-      console.log('Student authentication stored, navigating to /studentTable');
       navigate('/studentTable');
     },
     onError: (error) => {
@@ -94,15 +91,11 @@ export const useAuth = () => {
 
   // Verify authentication using original pattern - memoized to prevent infinite loops
   const verifyAuth = useCallback(async (fromLoginPage = false) => {
-    console.log('Verifying authentication...'); // Debug log
     const adminAuth = localStorage.getItem('adminAuthentication');
     const studentAuth = localStorage.getItem('studentAuthentication');
     const authToken = adminAuth || studentAuth;
 
-    console.log('Auth tokens:', { adminAuth: !!adminAuth, studentAuth: !!studentAuth }); // Debug log
-
     if (!adminAuth && !studentAuth) {
-      console.log('No auth tokens found, navigating to login'); // Debug log
       navigate('/');
       return;
     }
@@ -112,12 +105,9 @@ export const useAuth = () => {
     const userAuthenticationToken = `${user}Authentication`;
 
     try {
-      console.log('Making authentication request to:', `${API_BASE_URL}/${url}/authentication`); // Debug log
       const response = await axios.post(`${API_BASE_URL}/${url}/authentication`, {
         authentication: authToken,
       });
-
-      console.log('Authentication response:', response.data); // Debug log
 
       if (fromLoginPage) {
         if (response.data !== 401) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Pagination } from '../Components/Pagination/pagination';
 import { SearchInput } from '../Components/Search/Search';
@@ -48,7 +48,6 @@ export const AdminTable = () => {
   // Check if user has permission to access admin table
   useEffect(() => {
     if (userRole && userRole !== 'admin') {
-      console.log('User is not admin, redirecting to appropriate page');
       if (userRole === 'student') {
         navigate('/studentTable');
       } else {
@@ -121,16 +120,6 @@ export const AdminTable = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-
-  console.log('AdminTable Debug:', {
-    allStudentsLength: allStudents?.length || 0,
-    filteredDataLength: filteredData.length,
-    currentPage,
-    itemsPerPage,
-    indexOfFirstItem,
-    indexOfLastItem,
-    currentItemsLength: currentItems.length
-  });
 
   if (isLoading) {
     return <div>Loading...</div>;

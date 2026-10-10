@@ -15,9 +15,7 @@ export const useStudents = () => {
       console.log('Fetching students from API...'); // Debug log
       try {
         const response = await axios.get(`${API_BASE_URL}/students2`);
-        console.log('API Response:', response.data); // Debug log
         const students = response.data?.items || [];
-        console.log('Processed students:', students); // Debug log
         return students;
       } catch (error) {
         console.error('Error fetching students:', error);
@@ -42,9 +40,7 @@ export const useStudents = () => {
         studentsGrades: newStudent.studentsGrades
       };
       
-      console.log('Sending to server:', serverData); // Debug log
       const response = await axios.post(`${API_BASE_URL}/students2`, serverData);
-      console.log('Server response:', response.data); // Debug log
       return response.data;
     },
     onSuccess: (newStudent) => {
@@ -54,10 +50,8 @@ export const useStudents = () => {
       toast.success('Student created successfully');
     },
     onError: (error) => {
+      console.log(error)
       toast.error('Failed to create student');
-      console.error('Create student error:', error);
-      console.error('Error response:', error.response?.data);
-      console.error('Error status:', error.response?.status);
     },
   });
 

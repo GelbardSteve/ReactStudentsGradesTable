@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://node-4-pdlj.onrender.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://node-4-pdlj.onrender.com';
 
 export const authenticateUser = async (data) => {
   const response = await axios.post(`${API_BASE_URL}/login`, data);

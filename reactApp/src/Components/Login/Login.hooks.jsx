@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authenticateStudent, authenticateUser } from './LoginPage.helper';
 
-const API_BASE_URL = 'https://node-4-pdlj.onrender.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://node-4-pdlj.onrender.com';
 
 export const useLoginAdmin = (setError, navigate, dispatch) => {
     const { mutate: loginAdmin, isLoading: isAdminLoading, error } = useMutation(authenticateUser, {
