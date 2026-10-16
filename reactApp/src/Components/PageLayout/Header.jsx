@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { Button } from '../Buttons/Button';
@@ -47,7 +47,7 @@ export const Header = () => {
             </>
           )}
         </div>
-        <Button buttonType="danger" onClick={logout} isLoading={isLogoutLoading}>
+        <Button buttonType="danger" onClick={logout} isLoading={isLogoutLoading} dataTestSpecifier="logoutButton">
           {'Log out'}
         </Button>
       </StyleHeader>

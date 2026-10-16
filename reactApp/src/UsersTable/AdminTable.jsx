@@ -10,7 +10,7 @@ import { EditUserModal } from '../UsersActionsModal/EditUserModal';
 import { TableWrapper } from './Table.styles';
 
 export const AdminTable = () => {
-  const { allStudents, isLoading, error, updateStudent, deleteStudent } = useStudents();
+  const { allStudents, isLoading, error, deleteStudent } = useStudents();
   const { userRole, verifyAuth } = useAuth();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);

@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
-    SearchContainer,
-    SearchIcon,
-    SearchLabel,
-    SearchResults,
-    StyledInput,
-    StyledWrapper
+  SearchContainer,
+  SearchIcon,
+  SearchLabel,
+  SearchResults,
+  StyledInput,
+  StyledWrapper
 } from './Search.styles';
 
 export const SearchInput = ({ value, handleSearchDara, isDisabled, totalResults, filteredResults }) => {
@@ -31,6 +31,7 @@ export const SearchInput = ({ value, handleSearchDara, isDisabled, totalResults,
         <StyledInput
           id="searchInput"
           name="searchInput"
+          data-test-specifier='search-input'
           value={value}
           onChange={handleSearchDara}
           onFocus={handleFocus}

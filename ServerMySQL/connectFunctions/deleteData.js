@@ -5,7 +5,7 @@ module.exports = (app, mysqlConnection) => {
     mysqlConnection.query(
       `DELETE students2, grades FROM stevegel_students.students2
       INNER JOIN grades ON students2.students_number = grades.students_number
-      WHERE students2.students_id = ${emp.students_id};`,
+      WHERE students2.students_number = ${emp.students_id};`,
       (err, rows, fields) => {
         if (!err) {
           res.status(200).json({ succeed: true });

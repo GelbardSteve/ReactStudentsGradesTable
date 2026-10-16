@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { AdminLoginForm } from '../../UsersLoginForm/AdminLoginForm/AdminLoginForm';
@@ -151,6 +151,7 @@ export const LoginPage = () => {
               </button>
               <button
                 type="button"
+                data-test-specifier="login-to-admin-button"
                 className={`toggle-btn ${loginType === 'admin' ? 'active' : ''}`}
                 onClick={() => setLoginType('admin')}
               >
@@ -180,6 +181,7 @@ export const LoginPage = () => {
               <Button 
                 disabled={!isValid} 
                 type="submit" 
+                dataTestSpecifier="submitButton"
                 className="btn-block mb-4 login-submit-btn" 
                 isLoading={isLoading}
               >

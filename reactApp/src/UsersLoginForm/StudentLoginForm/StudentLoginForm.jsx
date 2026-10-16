@@ -12,7 +12,10 @@ export const StudentLoginForm = ({ Controller, control, errors, trigger }) => {
           defaultValue=""
           render={({ field }) => (
             <>
-              <input {...field} type="number" className={`form-control ${errors.loginError ? 'is-invalid' : ''}`} onBlur={() => trigger('studentNumber')} />
+              <input 
+              {...field} 
+              data-test-specifier="studentNumberInput"
+              type="number" className={`form-control ${errors.loginError ? 'is-invalid' : ''}`} onBlur={() => trigger('studentNumber')} />
               {errors.studentNumber && <p className="invalid-feedback">{errors.studentNumber.message}</p>}
             </>
           )}

@@ -82,18 +82,14 @@ export const useStudents = () => {
     },
   });
 
-  // Delete student mutation
   const deleteStudentMutation = useMutation({
-    mutationFn: async (studentId) => {
-      console.log('Deleting student with ID:', studentId); // Debug log
-      const response = await axios.delete(`${API_BASE_URL}/students2/${studentId}`);
-      console.log('Delete response:', response.data); // Debug log
-      return studentId;
+    mutationFn: async (studentNumber) => {
+      await axios.delete(`${API_BASE_URL}/students2/${studentNumber}`);
+      return studentNumber;
     },
-    onSuccess: (deletedId) => {
-      console.log('Student deleted successfully, updating cache for ID:', deletedId); // Debug log
+    onSuccess: (deletedNumber) => {
       queryClient.setQueryData(['students'], (oldData) =>
-        (oldData || []).filter(student => student.students_id !== deletedId)
+        (oldData || []).filter(student => student.students_number !== deletedNumber)
       );
       toast.success('Student deleted successfully');
     },

@@ -142,7 +142,7 @@ export const Table = ({
                       </td>
                       <td>
                         <Button
-                          onClick={() => onDelete(user.students_id)}
+                          onClick={() => onDelete(user.students_number)}
                           buttonType="outline-danger"
                           title="Delete student"
                         >

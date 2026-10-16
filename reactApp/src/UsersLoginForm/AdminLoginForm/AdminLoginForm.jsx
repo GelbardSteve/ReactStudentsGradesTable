@@ -1,4 +1,3 @@
-import React from 'react';
 
 export const AdminLoginForm = ({ Controller, control, errors, trigger }) => {
   return (
@@ -12,7 +11,12 @@ export const AdminLoginForm = ({ Controller, control, errors, trigger }) => {
           defaultValue=""
           render={({ field }) => (
             <>
-              <input {...field} type="text" className={`form-control ${errors.Name ? 'is-invalid' : ''}`} onBlur={() => trigger('Name')} />
+              <input {...field} 
+                type="text" 
+                className={`form-control ${errors.Name ? 'is-invalid' : ''}`}
+                onBlur={() => trigger('Name')} 
+                data-test-specifier="usernameInput"
+               />
               {errors.Name && <p className="invalid-feedback">{errors.Name.message}</p>}
             </>
           )}
@@ -28,7 +32,14 @@ export const AdminLoginForm = ({ Controller, control, errors, trigger }) => {
           rules={{ required: 'Password is required' }}
           render={({ field }) => (
             <>
-              <input {...field} type="password" className={`form-control ${errors.Password ? 'is-invalid' : ''}`} onBlur={() => trigger('Password')} autoComplete="Password" />
+              <input 
+                {...field} 
+                type="password" 
+                className={`form-control ${errors.Password ? 'is-invalid' : ''}`} 
+                onBlur={() => trigger('Password')} 
+                autoComplete="Password"
+                data-test-specifier="passwordInput"
+              />
               {errors.Password && <p className="invalid-feedback">{errors.Password.message}</p>}
             </>
           )}
