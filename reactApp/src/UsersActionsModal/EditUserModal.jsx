@@ -22,23 +22,16 @@ export const EditUserModal = ({ user, onClose }) => {
     setValue('studentsGrades', user.studentsGrades);
   }, [setValue, user.studentsGrades, user.students_name, user.students_number]);
 
-  const handleSubmitUpdate = async (data) => {
+  const handleSubmitUpdate = (data) => {
     const updatedData = {
       id: user.students_id,
       data: {
         studentsGrades: data.studentsGrades
       }
     };
-    
-    try {
-      await updateStudent(updatedData);
-      
-      // Close modal after successful update
-      onClose();
-    } catch (error) {
-      // Error is already handled by the mutation
-      console.error('Error in form submission:', error);
-    }
+
+    // Close only on success so the user keeps their input if the request fails
+    updateStudent(updatedData, { onSuccess: onClose });
   };
 
   return (

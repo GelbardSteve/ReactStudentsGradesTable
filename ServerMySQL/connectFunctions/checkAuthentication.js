@@ -1,16 +1,15 @@
 module.exports = (app, mysqlConnection) => {
-  //Admin Login
-  app.post('/login/authentication', (req, res, next) => {
-    const emp = req.body;
-    const sql = `SELECT * FROM stevegel_students.login 
-    WHERE authentication = "${emp.authentication}"`;
-    mysqlConnection.query(sql, (err, rows, fields) => {
-      if (rows.length !== 0) {
-        res.json(rows);
-      } else {
-        res.json(401); // Send HTTP status code 400 for bad request
+  // Verify admin token
+  app.post('/login/authentication', (req, res) => {
+    const { authentication } = req.body;
+    // Never return the password hash or token to the client
+    const sql = 'SELECT Name, userRole FROM stevegel_students.login WHERE authentication = ?';
+    mysqlConnection.query(sql, [authentication], (err, rows) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Database error' });
       }
+      res.json(rows.length ? rows : 401);
     });
   });
-  //////////////////////////
 };

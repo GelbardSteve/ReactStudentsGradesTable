@@ -16,48 +16,6 @@ export const useAuth = () => {
   // Get current student data from localStorage
   const studentData = localStorage.getItem('studentData') ? JSON.parse(localStorage.getItem('studentData')) : null;
 
-  // Login admin mutation using original pattern
-  const loginAdminMutation = useMutation({
-    mutationFn: async (credentials) => {
-      const response = await axios.post(`${API_BASE_URL}/login`, credentials);
-      return response.data;
-    },
-    onSuccess: (data) => {
-      console.log('Admin login onSuccess called with:', data);
-      if (data === 401) {
-        throw new Error('Invalid username or password');
-      }
-      
-      localStorage.setItem('userRole', data.userRole);
-      localStorage.setItem('adminAuthentication', data.authentication);
-      navigate('/table');
-    },
-    onError: (error) => {
-      console.error('Admin login error:', error);
-    },
-  });
-
-  // Login student mutation using original pattern
-  const loginStudentMutation = useMutation({
-    mutationFn: async (credentials) => {
-      const response = await axios.post(`${API_BASE_URL}/students2/${credentials.studentNumber}`, credentials);
-      return response.data;
-    },
-    onSuccess: (data) => {
-      if (data === 'NotFound') {
-        throw new Error('Invalid student number');
-      }
-      
-      localStorage.setItem('userRole', 'student');
-      localStorage.setItem('studentData', JSON.stringify(data.userData));
-      localStorage.setItem('studentAuthentication', data.authentication);
-      navigate('/studentTable');
-    },
-    onError: (error) => {
-      console.error('Student login error:', error);
-    },
-  });
-
   // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -72,7 +30,8 @@ export const useAuth = () => {
 
       return axios.post(`${API_BASE_URL}/remove/authentication`, isAdminAuthentication);
     },
-    onSuccess: () => {
+    // Clear the local session even if the server call fails, so the user is never stuck logged in
+    onSettled: () => {
       const isAdmin = localStorage.getItem('adminAuthentication') ? true : false;
       const user = isAdmin ? 'admin' : 'student';
       const userAuthenticationToken = `${user}Authentication`;
@@ -111,12 +70,10 @@ export const useAuth = () => {
 
       if (fromLoginPage) {
         if (response.data !== 401) {
-          console.log('From login page, navigating to:', url === 'login' ? '/table' : '/studentTable'); // Debug log
           navigate(url === 'login' ? '/table' : '/studentTable');
         }
       } else {
         if (response.data === 401) {
-          console.log('Authentication failed, clearing cache and navigating to login'); // Debug log
           navigate('/');
           localStorage.removeItem(userAuthenticationToken);
           localStorage.removeItem('userRole');
@@ -124,8 +81,6 @@ export const useAuth = () => {
             localStorage.removeItem('studentData');
           }
           queryClient.clear();
-        } else {
-          console.log('Authentication successful'); // Debug log
         }
       }
     } catch (error) {
@@ -158,14 +113,8 @@ export const useAuth = () => {
   return {
     userRole,
     studentData,
-    loginAdmin: loginAdminMutation.mutate,
-    loginStudent: loginStudentMutation.mutate,
     logout: logoutMutation.mutate,
-    isLoginAdminLoading: loginAdminMutation.isLoading,
-    isLoginStudentLoading: loginStudentMutation.isLoading,
     isLogoutLoading: logoutMutation.isLoading,
-    loginAdminError: loginAdminMutation.error,
-    loginStudentError: loginStudentMutation.error,
     verifyAuth,
   };
 }; 

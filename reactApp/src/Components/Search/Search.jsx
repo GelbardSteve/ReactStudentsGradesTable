@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   SearchContainer,
   SearchIcon,
@@ -8,17 +7,7 @@ import {
   StyledWrapper
 } from './Search.styles';
 
-export const SearchInput = ({ value, handleSearchDara, isDisabled, totalResults, filteredResults }) => {
-  const [isFocused, setIsFocused] = useState(false);
-
-  const handleFocus = () => {
-    setIsFocused(true);
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-  };
-
+export const SearchInput = ({ value, onSearchChange, isDisabled, totalResults, filteredResults }) => {
   return (
     <StyledWrapper>
       <SearchLabel htmlFor="searchInput">
@@ -33,9 +22,7 @@ export const SearchInput = ({ value, handleSearchDara, isDisabled, totalResults,
           name="searchInput"
           data-test-specifier='search-input'
           value={value}
-          onChange={handleSearchDara}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
+          onChange={onSearchChange}
           placeholder="Search by name or student number..."
           type="search"
           disabled={isDisabled}

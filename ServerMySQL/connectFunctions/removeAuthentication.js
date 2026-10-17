@@ -1,18 +1,16 @@
 module.exports = (app, mysqlConnection) => {
-  // Admin Login
-  app.post('/remove/authentication', (req, res, next) => {
-    const emp = req.body;
-    const deleteSql = `UPDATE ${emp.table ? emp.table : 'login'} SET authentication = NULL WHERE authentication = "${emp.authentication}"`;
-    mysqlConnection.query(deleteSql, (err, result) => {
+  // Logout: clear the stored token
+  app.post('/remove/authentication', (req, res) => {
+    const { table, authentication } = req.body;
+    // Table names can't be bound as parameters, so only allow known tables
+    const tableName = table === 'students2' ? 'students2' : 'login';
+    const sql = `UPDATE ${tableName} SET authentication = NULL WHERE authentication = ?`;
+    mysqlConnection.query(sql, [authentication], (err, result) => {
       if (err) {
-        res.sendStatus(500); // Internal Server Error
-        return;
+        console.error(err);
+        return res.sendStatus(500);
       }
-      if (result.affectedRows > 0) {
-        res.json(200);
-      } else {
-        res.json(404); // Send HTTP status code 400 for bad request
-      }
+      res.json(result.affectedRows > 0 ? 200 : 404);
     });
   });
 };

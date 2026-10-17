@@ -21,55 +21,24 @@ import {
 export const FavoritesPage = () => {
   const { allStudents, deleteStudent } = useStudents();
   const { userRole, verifyAuth } = useAuth();
-  const [favoriteUsers, setFavoriteUsers] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  // Check authentication on component mount
+  // Check authentication on mount (verifyAuth is memoized and handles its own errors)
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await verifyAuth(false); // false means not from login page
-      } catch (error) {
-        console.error('Auth check error:', error);
-        // Don't redirect on network errors to prevent infinite loops
-        if (error.code === 'NETWORK_ERROR' || error.message?.includes('Network Error')) {
-          console.log('Network error detected, skipping auth check');
-          return;
-        }
-      }
-    };
-    
-    // Always check auth on mount, regardless of userRole
-    checkAuth();
-  }, []); // Empty dependency array to run only on mount
+    verifyAuth(false);
+  }, [verifyAuth]);
 
-  useEffect(() => {
-    setFavoriteUsers(allStudents.filter((user) => user.favorites === 1 || user.favorites === true));
-  }, [allStudents]);
+  const favoriteUsers = allStudents.filter((user) => user.favorites === 1 || user.favorites === true);
 
   const handleEdit = (user) => {
     setSelectedUser(user);
     setShowEditModal(true);
   };
 
-  const handleDelete = async (students_id) => {
+  const handleDelete = (students_number) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
-      try {
-        await deleteStudent(students_id);
-      } catch (error) {
-        console.error('Error deleting student:', error);
-      }
-    }
-  };
-
-  const handleUpdate = async (updatedData) => {
-    try {
-      // The update is handled by the EditUserModal
-      setShowEditModal(false);
-      setSelectedUser(null);
-    } catch (error) {
-      console.error('Error updating student:', error);
+      deleteStudent(students_number);
     }
   };
 
@@ -88,7 +57,7 @@ export const FavoritesPage = () => {
       {favoriteUsers.length > 0 ? (
         <FavoritesGrid>
           {favoriteUsers.map((user) => {
-            const { students_name, students_number, studentsGrades, students_id } = user;
+            const { students_name, students_number, studentsGrades } = user;
 
             return (
               <FavoriteCard key={students_number}>
@@ -115,7 +84,7 @@ export const FavoritesPage = () => {
                     Update
                   </Button>
                   <Button
-                    onClick={() => handleDelete(students_id)}
+                    onClick={() => handleDelete(students_number)}
                     buttonType="outline-danger"
                     title="Delete student"
                   >

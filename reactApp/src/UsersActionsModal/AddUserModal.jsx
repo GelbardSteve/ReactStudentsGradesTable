@@ -36,34 +36,19 @@ export const AddUserModal = ({ onClose, onSuccess }) => {
     onClose();
   };
 
-  const handleSubmitCreateNewUser = async (data) => {
+  const handleSubmitCreateNewUser = (data) => {
     if (isUserExist) {
       return;
     }
 
-    // Transform data to match the expected format
     const userData = {
       studentName: data.studentName,
-      studentsNumber: parseInt(data.studentsNumber), // Ensure it's a number
+      studentsNumber: parseInt(data.studentsNumber, 10),
       studentsGrades: data.studentsGrades
     };
 
-    console.log('Form data being sent:', userData); // Debug log
-
-    try {
-      await createStudent(userData);
-      
-      // Reset form and close modal after successful creation
-      reset({
-        studentName: '',
-        studentsNumber: '',
-        studentsGrades: '',
-      });
-      onClose();
-    } catch (error) {
-      // Error is already handled by the mutation
-      console.error('Error in form submission:', error);
-    }
+    // Close only on success so the user keeps their input if the request fails
+    createStudent(userData, { onSuccess: handleCloseTheModal });
   }
 
   return (

@@ -18,8 +18,8 @@ export const LoginPage = () => {
     handleSubmit,
     formState: { errors, isValid },
     trigger,
-    reset,
     setError,
+    clearErrors,
   } = useForm();
 
   // Use the original working hooks
@@ -28,45 +28,24 @@ export const LoginPage = () => {
   const verifyAuth = useVerifyAuthenticationFromLoginPage(true);
 
   // Check if user is already authenticated and redirect them
+  // verifyAuth is memoized, so this runs once on mount
   useEffect(() => {
-    const checkAuth = async () => {
-      console.log('LoginPage - Checking authentication status...');
-      setIsCheckingAuth(true);
-      
-      try {
-        await verifyAuth();
-      } catch (error) {
-        console.error('Error checking authentication:', error);
-      } finally {
-        setIsCheckingAuth(false);
-      }
-    };
-    
-    // Only check auth once when component mounts
-    checkAuth();
-  }, []); // Empty dependency array to run only once
+    verifyAuth().finally(() => setIsCheckingAuth(false));
+  }, [verifyAuth]);
 
   const onSubmit = (data) => {
-    console.log('Login form submitted:', { loginType, data }); // Debug log
+    clearErrors('loginError');
     if (loginType === 'admin') {
-      console.log('Calling loginAdmin with:', data); // Debug log
       loginAdmin(data);
     } else {
-      console.log('Calling loginStudent with:', data); // Debug log
       loginStudent(data);
     }
   };
 
-  const toggleLoginType = () => {
-    setLoginType(loginType === 'student' ? 'admin' : 'student');
-    reset(); // Reset form when switching types
-  };
-
-  // Get the correct error & loading state based on the selected form
-  const error = loginType === 'admin' ? adminError : studentError;
+  // Get the correct error & loading state based on the selected form.
+  // Invalid credentials are reported via setError('loginError'); network/server failures via the mutation error.
+  const error = errors.loginError || (loginType === 'admin' ? adminError : studentError);
   const isLoading = loginType === 'admin' ? isAdminLoading : isStudentLoading;
-
-  console.log('LoginPage render:', { loginType, error, isLoading }); // Debug log
 
   // Show loading while checking authentication
   if (isCheckingAuth) {
@@ -103,36 +82,8 @@ export const LoginPage = () => {
     );
   }
 
-  // Debug section - remove in production
-  const debugInfo = {
-    adminAuth: localStorage.getItem('adminAuthentication'),
-    studentAuth: localStorage.getItem('studentAuthentication'),
-    isAdminLoading,
-    isStudentLoading,
-    adminError: adminError?.message,
-    studentError: studentError?.message
-  };
-
   return (
     <div className="login-page">
-      {/* Debug info - remove in production */}
-      {process.env.NODE_ENV === 'development' && (
-        <div style={{
-          position: 'fixed',
-          top: '10px',
-          right: '10px',
-          background: '#f0f0f0',
-          padding: '10px',
-          borderRadius: '5px',
-          fontSize: '12px',
-          maxWidth: '300px',
-          zIndex: 1000
-        }}>
-          <strong>Debug Info:</strong>
-          <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
-        </div>
-      )}
-      
       <StyledWrapper>
         <StyledFormWrapper>
           <StyledForm onSubmit={handleSubmit(onSubmit)}>
@@ -159,7 +110,7 @@ export const LoginPage = () => {
               </button>
             </div>
             
-            {error && <div className="error-message">{error.message}</div>}
+            {error && <div className="error-message" role="alert">{error.message}</div>}
             
             <div className="form-content">
               {loginType === 'student' ? (

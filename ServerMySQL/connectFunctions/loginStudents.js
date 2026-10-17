@@ -1,26 +1,33 @@
+const crypto = require('node:crypto');
+
 module.exports = (app, mysqlConnection) => {
+  // Student login
   app.post('/students2/:students_number', (req, res) => {
-    const emp = req.params;
+    const { students_number } = req.params;
     mysqlConnection.query(
       `SELECT * FROM stevegel_students.students2 INNER JOIN grades ON
-      students2.students_number = grades.students_number 
-      WHERE students2.students_number = ${emp.students_number};`,
-      (err, rows, fields) => {
-        if (rows.length !== 0) {
-          // Generate a random authentication string
-          const authenticationString = require('node:crypto').randomBytes(20).toString('hex');
-
-          // Update the database with the authorization string
-          const updateSql = `UPDATE stevegel_students.students2 SET authentication = "${authenticationString}" WHERE  students2.students_number = "${emp.students_number}"`;
-          mysqlConnection.query(updateSql, (err, result) => {
-            if (err) throw err;
-            console.log(`Updated authentication for user ${emp.Name}`);
-          });
-
-          res.json({userData: rows, authentication: authenticationString });
-        } else {
-          res.json('NotFound'); // Send HTTP status code 400 for bad request
+      students2.students_number = grades.students_number
+      WHERE students2.students_number = ?`,
+      [students_number],
+      (err, rows) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Database error' });
         }
+        if (!rows.length) {
+          return res.json('NotFound');
+        }
+
+        const authenticationString = crypto.randomBytes(20).toString('hex');
+        const updateSql = 'UPDATE stevegel_students.students2 SET authentication = ? WHERE students_number = ?';
+        // Respond only after the token is saved, otherwise the client may hold a token the DB doesn't know
+        mysqlConnection.query(updateSql, [authenticationString, students_number], (updateErr) => {
+          if (updateErr) {
+            console.error(updateErr);
+            return res.status(500).json({ error: 'Database error' });
+          }
+          res.json({ userData: rows, authentication: authenticationString });
+        });
       }
     );
   });

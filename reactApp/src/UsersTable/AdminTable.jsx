@@ -9,13 +9,14 @@ import { AddUserModal } from '../UsersActionsModal/AddUserModal';
 import { EditUserModal } from '../UsersActionsModal/EditUserModal';
 import { TableWrapper } from './Table.styles';
 
+const ITEMS_PER_PAGE = 10;
+
 export const AdminTable = () => {
   const { allStudents, isLoading, error, deleteStudent } = useStudents();
   const { userRole, verifyAuth } = useAuth();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
-  const [itemsPerPage] = useState(10);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -26,24 +27,10 @@ export const AdminTable = () => {
     return savedHeight || 'auto';
   });
 
-  // Check authentication on component mount
+  // Check authentication on mount (verifyAuth is memoized and handles its own errors)
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await verifyAuth(false); // false means not from login page
-      } catch (error) {
-        console.error('Auth check error:', error);
-        // Don't redirect on network errors to prevent infinite loops
-        if (error.code === 'NETWORK_ERROR' || error.message?.includes('Network Error')) {
-          console.log('Network error detected, skipping auth check');
-          return;
-        }
-      }
-    };
-    
-    // Always check auth on mount, regardless of userRole
-    checkAuth();
-  }, []); // Empty dependency array to run only on mount
+    verifyAuth(false);
+  }, [verifyAuth]);
 
   // Check if user has permission to access admin table
   useEffect(() => {
@@ -66,15 +53,11 @@ export const AdminTable = () => {
     );
 
     // Apply sorting only for student numbers
+    const direction = sortDirection === 'asc' ? 1 : -1;
     filtered.sort((a, b) => {
-      const aValue = parseInt(a.students_number) || 0;
-      const bValue = parseInt(b.students_number) || 0;
-
-      if (sortDirection === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
+      const aValue = parseInt(a.students_number, 10) || 0;
+      const bValue = parseInt(b.students_number, 10) || 0;
+      return (aValue - bValue) * direction;
     });
 
     return filtered;
@@ -85,13 +68,9 @@ export const AdminTable = () => {
     setShowEditModal(true);
   };
 
-  const handleDelete = async (students_number) => {
+  const handleDelete = (students_number) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
-      try {
-        await deleteStudent(students_number);
-      } catch (error) {
-        console.error('Error deleting student:', error);
-      }
+      deleteStudent(students_number);
     }
   };
 
@@ -117,8 +96,12 @@ export const AdminTable = () => {
     localStorage.setItem('tableHeight', height);
   };
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  // Keep the page in range when the list shrinks (e.g. deleting the last row on the last page)
+  const pageCount = Math.max(1, Math.ceil(filteredData.length / ITEMS_PER_PAGE));
+  const activePage = Math.min(currentPage, pageCount);
+
+  const indexOfLastItem = activePage * ITEMS_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - ITEMS_PER_PAGE;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   if (isLoading) {
@@ -149,7 +132,7 @@ export const AdminTable = () => {
       <div className="table-controls">
         <SearchInput 
           value={searchTerm}
-          handleSearchDara={(e) => handleSearch(e.target.value)}
+          onSearchChange={(e) => handleSearch(e.target.value)}
           isDisabled={false}
           totalResults={allStudents?.length || 0}
           filteredResults={filteredData.length}
@@ -171,8 +154,8 @@ export const AdminTable = () => {
 
       <div className="pagination-container">
         <Pagination
-          numberOfRows={itemsPerPage}
-          currentPage={currentPage}
+          numberOfRows={ITEMS_PER_PAGE}
+          currentPage={activePage}
           onPageChange={handlePageChange}
           totalItems={filteredData.length}
         />

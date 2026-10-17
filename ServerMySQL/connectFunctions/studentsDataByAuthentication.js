@@ -1,21 +1,16 @@
 module.exports = (app, mysqlConnection) => {
-  //Admin Login
-  app.post('/students/authentication', (req, res, next) => {
-    const emp = req.body;
-    const sql = `SELECT * FROM stevegel_students.students2
-      WHERE authentication = "${emp.authentication}"`;
-    mysqlConnection.query(sql, (err, rows, fields) => {
-      if (rows.length !== 0) {
-        const updateSql = `SELECT * FROM stevegel_students.students2 INNER JOIN grades ON
-        students2.students_number = grades.students_number 
-        WHERE students2.students_number = ${rows[0].students_number};`;
-        mysqlConnection.query(updateSql, (err, result, fields) => {
-          res.json(result);
-        });
-      } else {
-        res.json(401); // Send HTTP status code 400 for bad request
+  // Verify student token and return the student's data
+  app.post('/students/authentication', (req, res) => {
+    const { authentication } = req.body;
+    const sql = `SELECT * FROM stevegel_students.students2 INNER JOIN grades ON
+      students2.students_number = grades.students_number
+      WHERE students2.authentication = ?`;
+    mysqlConnection.query(sql, [authentication], (err, rows) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Database error' });
       }
+      res.json(rows.length ? rows : 401);
     });
   });
-  //////////////////////////
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table } from '../Components/Table/Table';
 import { useAuth } from '../hooks/useAuth';
@@ -9,32 +9,15 @@ export const StudentTable = () => {
   const navigate = useNavigate();
   const [sortField, setSortField] = useState('students_number');
   const [sortDirection, setSortDirection] = useState('asc');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-  // Check authentication on component mount
+  // Check authentication on mount (verifyAuth is memoized and handles its own errors)
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await verifyAuth(false); // false means not from login page
-      } catch (error) {
-        console.error('Auth check error:', error);
-        // Don't redirect on network errors to prevent infinite loops
-        if (error.code === 'NETWORK_ERROR' || error.message?.includes('Network Error')) {
-          console.log('Network error detected, skipping auth check');
-          return;
-        }
-      }
-    };
-    
-    // Always check auth on mount, regardless of userRole
-    checkAuth();
-  }, []); // Empty dependency array to run only on mount
+    verifyAuth(false);
+  }, [verifyAuth]);
 
   // Check if user has permission to access student table
   useEffect(() => {
     if (userRole && userRole !== 'student') {
-      console.log('User is not student, redirecting to appropriate page');
       if (userRole === 'admin') {
         navigate('/table');
       } else {
@@ -51,14 +34,6 @@ export const StudentTable = () => {
       setSortDirection('asc');
     }
   };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
 
   // Don't render if user is not student
   if (userRole !== 'student') {

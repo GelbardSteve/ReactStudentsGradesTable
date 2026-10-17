@@ -12,17 +12,8 @@ export const useStudents = () => {
   const { data: allStudents = [], isLoading, error } = useQuery({
     queryKey: ['students'],
     queryFn: async () => {
-      console.log('Fetching students from API...'); // Debug log
-      try {
-        const response = await axios.get(`${API_BASE_URL}/students2`);
-        const students = response.data?.items || [];
-        return students;
-      } catch (error) {
-        console.error('Error fetching students:', error);
-        console.error('Error response:', error.response?.data);
-        console.error('Error status:', error.response?.status);
-        throw error;
-      }
+      const response = await axios.get(`${API_BASE_URL}/students2`);
+      return response.data?.items || [];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 1,
@@ -31,8 +22,6 @@ export const useStudents = () => {
   // Create student mutation
   const createStudentMutation = useMutation({
     mutationFn: async (newStudent) => {
-      console.log('Creating student:', newStudent); // Debug log
-      
       // Transform the data to match the server's expected format
       const serverData = {
         students_name: newStudent.studentName,
@@ -43,15 +32,14 @@ export const useStudents = () => {
       const response = await axios.post(`${API_BASE_URL}/students2`, serverData);
       return response.data;
     },
-    onSuccess: (newStudent) => {
-      console.log('Student created successfully:', newStudent); // Debug log
+    onSuccess: () => {
       // Invalidate and refetch the students query to get the latest data
       queryClient.invalidateQueries(['students']);
       toast.success('Student created successfully');
     },
     onError: (error) => {
-      console.log(error)
       toast.error('Failed to create student');
+      console.error('Create student error:', error);
     },
   });
 
@@ -96,8 +84,6 @@ export const useStudents = () => {
     onError: (error) => {
       toast.error('Failed to delete student');
       console.error('Delete student error:', error);
-      console.error('Error response:', error.response?.data);
-      console.error('Error status:', error.response?.status);
     },
   });
 
@@ -190,7 +176,7 @@ export const useStudents = () => {
   // Search students
   const searchStudents = async (searchTerm) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/students2/search/${searchTerm}`);
+      const response = await axios.get(`${API_BASE_URL}/students2/search/${encodeURIComponent(searchTerm)}`);
       return response.data === 'NotFound' ? [] : response.data;
     } catch (error) {
       console.error('Search students error:', error);
