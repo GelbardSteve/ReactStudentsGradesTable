@@ -1,8 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import { toast } from 'react-toastify';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://node-4-pdlj.onrender.com';
+import { apiClient } from '../../api/client';
 
 // Students data management with React Query
 export const useStudents = () => {
@@ -12,7 +10,7 @@ export const useStudents = () => {
   const { data: allStudents = [], isLoading, error } = useQuery({
     queryKey: ['students'],
     queryFn: async () => {
-      const response = await axios.get(`${API_BASE_URL}/students2`);
+      const response = await apiClient.get('/students2');
       return response.data?.items || [];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -29,7 +27,7 @@ export const useStudents = () => {
         studentsGrades: newStudent.studentsGrades
       };
       
-      const response = await axios.post(`${API_BASE_URL}/students2`, serverData);
+      const response = await apiClient.post('/students2', serverData);
       return response.data;
     },
     onSuccess: () => {
@@ -47,7 +45,7 @@ export const useStudents = () => {
   const updateStudentMutation = useMutation({
     mutationFn: async ({ id, data }) => {
       // The server only supports updating grades, not student names or numbers
-      const response = await axios.put(`${API_BASE_URL}/grades`, {
+      const response = await apiClient.put('/grades', {
         students_id: id,
         studentsGrades: data.studentsGrades
       });
@@ -72,7 +70,7 @@ export const useStudents = () => {
 
   const deleteStudentMutation = useMutation({
     mutationFn: async (studentNumber) => {
-      await axios.delete(`${API_BASE_URL}/students2/${studentNumber}`);
+      await apiClient.delete(`/students2/${studentNumber}`);
       return studentNumber;
     },
     onSuccess: (deletedNumber) => {
@@ -90,7 +88,7 @@ export const useStudents = () => {
   // Update favorites mutation
   const updateFavoritesMutation = useMutation({
     mutationFn: async ({ students_number, favorites }) => {
-      const response = await axios.post(`${API_BASE_URL}/favorites`, {
+      const response = await apiClient.post('/favorites', {
         id: students_number,
         favorites,
       });
@@ -176,7 +174,7 @@ export const useStudents = () => {
   // Search students
   const searchStudents = async (searchTerm) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/students2/search/${encodeURIComponent(searchTerm)}`);
+      const response = await apiClient.get(`/students2/search/${encodeURIComponent(searchTerm)}`);
       return response.data === 'NotFound' ? [] : response.data;
     } catch (error) {
       console.error('Search students error:', error);

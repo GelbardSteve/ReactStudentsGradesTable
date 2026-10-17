@@ -1,4 +1,4 @@
-import { Button } from '../Buttons/Button';
+import { Button } from '../Button/Button';
 import { StyledNav } from './Pagination.styles';
 
 export const Pagination = ({ numberOfRows, onPageChange, currentPage, totalItems }) => {

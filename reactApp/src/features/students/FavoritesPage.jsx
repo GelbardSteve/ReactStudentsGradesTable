@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../hooks/useAuth';
-import { useStudents } from '../../hooks/useStudents';
-import { EditUserModal } from '../../UsersActionsModal/EditUserModal';
-import { Button } from '../Buttons/Button';
-import { EmptyPage } from '../EmptyPage/Empty';
-import { Favorites } from './Favorites';
+import { useState } from 'react';
+import { Button } from '../../components/Button/Button';
+import { EditUserModal } from './EditUserModal';
+import { FavoriteButton } from './FavoriteButton';
 import {
     ActionButtons,
     CardHeader,
@@ -17,17 +14,12 @@ import {
     StudentNumber,
     StyleFavoritesContainer
 } from './Favorites.styles';
+import { useStudents } from './useStudents';
 
 export const FavoritesPage = () => {
   const { allStudents, deleteStudent } = useStudents();
-  const { userRole, verifyAuth } = useAuth();
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-
-  // Check authentication on mount (verifyAuth is memoized and handles its own errors)
-  useEffect(() => {
-    verifyAuth(false);
-  }, [verifyAuth]);
 
   const favoriteUsers = allStudents.filter((user) => user.favorites === 1 || user.favorites === true);
 
@@ -41,11 +33,6 @@ export const FavoritesPage = () => {
       deleteStudent(students_number);
     }
   };
-
-  // Check if user has permission to access favorites
-  if (userRole !== 'admin') {
-    return <EmptyPage text="Access denied" />;
-  }
 
   return (
     <StyleFavoritesContainer>
@@ -63,7 +50,7 @@ export const FavoritesPage = () => {
               <FavoriteCard key={students_number}>
                 <CardHeader>
                   <StudentName>{students_name}</StudentName>
-                  <Favorites user={user} />
+                  <FavoriteButton user={user} />
                 </CardHeader>
                 
                 <StudentNumber>

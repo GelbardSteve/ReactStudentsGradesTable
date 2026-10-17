@@ -1,20 +1,16 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Pagination } from '../Components/Pagination/pagination';
-import { SearchInput } from '../Components/Search/Search';
-import { Table } from '../Components/Table/Table';
-import { useAuth } from '../hooks/useAuth';
-import { useStudents } from '../hooks/useStudents';
-import { AddUserModal } from '../UsersActionsModal/AddUserModal';
-import { EditUserModal } from '../UsersActionsModal/EditUserModal';
+import { useMemo, useState } from 'react';
+import { Pagination } from '../../components/Pagination/Pagination';
+import { SearchInput } from '../../components/Search/Search';
+import { AddUserModal } from './AddUserModal';
+import { EditUserModal } from './EditUserModal';
+import { StudentsTable } from './StudentsTable';
 import { TableWrapper } from './Table.styles';
+import { useStudents } from './useStudents';
 
 const ITEMS_PER_PAGE = 10;
 
 export const AdminTable = () => {
   const { allStudents, isLoading, error, deleteStudent } = useStudents();
-  const { userRole, verifyAuth } = useAuth();
-  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -26,22 +22,6 @@ export const AdminTable = () => {
     const savedHeight = localStorage.getItem('tableHeight');
     return savedHeight || 'auto';
   });
-
-  // Check authentication on mount (verifyAuth is memoized and handles its own errors)
-  useEffect(() => {
-    verifyAuth(false);
-  }, [verifyAuth]);
-
-  // Check if user has permission to access admin table
-  useEffect(() => {
-    if (userRole && userRole !== 'admin') {
-      if (userRole === 'student') {
-        navigate('/studentTable');
-      } else {
-        navigate('/');
-      }
-    }
-  }, [userRole, navigate]);
 
   // Calculate filtered and sorted data using useMemo to prevent infinite loops
   const filteredData = useMemo(() => {
@@ -112,11 +92,6 @@ export const AdminTable = () => {
     return <div>Error: {error.message}</div>;
   }
 
-  // Don't render if user is not admin
-  if (userRole !== 'admin') {
-    return null;
-  }
-
   return (
     <TableWrapper style={{ '--table-height': tableHeight }}>
       <div className="table-header">
@@ -139,12 +114,11 @@ export const AdminTable = () => {
         />
       </div>
 
-      <Table
+      <StudentsTable
         data={currentItems}
         onEdit={handleEdit}
         onDelete={handleDelete}
         isAdmin={true}
-        isLoading={isLoading}
         onSort={handleSort}
         sortField="students_number"
         sortDirection={sortDirection}

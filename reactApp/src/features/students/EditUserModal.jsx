@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { CustomModal } from '../Components/Modal/Modal';
-import { useStudents } from '../hooks/useStudents';
-import { ModalForm } from './UserActions.styles';
+import { CustomModal } from '../../components/Modal/Modal';
+import { ModalForm } from './StudentModal.styles';
+import { useStudents } from './useStudents';
 
 export const EditUserModal = ({ user, onClose }) => {
   const { updateStudent, isUpdating } = useStudents();

@@ -1,17 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { AdminLoginForm } from '../../UsersLoginForm/AdminLoginForm/AdminLoginForm';
-import { StudentLoginForm } from '../../UsersLoginForm/StudentLoginForm/StudentLoginForm';
-import { Button } from '../Buttons/Button';
+import { useForm } from 'react-hook-form';
+import { Button } from '../../components/Button/Button';
+import { AdminLoginForm } from './AdminLoginForm';
 import './Login.css';
-import { useLoginAdmin, useLoginStudent, useVerifyAuthenticationFromLoginPage } from './Login.hooks';
 import { StyledForm, StyledFormWrapper, StyledWrapper } from './Login.styles';
+import { StudentLoginForm } from './StudentLoginForm';
+import { useAuth } from './useAuth';
+import { useLogin } from './useLogin';
 
 export const LoginPage = () => {
   const [loginType, setLoginType] = useState('student');
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const navigate = useNavigate();
 
   const {
     control,
@@ -22,30 +21,20 @@ export const LoginPage = () => {
     clearErrors,
   } = useForm();
 
-  // Use the original working hooks
-  const { loginAdmin, isAdminLoading, error: adminError } = useLoginAdmin(setError, navigate, null);
-  const { loginStudent, isStudentLoading, error: studentError } = useLoginStudent(setError, navigate, null);
-  const verifyAuth = useVerifyAuthenticationFromLoginPage(true);
+  const { login, isLoading, error: requestError } = useLogin(loginType, setError);
+  const { verifyAuth } = useAuth();
 
-  // Check if user is already authenticated and redirect them
-  // verifyAuth is memoized, so this runs once on mount
+  // Redirect users who are already logged in (verifyAuth is memoized, so this runs once on mount)
   useEffect(() => {
-    verifyAuth().finally(() => setIsCheckingAuth(false));
+    verifyAuth(true).finally(() => setIsCheckingAuth(false));
   }, [verifyAuth]);
 
   const onSubmit = (data) => {
     clearErrors('loginError');
-    if (loginType === 'admin') {
-      loginAdmin(data);
-    } else {
-      loginStudent(data);
-    }
+    login(data);
   };
 
-  // Get the correct error & loading state based on the selected form.
-  // Invalid credentials are reported via setError('loginError'); network/server failures via the mutation error.
-  const error = errors.loginError || (loginType === 'admin' ? adminError : studentError);
-  const isLoading = loginType === 'admin' ? isAdminLoading : isStudentLoading;
+  const error = errors.loginError || requestError;
 
   // Show loading while checking authentication
   if (isCheckingAuth) {
@@ -114,16 +103,14 @@ export const LoginPage = () => {
             
             <div className="form-content">
               {loginType === 'student' ? (
-                <StudentLoginForm 
-                  Controller={Controller} 
-                  control={control} 
-                  errors={errors} 
-                  trigger={trigger} 
+                <StudentLoginForm
+                  control={control}
+                  errors={errors}
+                  trigger={trigger}
                 />
               ) : (
-                <AdminLoginForm 
-                  Controller={Controller} 
-                  control={control} 
+                <AdminLoginForm
+                  control={control}
                   errors={errors} 
                   trigger={trigger} 
                 />

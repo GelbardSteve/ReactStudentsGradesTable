@@ -1,8 +1,8 @@
-import React, { useCallback } from 'react';
-import { useStudents } from '../../hooks/useStudents';
+import { useCallback } from 'react';
 import { StyledFavoritesButton } from './Favorites.styles';
+import { useStudents } from './useStudents';
 
-export const Favorites = ({ user }) => {
+export const FavoriteButton = ({ user }) => {
   const { updateFavorites, isUpdatingFavorites } = useStudents();
 
   const handleUserFavorites = useCallback(() => {

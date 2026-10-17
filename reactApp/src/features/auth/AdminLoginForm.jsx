@@ -1,5 +1,6 @@
+import { Controller } from 'react-hook-form';
 
-export const AdminLoginForm = ({ Controller, control, errors, trigger }) => {
+export const AdminLoginForm = ({ control, errors, trigger }) => {
   return (
     <div className="form-group">
       <div className="form-outline mb-4">

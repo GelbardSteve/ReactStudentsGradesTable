@@ -1,27 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-import { Button } from '../Buttons/Button';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../features/auth/useAuth';
+import { Button } from '../Button/Button';
 import { StyleHeader } from './Layout.styles';
 
 export const Header = () => {
   const { userRole, logout, isLogoutLoading } = useAuth();
   const navigate = useNavigate();
-  const [activeComponent, setActiveComponent] = useState('table');
-  const path = window.location.href;
-
-  useEffect(() => {
-    if (path.includes('favorites')) {
-      setActiveComponent('favorites');
-    } else if (path.includes('table')) {
-      setActiveComponent('table');
-    }
-  }, [path]);
-
-  const handleNavigate = (path, component) => {
-    navigate(path);
-    setActiveComponent(component);
-  };
+  const { pathname } = useLocation();
+  // Derived from the URL instead of mirrored into state
+  const activeComponent = pathname === '/favorites' ? 'favorites' : 'table';
 
   // Only show navigation buttons for admin users
   const showNavigationButtons = userRole === 'admin';
@@ -34,13 +21,13 @@ export const Header = () => {
             <>
               <Button
                 className={`mr-2 ${activeComponent === 'favorites' ? 'active' : ''}`}
-                onClick={() => handleNavigate('/favorites', 'favorites')}
+                onClick={() => navigate('/favorites')}
               >
                 {'Favorites'}
               </Button>
               <Button
                 className={activeComponent === 'table' ? 'active' : ''}
-                onClick={() => handleNavigate('/table', 'table')}
+                onClick={() => navigate('/table')}
               >
                 {'Table'}
               </Button>

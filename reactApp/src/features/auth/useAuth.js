@@ -1,114 +1,90 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiClient, isNetworkError } from '../../api/client';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://node-4-pdlj.onrender.com';
+export const HOME_BY_ROLE = { admin: '/table', student: '/studentTable' };
 
-// Auth state management with localStorage and React Query
+// The session lives in localStorage: userRole, one token per role, and studentData for students
+const SESSION_KEYS = ['userRole', 'adminAuthentication', 'studentAuthentication', 'studentData'];
+
+const getSession = () => {
+  const adminToken = localStorage.getItem('adminAuthentication');
+  if (adminToken) return { role: 'admin', token: adminToken };
+
+  const studentToken = localStorage.getItem('studentAuthentication');
+  if (studentToken) return { role: 'student', token: studentToken };
+
+  return null;
+};
+
+export const saveSession = ({ role, token, studentData }) => {
+  localStorage.setItem('userRole', role);
+  localStorage.setItem(`${role}Authentication`, token);
+  if (studentData) {
+    localStorage.setItem('studentData', JSON.stringify(studentData));
+  }
+};
+
+const clearSession = () => SESSION_KEYS.forEach((key) => localStorage.removeItem(key));
+
 export const useAuth = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  // Get current user role from localStorage
   const userRole = localStorage.getItem('userRole');
-  
-  // Get current student data from localStorage
-  const studentData = localStorage.getItem('studentData') ? JSON.parse(localStorage.getItem('studentData')) : null;
+  const storedStudentData = localStorage.getItem('studentData');
+  const studentData = storedStudentData ? JSON.parse(storedStudentData) : null;
 
-  // Logout mutation
+  const endSession = useCallback(() => {
+    clearSession();
+    queryClient.clear();
+    navigate('/');
+  }, [navigate, queryClient]);
+
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const isAdmin = localStorage.getItem('adminAuthentication') ? true : false;
-      const user = isAdmin ? 'admin' : 'student';
-      const userAuthenticationToken = `${user}Authentication`;
-      const userAuthentication = localStorage.getItem(userAuthenticationToken);
-      
-      const isAdminAuthentication = user === 'admin'
-        ? { authentication: userAuthentication }
-        : { table: 'students2', authentication: userAuthentication };
+      const session = getSession();
+      if (!session) return;
 
-      return axios.post(`${API_BASE_URL}/remove/authentication`, isAdminAuthentication);
+      await apiClient.post('/remove/authentication', {
+        authentication: session.token,
+        ...(session.role === 'student' && { table: 'students2' }),
+      });
     },
     // Clear the local session even if the server call fails, so the user is never stuck logged in
-    onSettled: () => {
-      const isAdmin = localStorage.getItem('adminAuthentication') ? true : false;
-      const user = isAdmin ? 'admin' : 'student';
-      const userAuthenticationToken = `${user}Authentication`;
-
-      localStorage.removeItem(userAuthenticationToken);
-      localStorage.removeItem('userRole');
-      if (user === 'student') {
-        localStorage.removeItem('studentData');
-      }
-
-      // Clear all queries
-      queryClient.clear();
-      navigate('/');
-    },
+    onSettled: endSession,
   });
 
-  // Verify authentication using original pattern - memoized to prevent infinite loops
+  // Checks the stored token with the server.
+  // On the login page a valid token redirects to the user's home; elsewhere an invalid token ends the session.
   const verifyAuth = useCallback(async (fromLoginPage = false) => {
-    const adminAuth = localStorage.getItem('adminAuthentication');
-    const studentAuth = localStorage.getItem('studentAuthentication');
-    const authToken = adminAuth || studentAuth;
-
-    if (!adminAuth && !studentAuth) {
+    const session = getSession();
+    if (!session) {
       navigate('/');
       return;
     }
 
-    const url = adminAuth ? 'login' : 'students';
-    const user = adminAuth ? 'admin' : 'student';
-    const userAuthenticationToken = `${user}Authentication`;
+    const url = session.role === 'admin' ? '/login/authentication' : '/students/authentication';
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/${url}/authentication`, {
-        authentication: authToken,
-      });
+      const { data } = await apiClient.post(url, { authentication: session.token });
+      const isValid = data !== 401;
 
-      if (fromLoginPage) {
-        if (response.data !== 401) {
-          navigate(url === 'login' ? '/table' : '/studentTable');
-        }
-      } else {
-        if (response.data === 401) {
-          navigate('/');
-          localStorage.removeItem(userAuthenticationToken);
-          localStorage.removeItem('userRole');
-          if (user === 'student') {
-            localStorage.removeItem('studentData');
-          }
-          queryClient.clear();
-        }
+      if (fromLoginPage && isValid) {
+        navigate(HOME_BY_ROLE[session.role]);
+      } else if (!fromLoginPage && !isValid) {
+        endSession();
       }
     } catch (error) {
-      console.error("Error in authentication request:", error);
-      
-      // Handle network errors gracefully to prevent infinite loops
-      if (error.code === 'NETWORK_ERROR' || 
-          error.message?.includes('Network Error') || 
-          error.code === 'ERR_NETWORK' ||
-          !error.response) {
-        console.log('Network error detected, authentication check skipped');
-        // Don't redirect on network errors to prevent infinite loops
-        return;
-      }
-      
-      // For other errors, only redirect if it's a 401 or similar auth error
-      if (error.response?.status === 401) {
-        console.log('Authentication error (401), clearing cache and navigating to login');
-        navigate('/');
-        localStorage.removeItem(userAuthenticationToken);
-        localStorage.removeItem('userRole');
-        if (user === 'student') {
-          localStorage.removeItem('studentData');
-        }
-        queryClient.clear();
+      // Keep the session on network errors; the server may just be unreachable
+      if (!isNetworkError(error) && error.response.status === 401) {
+        endSession();
+      } else {
+        console.error('Error in authentication request:', error);
       }
     }
-  }, [navigate, queryClient]);
+  }, [navigate, endSession]);
 
   return {
     userRole,
@@ -117,4 +93,4 @@ export const useAuth = () => {
     isLogoutLoading: logoutMutation.isLoading,
     verifyAuth,
   };
-}; 
+};

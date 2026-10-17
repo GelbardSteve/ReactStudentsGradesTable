@@ -1,14 +1,11 @@
-import { LinearProgress } from '@mui/material';
-import React from 'react';
-import { Button } from '../Buttons/Button';
-import { Favorites } from '../Favorites/Favorites';
+import { Button } from '../../components/Button/Button';
+import { FavoriteButton } from './FavoriteButton';
 
-export const Table = ({
+export const StudentsTable = ({
   data,
   onEdit,
   onDelete,
   isAdmin,
-  isLoading,
   onSort,
   sortField,
   sortDirection,
@@ -87,13 +84,7 @@ export const Table = ({
           </thead>
           <tbody>
             
-            {isLoading ? ( 
-              <tr className="loading-row">
-                <td colSpan={isAdmin ? 6 : 3} style={{ padding: 0 }}>
-                  <LinearProgress style={{ width: "100%" }} />
-                </td>
-              </tr>
-            ) : data?.length === 0 ? (
+            {data?.length === 0 ? (
               <tr>
                 <td colSpan={isAdmin ? 6 : 3} className="empty-state">
                   <div className="empty-icon">📋</div>
@@ -101,8 +92,8 @@ export const Table = ({
                 </td>
               </tr>
             ) : data?.map((user, index) => (
-              <React.Fragment key={user?.students_id || user?.students_number}>
-                <tr 
+                <tr
+                  key={user?.students_id || user?.students_number}
                   className={`table-row ${getRowStatus(user)}`}
                   style={{
                     animationDelay: `${index * 0.05}s`,
@@ -150,12 +141,11 @@ export const Table = ({
                         </Button>
                       </td>
                       <td>
-                        <Favorites user={user} />
+                        <FavoriteButton user={user} />
                       </td>
                     </>
                   )}
                 </tr>
-              </React.Fragment>
             ))}
           </tbody>
         </table>
