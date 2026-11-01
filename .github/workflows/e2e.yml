@@ -146,6 +146,9 @@ jobs:
         id: publish
         env:
           REPO_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          RESULT: ${{ needs.e2e.result }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -167,6 +170,22 @@ jobs:
           mkdir -p "$REPORT_DIR"
           cp -R ../new-report/. "$REPORT_DIR"
           touch .nojekyll
+
+          # Short description of this run, shown on the home page
+          STATUS=$([ "$RESULT" = success ] && echo '✅ passed' || echo '❌ failed')
+          echo "$(date -u +%H:%M) UTC · ${PR_NUMBER:+PR #$PR_NUMBER · }$BRANCH · $STATUS" > "$REPORT_DIR/run-info.txt"
+
+          # Home page (the site's main address): all reports, newest first
+          {
+            echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>E2E reports</title>'
+            echo '<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px}li{margin:8px 0}</style>'
+            echo '</head><body><h1>E2E Allure reports</h1><ul>'
+            for dir in $(ls -1 reports | sort -r); do
+              info=$(sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' "reports/$dir/run-info.txt" 2>/dev/null)
+              echo "<li><a href=\"reports/$dir/\">${dir%%_*}</a> ${info:+· $info}</li>"
+            done
+            echo '</ul></body></html>'
+          } > index.html
 
           git add -A
           git commit --quiet -m "Allure report for run ${{ github.run_id }}"
