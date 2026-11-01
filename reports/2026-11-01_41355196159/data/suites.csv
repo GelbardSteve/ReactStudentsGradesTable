@@ -1,0 +1,4 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","1189","Sign In is disabled when fields are empty","chromium","2026-11-01","passed","2026-11-01","Login","VerifyLogin.spec.ts","",""
+"","1580","admin can log in with valid credentials","chromium","2026-11-01","passed","2026-11-01","Login","VerifyLogin.spec.ts","",""
+"","2735","wrong password shows an error","chromium","2026-11-01","passed","2026-11-01","Login","VerifyLogin.spec.ts","",""
