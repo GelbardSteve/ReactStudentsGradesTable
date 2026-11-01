@@ -181,7 +181,11 @@ jobs:
             echo '<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:40px auto;padding:0 16px}li{margin:8px 0}</style>'
             echo '</head><body><h1>E2E Allure reports</h1><ul>'
             for dir in $(ls -1 reports | sort -r); do
-              info=$(sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' "reports/$dir/run-info.txt" 2>/dev/null)
+              info=''
+              # Reports published before run-info.txt existed have no description
+              if [ -f "reports/$dir/run-info.txt" ]; then
+                info=$(sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g' "reports/$dir/run-info.txt")
+              fi
               echo "<li><a href=\"reports/$dir/\">${dir%%_*}</a> ${info:+· $info}</li>"
             done
             echo '</ul></body></html>'
