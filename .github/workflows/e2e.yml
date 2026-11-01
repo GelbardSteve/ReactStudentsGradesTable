@@ -19,6 +19,10 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Where this run's Allure report will be published (used by publish-report)
+    outputs:
+      report_dir: ${{ steps.report.outputs.dir }}
+      report_url: ${{ steps.report.outputs.url }}
 
     services:
       mysql:
@@ -39,6 +43,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Choose report address
+        id: report
+        run: |
+          DIR="reports/$(date -u +%F)_${{ github.run_id }}"
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+          echo "url=https://$OWNER.github.io/${{ github.event.repository.name }}/$DIR/" >> "$GITHUB_OUTPUT"
 
       - uses: actions/setup-node@v7
         with:
@@ -98,6 +110,12 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: npx playwright test
 
+      # Results, AI analysis of failures and the report link, shown on the run summary page
+      - name: Write run summary
+        if: ${{ !cancelled() }}
+        working-directory: e2e-playwright
+        run: npx tsx report/runSummary.ts "${{ steps.report.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
+
       # Handed over to the publish-report job
       - name: Upload Allure report
         if: ${{ !cancelled() }}
@@ -143,12 +161,12 @@ jobs:
           path: new-report
 
       - name: Publish to GitHub Pages
-        id: publish
         env:
           REPO_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
           PR_NUMBER: ${{ github.event.pull_request.number }}
           BRANCH: ${{ github.head_ref || github.ref_name }}
           RESULT: ${{ needs.e2e.result }}
+          REPORT_DIR: ${{ needs.e2e.outputs.report_dir }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -166,7 +184,6 @@ jobs:
             [ -d "$dir" ] && [[ "$(basename "$dir")" < "$CUTOFF" ]] && rm -rf "$dir"
           done
 
-          REPORT_DIR="reports/$(date -u +%F)_${{ github.run_id }}"
           mkdir -p "$REPORT_DIR"
           cp -R ../new-report/. "$REPORT_DIR"
           touch .nojekyll
@@ -195,17 +212,12 @@ jobs:
           git commit --quiet -m "Allure report for run ${{ github.run_id }}"
           git push --quiet origin gh-pages
 
-          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          URL="https://$OWNER.github.io/${{ github.event.repository.name }}/$REPORT_DIR/"
-          echo "url=$URL" >> "$GITHUB_OUTPUT"
-          echo "### 📊 [Open Allure report]($URL)" >> "$GITHUB_STEP_SUMMARY"
-
       # One comment per PR, updated on every run
       - name: Comment report link on the PR
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/github-script@v9
         env:
-          REPORT_URL: ${{ steps.publish.outputs.url }}
+          REPORT_URL: ${{ needs.e2e.outputs.report_url }}
           RESULT: ${{ needs.e2e.result }}
         with:
           script: |

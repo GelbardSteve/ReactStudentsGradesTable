@@ -1,2 +1,8 @@
-// Shared enums of the E2E project
-export {};
+// Test statuses used by Allure
+export enum AllureStatus {
+  Passed = 'passed',
+  Failed = 'failed',
+  Broken = 'broken',
+  Skipped = 'skipped',
+  Unknown = 'unknown',
+}
