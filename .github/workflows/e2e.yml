@@ -7,6 +7,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 # A new push to the same PR cancels the previous run
 concurrency:
   group: e2e-${{ github.ref }}
@@ -95,13 +98,14 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: npx playwright test
 
+      # Handed over to the publish-report job
       - name: Upload Allure report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
         with:
           name: allure-report
           path: e2e-playwright/allure-report/
-          retention-days: 14
+          retention-days: 3
 
       - name: Upload Playwright report and traces
         if: ${{ failure() }}
@@ -118,3 +122,84 @@ jobs:
         run: |
           echo "::group::API server log"; cat server.log; echo "::endgroup::"
           echo "::group::Web server log"; cat web.log; echo "::endgroup::"
+
+  # Publishes the Allure report to GitHub Pages and links it on the PR (no zip download)
+  publish-report:
+    needs: e2e
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    # Runs publish one at a time so pushes to gh-pages never conflict
+    concurrency:
+      group: gh-pages
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: allure-report
+          path: new-report
+
+      - name: Publish to GitHub Pages
+        id: publish
+        env:
+          REPO_URL: https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Clone the gh-pages branch, or create it on the first run
+          if ! git clone --quiet --depth 1 --branch gh-pages "$REPO_URL" pages; then
+            git init --quiet -b gh-pages pages
+            git -C pages remote add origin "$REPO_URL"
+          fi
+          cd pages
+
+          # Folders are named <date>_<run id>; delete reports older than 14 days
+          CUTOFF=$(date -u -d '14 days ago' +%F)
+          for dir in reports/*/; do
+            [ -d "$dir" ] && [[ "$(basename "$dir")" < "$CUTOFF" ]] && rm -rf "$dir"
+          done
+
+          REPORT_DIR="reports/$(date -u +%F)_${{ github.run_id }}"
+          mkdir -p "$REPORT_DIR"
+          cp -R ../new-report/. "$REPORT_DIR"
+          touch .nojekyll
+
+          git add -A
+          git commit --quiet -m "Allure report for run ${{ github.run_id }}"
+          git push --quiet origin gh-pages
+
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          URL="https://$OWNER.github.io/${{ github.event.repository.name }}/$REPORT_DIR/"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "### 📊 [Open Allure report]($URL)" >> "$GITHUB_STEP_SUMMARY"
+
+      # One comment per PR, updated on every run
+      - name: Comment report link on the PR
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v9
+        env:
+          REPORT_URL: ${{ steps.publish.outputs.url }}
+          RESULT: ${{ needs.e2e.result }}
+        with:
+          script: |
+            const marker = '<!-- e2e-allure-report -->';
+            const icon = process.env.RESULT === 'success' ? '✅' : '❌';
+            const sha = context.payload.pull_request.head.sha.slice(0, 7);
+            const body = [
+              marker,
+              `${icon} **E2E tests: ${process.env.RESULT}** · [Open Allure report](${process.env.REPORT_URL})`,
+              '',
+              `Commit \`${sha}\` · run #${context.runNumber} · the page may take a minute to appear`,
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({ ...context.repo, issue_number: context.issue.number });
+            const existing = comments.find((comment) => comment.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body });
+            }
