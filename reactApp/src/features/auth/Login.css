@@ -247,8 +247,9 @@
     padding: 30px 20px;
   }
   
+  /* Decorative only: hide it so the form isn't pushed below a large image */
   .login-illustration {
-    padding: 20px;
+    display: none;
   }
   
   .login-title {

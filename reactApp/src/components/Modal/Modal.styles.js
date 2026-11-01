@@ -188,8 +188,8 @@ export const StyledModal = styled(Modal)`
   
   /* Responsive design */
   @media (max-width: 768px) {
-    width: 95%;
-    margin: 1rem;
+    /* No margin here: it would push the translate(-50%)-centred modal off-centre */
+    width: calc(100% - 1.5rem);
     
     .modal-header {
       padding: 1rem 1.5rem;

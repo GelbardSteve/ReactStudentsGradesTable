@@ -109,6 +109,10 @@ export const StyledFotter = styled.div`
 
 export const ModalForm = styled.div`
   padding: 2rem;
+
+  @media (max-width: 768px) {
+    padding: 0;
+  }
   
   .form-group {
     margin-bottom: 1.5rem;

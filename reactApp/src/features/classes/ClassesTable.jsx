@@ -69,16 +69,16 @@ export const ClassesTable = () => {
                   title="Open class"
                   data-test-specifier="classRow"
                 >
-                  <td>{classItem.name}</td>
-                  <td>{classItem.student_count}</td>
-                  <td>{formatDate(classItem.created_at)}</td>
+                  <td data-label="Class">{classItem.name}</td>
+                  <td data-label="Students">{classItem.student_count}</td>
+                  <td data-label="Created">{formatDate(classItem.created_at)}</td>
                   {/* Stop propagation so the action buttons don't also open the class */}
-                  <td onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                  <td className="action-cell" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
                     <Button onClick={() => setModalClass(classItem)} buttonType="outline-secondary">
                       Rename
                     </Button>
                   </td>
-                  <td onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                  <td className="action-cell" onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
                     <Button onClick={() => handleDelete(classItem)} buttonType="outline-danger">
                       Delete
                     </Button>

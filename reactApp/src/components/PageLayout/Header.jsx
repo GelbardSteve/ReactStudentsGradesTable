@@ -13,9 +13,9 @@ export const Header = () => {
   return (
     <header>
       <StyleHeader>
-        <div>
+        <div className="nav-group">
           <Button
-            className={`mr-2 ${activeComponent === 'classes' ? 'active' : ''}`}
+            className={`${activeComponent === 'classes' ? 'active' : ''}`}
             onClick={() => navigate('/classes')}
             dataTestSpecifier="classesNavButton"
           >
@@ -28,8 +28,8 @@ export const Header = () => {
             {'Favorites'}
           </Button>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {adminEmail && <span data-test-specifier="adminEmail">{adminEmail}</span>}
+        <div className="account-group">
+          {adminEmail && <span className="admin-email" data-test-specifier="adminEmail">{adminEmail}</span>}
           <Button buttonType="danger" onClick={logout} isLoading={isLogoutLoading} dataTestSpecifier="logoutButton">
             {'Log out'}
           </Button>

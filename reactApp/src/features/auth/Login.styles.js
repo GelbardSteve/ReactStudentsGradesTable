@@ -19,6 +19,11 @@ export const StyledFormWrapper = styled.div`
    display: flex;
    align-items: stretch;
    min-height: 600px;
+
+   @media (max-width: 768px) {
+       flex-direction: column;
+       min-height: auto;
+   }
 `;
 
 export const StyledLoginPanel = styled.div`

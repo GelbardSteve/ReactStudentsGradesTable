@@ -3,8 +3,8 @@ import styled from 'styled-components';
 export const StyleHeader = styled.header`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 100px;
-  padding: 4px;
+  align-items: center;
+  gap: 8px;
   position: fixed;
   top: 0;
   left: 0;
@@ -86,12 +86,38 @@ export const StyleHeader = styled.header`
     }
   }
 
+  .nav-group,
+  .account-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .admin-email {
+    color: #37474f;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   @media (max-width: 768px) {
+    padding: 8px;
+
+    .nav-group,
+    .account-group {
+      gap: 6px;
+    }
+
+    .admin-email {
+      display: none;
+    }
+
     button {
-      padding: 10px 20px;
+      padding: 8px 12px;
       font-size: 12px;
-      min-width: 100px;
-      margin: 4px;
+      min-width: 0;
+      margin: 0;
     }
   }
 `;
@@ -109,4 +135,8 @@ export const StyledFooter = styled.footer`
 
 export const StyledMain = styled.main`
   margin: 5em 0;
+
+  @media (max-width: 768px) {
+    margin: 4em 0 3.5em;
+  }
 `;

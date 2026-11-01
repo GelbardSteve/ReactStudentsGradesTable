@@ -71,11 +71,10 @@ export const TableWrapper = styled.div`
     .table-responsive {
         border: 1px solid #e1e5e9;
         border-radius: 8px;
-        overflow: hidden;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         background: white;
         flex: 1; /* Take remaining space */
-        overflow-y: auto; /* Allow table to scroll if needed */
+        overflow: auto; /* Scroll in both directions instead of clipping columns */
         margin-bottom: 1rem; /* Reduced margin since we have flex layout */
 
         .table-controls {
@@ -85,6 +84,17 @@ export const TableWrapper = styled.div`
             padding: 1rem;
             background: #f8f9fa;
             border-bottom: 1px solid #e1e5e9;
+
+            /* Column headers (and their sort) are hidden in the mobile card layout */
+            .mobile-sort-btn {
+                display: none;
+                min-width: 0;
+                padding: 8px 14px;
+                font-size: 12px;
+                background: #ffffff;
+                color: #495057;
+                border: 1px solid #ced4da;
+            }
 
             .height-control {
                 display: flex;
@@ -339,7 +349,8 @@ export const TableWrapper = styled.div`
     @media (max-width: 768px) {
         margin: 1rem;
         padding: 1rem;
-        height: var(--table-height, calc(100vh - 120px));
+        /* Let the page scroll naturally instead of a fixed-height inner scroll area */
+        height: auto;
 
         .table-header {
             flex-direction: column;
@@ -394,13 +405,118 @@ export const TableWrapper = styled.div`
             font-size: 12px;
             min-width: 100px;
         }
+
+        /* Card layout: each row becomes a stacked card with inline labels */
+        .table-responsive {
+            overflow: visible;
+            border: none;
+            box-shadow: none;
+            background: transparent;
+            flex: none;
+
+            .table-controls {
+                flex-direction: row;
+                justify-content: space-between;
+                border: 1px solid #e1e5e9;
+                border-radius: 8px;
+                margin-bottom: 0.75rem;
+
+                .mobile-sort-btn {
+                    display: inline-block;
+                }
+
+                .height-control {
+                    display: none;
+                }
+            }
+
+            table,
+            table tbody {
+                display: block;
+                width: 100%;
+            }
+
+            table thead {
+                display: none;
+            }
+
+            table tbody tr,
+            table tbody tr:nth-child(even) {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0 0.5rem;
+                background: #ffffff;
+                border: 1px solid #e1e5e9;
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+                margin-bottom: 0.75rem;
+                padding: 0.5rem 0.75rem;
+            }
+
+            table tbody tr td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 1rem;
+                width: 100%;
+                padding: 6px 0;
+                font-size: 14px;
+                text-align: right;
+                word-break: break-word;
+
+                &::before {
+                    content: attr(data-label);
+                    flex-shrink: 0;
+                    text-align: left;
+                    font-family: inherit;
+                    font-size: 11px;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    color: #6c757d;
+                }
+
+                .grades-cell {
+                    max-width: none !important;
+                    white-space: normal !important;
+                }
+
+                &.action-cell {
+                    flex: 1 1 0;
+                    width: auto;
+                    justify-content: center;
+                    padding-top: 0.5rem;
+                    border-top: 1px solid #f1f3f4;
+
+                    &::before {
+                        display: none;
+                    }
+
+                    .btn {
+                        width: 100%;
+                        min-width: 0;
+                        padding: 8px 4px;
+                        font-size: 11px;
+                        letter-spacing: 0;
+                    }
+                }
+
+                &.empty-state {
+                    display: block;
+                    text-align: center;
+
+                    &::before {
+                        display: none;
+                    }
+                }
+            }
+        }
     }
 
     @media (max-width: 480px) {
         margin: 0.5rem;
         padding: 0.75rem;
         border-radius: 8px;
-        height: var(--table-height, calc(100vh - 100px));
 
         .table-header {
             h2 {

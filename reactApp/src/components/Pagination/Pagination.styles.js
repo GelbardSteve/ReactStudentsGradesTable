@@ -23,10 +23,13 @@ export const StyledShowPage = styled.p`
 export const StyledNav = styled.nav`
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     
     ul {
         display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         list-style: none;
         margin: 0;
         padding: 0;

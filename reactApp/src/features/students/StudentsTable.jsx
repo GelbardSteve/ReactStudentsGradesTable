@@ -36,6 +36,13 @@ export const StudentsTable = ({
   return (
       <div className="table-responsive">
         <div className="table-controls">
+          <button
+            type="button"
+            className="mobile-sort-btn"
+            onClick={() => handleHeaderClick('student_number')}
+          >
+            Sort by number {getSortIcon('student_number')}
+          </button>
           <div className="height-control">
             <label htmlFor="tableHeight">Table Height:</label>
             <select 
@@ -99,19 +106,19 @@ export const StudentsTable = ({
                     animation: 'fadeInUp 0.5s ease forwards'
                   }}
                 >
-                  <td>
+                  <td data-label="Name">
                     {user.name}
                   </td>
-                  <td>
+                  <td data-label="Number">
                     <span style={{ 
                       fontFamily: 'Monaco, Menlo, Ubuntu Mono, monospace'
                     }}>
                       {user.student_number}
                     </span>
                   </td>
-                  <td>{user.email}</td>
-                  <td>
-                    <div style={{ 
+                  <td data-label="Email">{user.email}</td>
+                  <td data-label="Grades">
+                    <div className="grades-cell" style={{ 
                       maxWidth: '200px', 
                       overflow: 'hidden', 
                       textOverflow: 'ellipsis',
@@ -120,7 +127,7 @@ export const StudentsTable = ({
                       {user.grades}
                     </div>
                   </td>
-                  <td>
+                  <td className="action-cell">
                     <Button
                       onClick={() => onSendGrades(user)}
                       buttonType="outline-primary"
@@ -131,7 +138,7 @@ export const StudentsTable = ({
                       {sendingGradesId === user.id ? 'Sending...' : 'Send'}
                     </Button>
                   </td>
-                  <td>
+                  <td className="action-cell">
                     <Button 
                       onClick={() => onEdit(user)} 
                       buttonType="outline-secondary"
@@ -140,7 +147,7 @@ export const StudentsTable = ({
                       Update
                     </Button>
                   </td>
-                  <td>
+                  <td className="action-cell">
                     <Button
                       onClick={() => onDelete(user.id)}
                       buttonType="outline-danger"
@@ -149,7 +156,7 @@ export const StudentsTable = ({
                       Delete
                     </Button>
                   </td>
-                  <td>
+                  <td className="action-cell">
                     <FavoriteButton user={user} />
                   </td>
                 </tr>
