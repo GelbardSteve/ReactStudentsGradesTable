@@ -3,9 +3,8 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 type TestRunEntry = {
-  name: string;
+  email: string;
   password: string;
-  isAdmin: boolean;
   dataTag: string;
 };
 
@@ -21,7 +20,7 @@ const testRunData: TestRunEntry[] = JSON.parse(
   fs.readFileSync(testRunDataPath, "utf-8"),
 );
 
-// Optional CLI filter: `ts-node runRegression.ts admin student`
+// Optional CLI filter: `ts-node runRegression.ts adminTests`
 const cliTags = process.argv.slice(2);
 const entriesToRun =
   cliTags.length > 0
@@ -39,7 +38,7 @@ let hasFailure = false;
 fs.rmSync(path.join(__dirname, "..", "allure-results"), { recursive: true, force: true });
 
 for (const entry of entriesToRun) {
-  console.log(`\n🚀 Running regression for dataTag="${entry.dataTag}" (${entry.name})`);
+  console.log(`\n🚀 Running regression for dataTag="${entry.dataTag}" (${entry.email})`);
 
   const result = spawnSync(
     "npx",

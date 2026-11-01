@@ -1,186 +1,109 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import { apiClient } from '../../api/client';
+import { apiClient, getErrorMessage } from '../../api/client';
+import { CLASSES_KEY } from '../classes/useClasses';
 
-// Students data management with React Query
-export const useStudents = () => {
+// All student queries share the ['students'] prefix, so one invalidation refreshes every class and favorites
+const STUDENTS_KEY = ['students'];
+export const classStudentsKey = (classId) => [...STUDENTS_KEY, 'class', classId];
+const FAVORITES_KEY = [...STUDENTS_KEY, 'favorites'];
+
+const undoButtonStyle = {
+  background: 'transparent',
+  border: '2px solid #667eea',
+  color: '#667eea',
+  padding: '6px 12px',
+  borderRadius: '20px',
+  fontSize: '12px',
+  fontWeight: '600',
+  cursor: 'pointer',
+  marginLeft: '8px',
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+  fontFamily: 'inherit',
+};
+
+// Students of one class (pass a classId), plus the mutations every student view needs.
+// Without a classId the list query is skipped, e.g. for FavoriteButton or the edit modal.
+export const useStudents = (classId) => {
   const queryClient = useQueryClient();
 
-  // Get all students
   const { data: allStudents = [], isLoading, error } = useQuery({
-    queryKey: ['students'],
-    queryFn: async () => {
-      const response = await apiClient.get('/students2');
-      return response.data?.items || [];
-    },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    retry: 1,
+    queryKey: classStudentsKey(classId),
+    queryFn: async () => (await apiClient.get(`/classes/${classId}/students`)).data,
+    enabled: Boolean(classId),
   });
 
-  // Create student mutation
+  const refreshStudents = () => queryClient.invalidateQueries(STUDENTS_KEY);
+
   const createStudentMutation = useMutation({
-    mutationFn: async (newStudent) => {
-      // Transform the data to match the server's expected format
-      const serverData = {
-        students_name: newStudent.studentName,
-        students_number: newStudent.studentsNumber,
-        studentsGrades: newStudent.studentsGrades
-      };
-      
-      const response = await apiClient.post('/students2', serverData);
-      return response.data;
-    },
+    mutationFn: async ({ classId: targetClassId, student }) =>
+      (await apiClient.post(`/classes/${targetClassId}/students`, student)).data,
     onSuccess: () => {
-      // Invalidate and refetch the students query to get the latest data
-      queryClient.invalidateQueries(['students']);
+      refreshStudents();
+      // The classes table shows a student count
+      queryClient.invalidateQueries(CLASSES_KEY);
       toast.success('Student created successfully');
     },
-    onError: (error) => {
-      toast.error('Failed to create student');
-      console.error('Create student error:', error);
-    },
+    onError: (err) => toast.error(getErrorMessage(err, 'Failed to create student')),
   });
 
-  // Update student grades mutation (server only supports updating grades)
   const updateStudentMutation = useMutation({
-    mutationFn: async ({ id, data }) => {
-      // The server only supports updating grades, not student names or numbers
-      const response = await apiClient.put('/grades', {
-        students_id: id,
-        studentsGrades: data.studentsGrades
-      });
-      return response.data;
+    mutationFn: async ({ id, data }) => (await apiClient.put(`/students/${id}`, data)).data,
+    onSuccess: () => {
+      refreshStudents();
+      toast.success('Student updated successfully');
     },
-    onSuccess: (updatedData, variables) => {
-      // Update the cache with the new grades data
-      queryClient.setQueryData(['students'], (oldData) =>
-        (oldData || []).map(student =>
-          student.students_id === variables.id 
-            ? { ...student, studentsGrades: variables.data.studentsGrades }
-            : student
-        )
-      );
-      toast.success('Student grades updated successfully');
-    },
-    onError: (error) => {
-      toast.error('Failed to update student grades');
-      console.error('Update student error:', error);
-    },
+    onError: (err) => toast.error(getErrorMessage(err, 'Failed to update student')),
   });
 
   const deleteStudentMutation = useMutation({
-    mutationFn: async (studentNumber) => {
-      await apiClient.delete(`/students2/${studentNumber}`);
-      return studentNumber;
+    mutationFn: async (id) => {
+      await apiClient.delete(`/students/${id}`);
+      return id;
     },
-    onSuccess: (deletedNumber) => {
-      queryClient.setQueryData(['students'], (oldData) =>
-        (oldData || []).filter(student => student.students_number !== deletedNumber)
-      );
+    onSuccess: () => {
+      refreshStudents();
+      queryClient.invalidateQueries(CLASSES_KEY);
       toast.success('Student deleted successfully');
     },
-    onError: (error) => {
-      toast.error('Failed to delete student');
-      console.error('Delete student error:', error);
-    },
+    onError: (err) => toast.error(getErrorMessage(err, 'Failed to delete student')),
   });
 
-  // Update favorites mutation
+  const sendGradesMutation = useMutation({
+    mutationFn: async (student) => (await apiClient.post(`/students/${student.id}/send-grades`)).data,
+    onSuccess: (data, student) => {
+      refreshStudents();
+      toast.success(`Grades sent to ${student.email}`);
+    },
+    onError: (err) => toast.error(getErrorMessage(err, 'Failed to send grades')),
+  });
+
   const updateFavoritesMutation = useMutation({
-    mutationFn: async ({ students_number, favorites }) => {
-      const response = await apiClient.post('/favorites', {
-        id: students_number,
-        favorites,
-      });
-      return response.data;
-    },
-    onSuccess: (updatedData, variables) => {
-      // Update the cache with the new favorites data
-      queryClient.setQueryData(['students'], (oldData) =>
-        (oldData || []).map(student =>
-          student.students_number === variables.students_number 
-            ? { ...student, favorites: variables.favorites }
-            : student
-        )
+    mutationFn: async ({ student, favorites }) =>
+      (await apiClient.post(`/students/${student.id}/favorite`, { favorites })).data,
+    onSuccess: (data, { student, favorites }) => {
+      refreshStudents();
+
+      const undoAction = (
+        <button
+          style={undoButtonStyle}
+          onClick={() => updateFavoritesMutation.mutate({ student, favorites: !favorites })}
+        >
+          Undo
+        </button>
       );
 
-      // Create undo function
-      const undoFavorite = () => {
-        updateFavoritesMutation.mutate({
-          students_number: variables.students_number,
-          favorites: !variables.favorites
-        });
-      };
-
-      // Find the user for the toast message
-      const user = queryClient.getQueryData(['students'])?.find(
-        student => student.students_number === variables.students_number
+      toast.success(
+        <span>
+          {student.name} was {favorites ? 'added to' : 'removed from'} favorites
+          {!favorites && undoAction}
+        </span>,
+        { autoClose: 3000, closeButton: true }
       );
-
-      if (user) {
-        const undoAction = (
-          <button
-            style={{
-              background: 'transparent',
-              border: '2px solid #667eea',
-              color: '#667eea',
-              padding: '6px 12px',
-              borderRadius: '20px',
-              fontSize: '12px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              marginLeft: '8px',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              transition: 'all 0.3s ease',
-              fontFamily: 'inherit'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = '#667eea';
-              e.target.style.color = 'white';
-              e.target.style.transform = 'translateY(-1px)';
-              e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = 'transparent';
-              e.target.style.color = '#667eea';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }}
-            onClick={undoFavorite}
-          >
-            Undo
-          </button>
-        );
-
-        toast.success(
-          <span>
-            User {user.students_name} was {variables.favorites ? 'added to' : 'removed from'} favorites 
-            {!variables.favorites && undoAction}
-          </span>,
-          {
-            autoClose: 3000,
-            closeButton: true,
-          }
-        );
-      }
     },
-    onError: (error) => {
-      toast.error('Failed to update favorites');
-      console.error('Update favorites error:', error);
-    },
+    onError: (err) => toast.error(getErrorMessage(err, 'Failed to update favorites')),
   });
-
-  // Search students
-  const searchStudents = async (searchTerm) => {
-    try {
-      const response = await apiClient.get(`/students2/search/${encodeURIComponent(searchTerm)}`);
-      return response.data === 'NotFound' ? [] : response.data;
-    } catch (error) {
-      console.error('Search students error:', error);
-      return [];
-    }
-  };
 
   return {
     allStudents,
@@ -189,17 +112,22 @@ export const useStudents = () => {
     createStudent: createStudentMutation.mutate,
     updateStudent: updateStudentMutation.mutate,
     deleteStudent: deleteStudentMutation.mutate,
-    updateFavorites: updateFavoritesMutation.mutate,
-    toggleFavorite: (student) => {
-      updateFavoritesMutation.mutate({
-        students_number: student.students_number,
-        favorites: !student.favorites
-      });
-    },
-    searchStudents,
+    sendGrades: sendGradesMutation.mutate,
+    toggleFavorite: (student) => updateFavoritesMutation.mutate({ student, favorites: !student.favorites }),
     isCreating: createStudentMutation.isLoading,
     isUpdating: updateStudentMutation.isLoading,
     isDeleting: deleteStudentMutation.isLoading,
+    // The id of the student whose email is being sent, so only that row's button shows a spinner
+    sendingGradesId: sendGradesMutation.isLoading ? sendGradesMutation.variables?.id : null,
     isUpdatingFavorites: updateFavoritesMutation.isLoading,
   };
-}; 
+};
+
+// Favorite students across all of the admin's classes, with the class name
+export const useFavoriteStudents = () => {
+  const { data: favorites = [], isLoading, error } = useQuery({
+    queryKey: FAVORITES_KEY,
+    queryFn: async () => (await apiClient.get('/students/favorites')).data,
+  });
+  return { favorites, isLoading, error };
+};

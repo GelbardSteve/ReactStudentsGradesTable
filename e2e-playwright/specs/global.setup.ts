@@ -13,7 +13,7 @@ setup("login and save state + user data", async ({ page }) => {
   await loginPage.login(userInfo);
 
   // Fail fast if login didn't store an auth token (e.g. the API is unreachable)
-  const tokenKey = userInfo.isAdmin ? "adminAuthentication" : "studentAuthentication";
+  const tokenKey = "adminToken";
   await expect
     .poll(() => page.evaluate((key) => localStorage.getItem(key), tokenKey), {
       message: `Login failed: '${tokenKey}' was not saved in localStorage`,

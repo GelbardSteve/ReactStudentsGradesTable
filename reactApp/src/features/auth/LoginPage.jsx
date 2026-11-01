@@ -1,40 +1,19 @@
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Button } from '../../components/Button/Button';
 import { AdminLoginForm } from './AdminLoginForm';
 import './Login.css';
-import { StyledForm, StyledFormWrapper, StyledWrapper } from './Login.styles';
-import { StudentLoginForm } from './StudentLoginForm';
+import { StyledFormWrapper, StyledLoginPanel, StyledWrapper } from './Login.styles';
+import { SignUpForm } from './SignUpForm';
 import { useAuth } from './useAuth';
-import { useLogin } from './useLogin';
 
 export const LoginPage = () => {
-  const [loginType, setLoginType] = useState('student');
+  const [activeTab, setActiveTab] = useState('login');
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isValid },
-    trigger,
-    setError,
-    clearErrors,
-  } = useForm();
-
-  const { login, isLoading, error: requestError } = useLogin(loginType, setError);
   const { verifyAuth } = useAuth();
 
-  // Redirect users who are already logged in (verifyAuth is memoized, so this runs once on mount)
+  // Redirect admins who are already logged in (verifyAuth is memoized, so this runs once on mount)
   useEffect(() => {
     verifyAuth(true).finally(() => setIsCheckingAuth(false));
   }, [verifyAuth]);
-
-  const onSubmit = (data) => {
-    clearErrors('loginError');
-    login(data);
-  };
-
-  const error = errors.loginError || requestError;
 
   // Show loading while checking authentication
   if (isCheckingAuth) {
@@ -75,58 +54,39 @@ export const LoginPage = () => {
     <div className="login-page">
       <StyledWrapper>
         <StyledFormWrapper>
-          <StyledForm onSubmit={handleSubmit(onSubmit)}>
+          <StyledLoginPanel>
             <div className="login-header">
-              <h2 className="login-title">Welcome Back</h2>
-              <p className="login-subtitle">Please sign in to continue</p>
+              <h2 className="login-title">{activeTab === 'login' ? 'Welcome Back' : 'Create Admin Account'}</h2>
+              <p className="login-subtitle">
+                {activeTab === 'login' ? 'Please sign in to continue' : 'We will email you a link to activate it'}
+              </p>
             </div>
-            
-            <div className="login-toggle">
-              <button
-                type="button"
-                className={`toggle-btn ${loginType === 'student' ? 'active' : ''}`}
-                onClick={() => setLoginType('student')}
-              >
-                Student Login
-              </button>
-              <button
-                type="button"
-                data-test-specifier="login-to-admin-button"
-                className={`toggle-btn ${loginType === 'admin' ? 'active' : ''}`}
-                onClick={() => setLoginType('admin')}
-              >
-                Admin Login
-              </button>
-            </div>
-            
-            {error && <div className="error-message" role="alert">{error.message}</div>}
-            
-            <div className="form-content">
-              {loginType === 'student' ? (
-                <StudentLoginForm
-                  control={control}
-                  errors={errors}
-                  trigger={trigger}
-                />
-              ) : (
-                <AdminLoginForm
-                  control={control}
-                  errors={errors} 
-                  trigger={trigger} 
-                />
-              )}
 
-              <Button 
-                disabled={!isValid} 
-                type="submit" 
-                dataTestSpecifier="submitButton"
-                className="btn-block mb-4 login-submit-btn" 
-                isLoading={isLoading}
+            <div className="login-toggle" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'login'}
+                data-test-specifier="login-to-admin-button"
+                className={`toggle-btn ${activeTab === 'login' ? 'active' : ''}`}
+                onClick={() => setActiveTab('login')}
               >
-                Sign In
-              </Button>
+                Login
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'signup'}
+                data-test-specifier="signup-tab-button"
+                className={`toggle-btn ${activeTab === 'signup' ? 'active' : ''}`}
+                onClick={() => setActiveTab('signup')}
+              >
+                Sign Up
+              </button>
             </div>
-          </StyledForm>
+
+            {activeTab === 'login' ? <AdminLoginForm /> : <SignUpForm />}
+          </StyledLoginPanel>
 
           <div className="login-illustration">
             <img 

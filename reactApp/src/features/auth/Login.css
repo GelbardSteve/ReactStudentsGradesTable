@@ -103,6 +103,46 @@
   font-weight: 500;
 }
 
+.success-message,
+.info-message {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.success-message {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.info-message {
+  background: #e7f1fb;
+  color: #1b4f72;
+  border: 1px solid #bcdcf5;
+}
+
+/* .info-message prefix outranks the login panel's generic button styles */
+.info-message .link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  min-width: 0;
+  text-transform: none;
+  letter-spacing: normal;
+  color: #3498db;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.info-message .link-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .form-content {
   flex: 1;
   display: flex;

@@ -1,42 +1,61 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../api/client';
-import { HOME_BY_ROLE, saveSession } from './useAuth';
+import { saveSession } from './session';
+import { HOME_PATH } from './useAuth';
 
 // Invalid credentials are reported through the form (setError); network/server failures through `error`
-export const useLogin = (loginType, setError) => {
+export const useLogin = (setError) => {
   const navigate = useNavigate();
 
-  const adminLogin = useMutation({
-    mutationFn: async (credentials) => (await apiClient.post('/login', credentials)).data,
+  const mutation = useMutation({
+    mutationFn: async ({ email, password }) => (await apiClient.post('/auth/login', { email, password })).data,
     onSuccess: (data) => {
-      if (data === 401) {
-        setError('loginError', { type: 'manual', message: 'Invalid username or password' });
-        return;
+      saveSession({ token: data.token, email: data.email });
+      navigate(HOME_PATH);
+    },
+    onError: (error) => {
+      const { status, data } = error.response || {};
+      if (status === 401) {
+        setError('loginError', { type: 'manual', message: 'Invalid email or password' });
+      } else if (status === 403 && data?.code === 'EMAIL_NOT_VERIFIED') {
+        setError('loginError', { type: 'notVerified', message: 'Please verify your email before logging in' });
       }
-      saveSession({ role: 'admin', token: data.authentication });
-      navigate(HOME_BY_ROLE.admin);
     },
   });
 
-  const studentLogin = useMutation({
-    mutationFn: async ({ studentNumber }) =>
-      (await apiClient.post(`/students2/${encodeURIComponent(studentNumber)}`)).data,
-    onSuccess: (data) => {
-      if (data === 'NotFound') {
-        setError('loginError', { type: 'manual', message: 'Invalid student number' });
-        return;
-      }
-      saveSession({ role: 'student', token: data.authentication, studentData: data.userData });
-      navigate(HOME_BY_ROLE.student);
-    },
-  });
-
-  const mutation = loginType === 'admin' ? adminLogin : studentLogin;
+  const { status } = mutation.error?.response || {};
+  const isHandledByForm = status === 401 || status === 403;
 
   return {
     login: mutation.mutate,
     isLoading: mutation.isLoading,
+    error: isHandledByForm ? null : mutation.error,
+  };
+};
+
+export const useSignUp = () => {
+  const mutation = useMutation({
+    mutationFn: async ({ email, password }) => (await apiClient.post('/auth/signup', { email, password })).data,
+  });
+
+  return {
+    signUp: mutation.mutate,
+    isLoading: mutation.isLoading,
+    isSuccess: mutation.isSuccess,
     error: mutation.error,
+    reset: mutation.reset,
+  };
+};
+
+export const useResendVerification = () => {
+  const mutation = useMutation({
+    mutationFn: async (email) => (await apiClient.post('/auth/resend-verification', { email })).data,
+  });
+
+  return {
+    resend: mutation.mutate,
+    isLoading: mutation.isLoading,
+    isSuccess: mutation.isSuccess,
   };
 };

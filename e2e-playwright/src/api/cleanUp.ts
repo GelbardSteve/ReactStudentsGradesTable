@@ -1,5 +1,5 @@
-import { deleteUser } from "./newUser";
+import { deleteCreatedClasses } from "./admin";
 
 export const cleanUp = async () => {
-    await deleteUser();
+    await deleteCreatedClasses();
 }

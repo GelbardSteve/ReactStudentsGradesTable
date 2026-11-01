@@ -4,39 +4,36 @@ import { Button } from '../Button/Button';
 import { StyleHeader } from './Layout.styles';
 
 export const Header = () => {
-  const { userRole, logout, isLogoutLoading } = useAuth();
+  const { adminEmail, logout, isLogoutLoading } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   // Derived from the URL instead of mirrored into state
-  const activeComponent = pathname === '/favorites' ? 'favorites' : 'table';
-
-  // Only show navigation buttons for admin users
-  const showNavigationButtons = userRole === 'admin';
+  const activeComponent = pathname === '/favorites' ? 'favorites' : 'classes';
 
   return (
     <header>
       <StyleHeader>
         <div>
-          {showNavigationButtons && (
-            <>
-              <Button
-                className={`mr-2 ${activeComponent === 'favorites' ? 'active' : ''}`}
-                onClick={() => navigate('/favorites')}
-              >
-                {'Favorites'}
-              </Button>
-              <Button
-                className={activeComponent === 'table' ? 'active' : ''}
-                onClick={() => navigate('/table')}
-              >
-                {'Table'}
-              </Button>
-            </>
-          )}
+          <Button
+            className={`mr-2 ${activeComponent === 'classes' ? 'active' : ''}`}
+            onClick={() => navigate('/classes')}
+            dataTestSpecifier="classesNavButton"
+          >
+            {'Classes'}
+          </Button>
+          <Button
+            className={activeComponent === 'favorites' ? 'active' : ''}
+            onClick={() => navigate('/favorites')}
+          >
+            {'Favorites'}
+          </Button>
         </div>
-        <Button buttonType="danger" onClick={logout} isLoading={isLogoutLoading} dataTestSpecifier="logoutButton">
-          {'Log out'}
-        </Button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {adminEmail && <span data-test-specifier="adminEmail">{adminEmail}</span>}
+          <Button buttonType="danger" onClick={logout} isLoading={isLogoutLoading} dataTestSpecifier="logoutButton">
+            {'Log out'}
+          </Button>
+        </div>
       </StyleHeader>
 
       {/* Add styles */}

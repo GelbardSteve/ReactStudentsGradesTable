@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { CustomModal } from '../../components/Modal/Modal';
+import { EMAIL_RULES } from '../auth/validation';
 import { ModalForm } from './StudentModal.styles';
 import { useStudents } from './useStudents';
 
@@ -17,17 +18,20 @@ export const EditUserModal = ({ user, onClose }) => {
 
   // Set default values when the component mounts
   useEffect(() => {
-    setValue('studentName', user.students_name);
-    setValue('studentsNumber', user.students_number);
-    setValue('studentsGrades', user.studentsGrades);
-  }, [setValue, user.studentsGrades, user.students_name, user.students_number]);
+    setValue('studentName', user.name);
+    setValue('studentsNumber', user.student_number);
+    setValue('studentEmail', user.email);
+    setValue('studentsGrades', user.grades);
+  }, [setValue, user.name, user.student_number, user.email, user.grades]);
 
   const handleSubmitUpdate = (data) => {
     const updatedData = {
-      id: user.students_id,
+      id: user.id,
       data: {
-        studentsGrades: data.studentsGrades
-      }
+        name: data.studentName,
+        email: data.studentEmail,
+        grades: data.studentsGrades,
+      },
     };
 
     // Close only on success so the user keeps their input if the request fails
@@ -39,7 +43,7 @@ export const EditUserModal = ({ user, onClose }) => {
       <CustomModal
         isModalOpen={true}
         handleCloseTheModal={onClose}
-        header="Edit Student Grades"
+        header="Edit Student"
       >
         <ModalForm>
           <form onSubmit={handleSubmit(handleSubmitUpdate)}>
@@ -50,19 +54,21 @@ export const EditUserModal = ({ user, onClose }) => {
               <Controller
                 name="studentName"
                 control={control}
-                defaultValue={user.students_name}
+                defaultValue={user.name}
+                rules={{ required: 'Student name is required' }}
                 render={({ field }) => (
-                  <input 
-                    readOnly 
-                    id="studentName" 
-                    type="text" 
-                    {...field} 
-                  />
+                  <>
+                    <input
+                      {...field}
+                      id="studentName"
+                      type="text"
+                      className={errors.studentName ? 'error' : ''}
+                      onBlur={() => trigger('studentName')}
+                    />
+                    {errors.studentName && <div className="error-message">{errors.studentName.message}</div>}
+                  </>
                 )}
               />
-              <small style={{ color: '#6c757d', fontSize: '12px', marginTop: '4px' }}>
-                Student name cannot be modified
-              </small>
             </div>
             
             <div className="form-group">
@@ -72,7 +78,7 @@ export const EditUserModal = ({ user, onClose }) => {
               <Controller
                 name="studentsNumber"
                 control={control}
-                defaultValue={user.students_number}
+                defaultValue={user.student_number}
                 render={({ field }) => (
                   <input 
                     readOnly 
@@ -88,13 +94,37 @@ export const EditUserModal = ({ user, onClose }) => {
             </div>
             
             <div className="form-group">
+              <label htmlFor="studentEmail">
+                Student Email
+              </label>
+              <Controller
+                name="studentEmail"
+                control={control}
+                defaultValue={user.email}
+                rules={EMAIL_RULES}
+                render={({ field }) => (
+                  <>
+                    <input
+                      {...field}
+                      id="studentEmail"
+                      type="email"
+                      className={errors.studentEmail ? 'error' : ''}
+                      onBlur={() => trigger('studentEmail')}
+                    />
+                    {errors.studentEmail && <div className="error-message">{errors.studentEmail.message}</div>}
+                  </>
+                )}
+              />
+            </div>
+
+            <div className="form-group">
               <label htmlFor="studentsGrades">
                 Student Info
               </label>
               <Controller
                 name="studentsGrades"
                 control={control}
-                defaultValue={user.studentsGrades}
+                defaultValue={user.grades}
                 rules={{ required: 'Student info is required' }}
                 render={({ field }) => (
                   <>
@@ -112,9 +142,6 @@ export const EditUserModal = ({ user, onClose }) => {
                   </>
                 )}
               />
-              <small style={{ color: '#6c757d', fontSize: '12px', marginTop: '4px' }}>
-                Only student info can be modified
-              </small>
             </div>
 
             <div className="form-actions">
@@ -130,7 +157,7 @@ export const EditUserModal = ({ user, onClose }) => {
                 className="btn-primary" 
                 disabled={!isValid || isUpdating}
               >
-                {isUpdating ? 'Updating...' : 'Update Student Info'}
+                {isUpdating ? 'Updating...' : 'Update Student'}
               </button>
             </div>
           </form>

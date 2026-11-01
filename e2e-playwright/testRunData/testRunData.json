@@ -1,8 +1,7 @@
 [
     {
-       "name": "admin",
+       "email": "admin@example.com",
        "password": "admin",
-       "isAdmin": true,
        "dataTag": "adminTests"
     }
 ]

@@ -1,16 +1,8 @@
-import { useCallback } from 'react';
 import { StyledFavoritesButton } from './Favorites.styles';
 import { useStudents } from './useStudents';
 
 export const FavoriteButton = ({ user }) => {
-  const { updateFavorites, isUpdatingFavorites } = useStudents();
-
-  const handleUserFavorites = useCallback(() => {
-    updateFavorites({
-      students_number: user.students_number,
-      favorites: !user.favorites, // Toggle the favorite status
-    });
-  }, [user.students_number, user.favorites, updateFavorites]);
+  const { toggleFavorite, isUpdatingFavorites } = useStudents();
 
   if (isUpdatingFavorites) {
     return (
@@ -22,7 +14,7 @@ export const FavoriteButton = ({ user }) => {
 
   return (
     <StyledFavoritesButton
-      onClick={handleUserFavorites}
+      onClick={() => toggleFavorite(user)}
       title={user.favorites ? 'Remove from favorites' : 'Add to favorites'}
     >
       <i className={`fa-${user.favorites ? 'solid' : 'regular'} fa-star`}></i>

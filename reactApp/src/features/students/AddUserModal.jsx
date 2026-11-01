@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { CustomModal } from '../../components/Modal/Modal';
+import { EMAIL_RULES } from '../auth/validation';
 import { ModalForm } from './StudentModal.styles';
 import { useStudents } from './useStudents';
 
-export const AddUserModal = ({ onClose, onSuccess }) => {
+// Adds a student to one class; student numbers only need to be unique within that class
+export const AddUserModal = ({ classId, existingStudents, onClose }) => {
   const [isUserExist, setIsUserExist] = useState(false);
   const [userExistError, setUserExistError] = useState();
-  const { allStudents, createStudent, isCreating } = useStudents();
+  const { createStudent, isCreating } = useStudents();
 
   const {
     control,
@@ -20,10 +22,10 @@ export const AddUserModal = ({ onClose, onSuccess }) => {
   const handleInputChange = (value) => {
     if (!value) return;
   
-    const userExists = allStudents?.some(user => user.students_number === parseInt(value));
+    const userExists = existingStudents?.some((user) => user.student_number === parseInt(value, 10));
 
     setIsUserExist(userExists);
-    setUserExistError(userExists ? 'User number already exists' : '');
+    setUserExistError(userExists ? 'Student number already exists in this class' : '');
   };
 
   const handleCloseTheModal = () => {
@@ -31,6 +33,7 @@ export const AddUserModal = ({ onClose, onSuccess }) => {
     reset({
       studentName: '',
       studentsNumber: '',
+      studentEmail: '',
       studentsGrades: '',
     });
     onClose();
@@ -41,14 +44,15 @@ export const AddUserModal = ({ onClose, onSuccess }) => {
       return;
     }
 
-    const userData = {
-      studentName: data.studentName,
-      studentsNumber: parseInt(data.studentsNumber, 10),
-      studentsGrades: data.studentsGrades
+    const student = {
+      name: data.studentName,
+      student_number: parseInt(data.studentsNumber, 10),
+      email: data.studentEmail,
+      grades: data.studentsGrades,
     };
 
     // Close only on success so the user keeps their input if the request fails
-    createStudent(userData, { onSuccess: handleCloseTheModal });
+    createStudent({ classId, student }, { onSuccess: handleCloseTheModal });
   }
 
   return (
@@ -120,6 +124,31 @@ export const AddUserModal = ({ onClose, onSuccess }) => {
                         {isUserExist ? userExistError : errors.studentsNumber.message}
                       </div>
                     )}
+                  </>
+                )}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="studentEmail">Student Email</label>
+              <Controller
+                name="studentEmail"
+                control={control}
+                rules={EMAIL_RULES}
+                defaultValue=""
+                render={({ field }) => (
+                  <>
+                    <input
+                      {...field}
+                      id="studentEmail"
+                      name="studentEmail"
+                      required
+                      type="email"
+                      placeholder="student@example.com"
+                      className={errors.studentEmail ? 'error' : ''}
+                      onBlur={() => trigger('studentEmail')}
+                    />
+                    {errors.studentEmail && <div className="error-message">{errors.studentEmail.message}</div>}
                   </>
                 )}
               />

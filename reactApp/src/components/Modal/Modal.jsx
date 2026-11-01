@@ -5,6 +5,9 @@ import { StyledModal } from './Modal.styles';
 export const CustomModal = ({ isModalOpen, handleCloseTheModal, header, children }) => {
   useEffect(() => {
     Modal.setAppElement('#root'); // Assuming your root element has an id of 'root'
+    // react-modal can leave aria-hidden on #root when the modal unmounts while open (React 18 StrictMode),
+    // which hides the whole app from screen readers after the modal closes
+    return () => document.getElementById('root')?.removeAttribute('aria-hidden');
   }, []);
 
   return (

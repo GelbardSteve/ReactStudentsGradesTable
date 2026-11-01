@@ -21,7 +21,7 @@ export const StyledFormWrapper = styled.div`
    min-height: 600px;
 `;
 
-export const StyledForm = styled.form`
+export const StyledLoginPanel = styled.div`
     flex: 1;
     padding: 40px;
     display: flex;
