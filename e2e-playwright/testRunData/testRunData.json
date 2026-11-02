@@ -1,7 +1,12 @@
 [
-    {
-       "email": "admin@example.com",
-       "password": "admin",
-       "dataTag": "adminTests"
-    }
+  {
+    "project": "projectA",
+    "specs": "specs/projectA",
+    "user": { "email": "admin@example.com", "password": "admin" }
+  },
+  {
+    "project": "projectB",
+    "specs": "specs/projectB",
+    "user": { "email": "userb@example.com", "password": "userb-pass" }
+  }
 ]

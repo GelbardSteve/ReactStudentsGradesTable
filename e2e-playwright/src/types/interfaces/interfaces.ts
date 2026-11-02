@@ -1,5 +1,6 @@
 import type { ApiClient } from '../../../api/ApiClient';
 import type { LoginPage } from '../../pages/login/LoginPage';
+import type { ClassesPage } from '../../pages/table/ClassesPage';
 import type { AllureStatus } from '../enums/enums';
 
 export interface User {
@@ -7,10 +8,40 @@ export interface User {
   password: string;
 }
 
+// One entry of testRunData.json: a user and the project (specs folder) it owns
+export interface TestRunProject {
+  project: string;
+  specs: string;
+  user: User;
+}
+
+// Set per Playwright project in playwright.config.ts
+export interface UserOptions {
+  user: User;
+}
+
+export interface LoginResponse {
+  token: string;
+  email: string;
+}
+
+export interface ClassItem {
+  id: number;
+  name: string;
+}
+
+// Creates classes for a test and deletes them all when the test ends
+export interface ClassFactory {
+  create(api?: ApiClient): Promise<ClassItem>;
+}
+
 export interface Fixtures {
-  adminUser: User;
   api: ApiClient;
+  apiFor: (project: string) => ApiClient;
+  classFactory: ClassFactory;
+  testClass: ClassItem;
   loginPage: LoginPage;
+  classesPage: ClassesPage;
   failureAnalysis: void;
 }
 
@@ -34,4 +65,5 @@ export interface AllureTestCase {
   time: { duration: number };
   statusMessage?: string;
   descriptionHtml?: string;
+  labels: { name: string; value: string }[];
 }

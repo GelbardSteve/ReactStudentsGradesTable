@@ -17,9 +17,14 @@ const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.5-flash-lite';
 // What the AI needs to know about this project to read the test code correctly
 const PROJECT_CONTEXT = `
 - App: admin dashboard for classes and students (React, HashRouter). Login page is "/#/", after login the app goes to "/#/classes".
-- Fixture "adminUser": the VALID admin credentials from testRunData.json.
-- Fixture "loginPage": page object; login() fills email + password and clicks Sign In; expectError() checks the alert text.
-- An error alert is shown only when login fails ("Invalid email or password").
+- Each admin user sees and changes only their own classes and students.
+- Tests run per Playwright project; each project belongs to one user and starts already logged in as that user (except the "auth" project).
+- Fixture "user": the VALID credentials of the current project's user.
+- Fixture "api": API client logged in as the current user; "apiFor(project)": API client logged in as another project's user.
+- Fixtures "testClass" / "classFactory.create()": classes created for this test only (unique "e2e-..." names), deleted after the test.
+- Fixture "loginPage": login() fills email + password and clicks Sign In; expectError() checks the alert text.
+  An error alert is shown only when login fails ("Invalid email or password").
+- Fixture "classesPage": the "My Classes" table; expectClassVisible / expectClassNotListed check rows by class name.
 `;
 
 const INSTRUCTIONS = `You are a senior QA automation engineer analyzing a failed Playwright E2E test.

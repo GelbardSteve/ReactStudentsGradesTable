@@ -12,3 +12,6 @@ node_modules/
 auth.json
 /allure-results/
 /allure-report/
+
+# Saved logins per user (specs/auth.setup.ts)
+/.auth/

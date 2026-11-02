@@ -1,5 +1,5 @@
 import * as allure from 'allure-js-commons';
-import { expect, test } from '../fixtures';
+import { expect, test } from '../../fixtures';
 
 test.describe('Login', () => {
   test.beforeEach(async ({ loginPage }) => {
@@ -8,17 +8,17 @@ test.describe('Login', () => {
     await loginPage.open();
   });
 
-  test('admin can log in with valid credentials', async ({ page, loginPage, adminUser }) => {
+  test('admin can log in with valid credentials', async ({ page, loginPage, user }) => {
     await allure.severity(allure.Severity.BLOCKER);
-    await loginPage.login(adminUser);
+    await loginPage.login(user);
 
     await expect(page).toHaveURL(/#\/classes$/);
     expect(await page.evaluate(() => localStorage.getItem('adminToken'))).toBeTruthy();
   });
 
-  test('wrong password shows an error', async ({ page, loginPage, adminUser }) => {
+  test('wrong password shows an error', async ({ page, loginPage, user }) => {
     await allure.severity(allure.Severity.CRITICAL);
-    await loginPage.login({ email: adminUser.email, password: `${adminUser.password}-wrong` });
+    await loginPage.login({ email: user.email, password: `${user.password}-wrong` });
 
     await loginPage.expectError('Invalid email or password');
     await expect(page).toHaveURL(/#\/$/);

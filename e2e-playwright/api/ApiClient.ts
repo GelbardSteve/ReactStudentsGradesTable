@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse, expect } from '@playwright/test';
 
-export const API_URL = process.env.API_URL;
+export const API_URL = process.env.API_URL ?? 'http://localhost:4000';
 
 export class ApiClient {
   private token?: string;
@@ -18,6 +18,11 @@ export class ApiClient {
 
   async get<T>(path: string): Promise<T> {
     const response = await this.request.get(`${API_URL}${path}`, { headers: this.headers() });
+    return this.parse<T>(response);
+  }
+
+  async delete<T>(path: string): Promise<T> {
+    const response = await this.request.delete(`${API_URL}${path}`, { headers: this.headers() });
     return this.parse<T>(response);
   }
 

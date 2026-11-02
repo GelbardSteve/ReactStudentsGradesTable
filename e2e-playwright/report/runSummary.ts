@@ -22,6 +22,8 @@ const ICONS: Record<AllureStatus, string> = {
 
 const readJson = <T>(file: string): T => JSON.parse(fs.readFileSync(file, 'utf-8'));
 const seconds = (ms: number) => `${(ms / 1000).toFixed(1)}s`;
+// allure-playwright puts the Playwright project name in the parentSuite label
+const projectOf = (test: AllureTestCase) => test.labels.find((label) => label.name === 'parentSuite')?.value ?? '';
 const icon = (test: AllureTestCase) => (test.flaky ? '⚠️' : ICONS[test.status]);
 const isFailed = (test: AllureTestCase) => test.status === AllureStatus.Failed || test.status === AllureStatus.Broken;
 
@@ -38,7 +40,7 @@ const tests = fs
   .readdirSync(path.join(REPORT_DIR, 'data/test-cases'))
   .map((file) => readJson<AllureTestCase>(path.join(REPORT_DIR, 'data/test-cases', file)))
   .filter((test) => !test.retry) // keep only the final attempt of each test
-  .sort((a, b) => Number(isFailed(b)) - Number(isFailed(a)));
+  .sort((a, b) => projectOf(a).localeCompare(projectOf(b)) || Number(isFailed(b)) - Number(isFailed(a)));
 
 const { statistic } = summary;
 const failedCount = statistic.failed + statistic.broken;
@@ -49,15 +51,15 @@ const lines: string[] = [
     ? `### [📊 Open full Allure report](${reportUrl})\n_Screenshots, videos and traces. The page is ready about a minute after the run finishes._`
     : '',
   '',
-  '| | Test | Duration |',
-  '|---|---|---|',
-  ...tests.map((test) => `| ${icon(test)} | ${test.fullName} | ${seconds(test.time.duration)} |`),
+  '| | Project | Test | Duration |',
+  '|---|---|---|---|',
+  ...tests.map((test) => `| ${icon(test)} | ${projectOf(test)} | ${test.fullName} | ${seconds(test.time.duration)} |`),
 ];
 
 for (const test of tests.filter(isFailed)) {
   lines.push(
     '',
-    `### ❌ ${test.fullName}`,
+    `### ❌ [${projectOf(test)}] ${test.fullName}`,
     '**AI analysis**',
     '```text',
     aiAnalysis(test) ?? 'Not available',
