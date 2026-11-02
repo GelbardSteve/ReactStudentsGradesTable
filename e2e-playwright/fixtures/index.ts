@@ -5,7 +5,7 @@ import { LoginPage } from '../src/pages/login/LoginPage';
 import { ClassesPage } from '../src/pages/table/ClassesPage';
 import { ClassItem, Fixtures, UserOptions } from '../src/types/interfaces/interfaces';
 import testRunData from '../testRunData/testRunData.json';
-import { getAuthToken } from './authState';
+import { getAuthToken } from '../src/utils/authState';
 
 // Unique per test and run, so parallel tests never share data
 const uniqueName = (prefix: string) => `e2e-${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -39,7 +39,10 @@ export const test = base.extend<UserOptions & Fixtures>({
         return item;
       },
     });
-    for (const { api: owner, item } of created) await owner.delete(`/classes/${item.id}`);
+    // Try every delete, even if one fails, then report the failures
+    const results = await Promise.allSettled(created.map(({ api: owner, item }) => owner.deleteIfExists(`/classes/${item.id}`)));
+    const errors = results.filter((result) => result.status === 'rejected').map((result) => result.reason);
+    if (errors.length) throw new AggregateError(errors, `Cleanup failed for ${errors.length} class(es)`);
   },
   testClass: async ({ classFactory }, use) => {
     await use(await classFactory.create());

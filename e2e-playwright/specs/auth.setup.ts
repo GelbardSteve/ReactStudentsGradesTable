@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { test as setup } from '@playwright/test';
 import { ApiClient } from '../api/ApiClient';
-import { authFile } from '../fixtures/authState';
+import { authFile } from '../src/utils/authState';
 import { LoginResponse } from '../src/types/interfaces/interfaces';
 import testRunData from '../testRunData/testRunData.json';
 

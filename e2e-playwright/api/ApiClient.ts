@@ -26,6 +26,12 @@ export class ApiClient {
     return this.parse<T>(response);
   }
 
+  // For cleanup: an item the test already deleted (404) counts as deleted
+  async deleteIfExists(path: string): Promise<void> {
+    const response = await this.request.delete(`${API_URL}${path}`, { headers: this.headers() });
+    if (response.status() !== 404) expect(response, `${response.url()} -> ${response.status()}`).toBeOK();
+  }
+
   private headers(): Record<string, string> {
     return this.token ? { Authorization: `Bearer ${this.token}` } : {};
   }

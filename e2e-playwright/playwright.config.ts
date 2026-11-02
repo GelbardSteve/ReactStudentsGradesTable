@@ -4,7 +4,7 @@ import path from 'path';
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 import { defineConfig, devices } from '@playwright/test';
-import { authFile } from './fixtures/authState';
+import { authFile } from './src/utils/authState';
 import { UserOptions } from './src/types/interfaces/interfaces';
 import testRunData from './testRunData/testRunData.json';
 

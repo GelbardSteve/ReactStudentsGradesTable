@@ -5,7 +5,7 @@ import type { BrowserContext } from '@playwright/test';
 type StorageState = Awaited<ReturnType<BrowserContext['storageState']>>;
 
 // Each user logs in once (specs/auth.setup.ts) and its session is saved here as Playwright storageState
-export const authFile = (project: string) => path.resolve(__dirname, `../.auth/${project}.auth.json`);
+export const authFile = (project: string) => path.resolve(__dirname, `../../.auth/${project}.auth.json`);
 
 // The API token is the adminToken the app keeps in localStorage, read from the user's auth.json
 export const getAuthToken = (project: string): string => {

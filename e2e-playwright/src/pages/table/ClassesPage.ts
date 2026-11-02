@@ -1,4 +1,4 @@
-import { expect, Locator, Page, test } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from '../BasePage';
 
 export class ClassesPage extends BasePage {
@@ -14,10 +14,8 @@ export class ClassesPage extends BasePage {
   }
 
   async open() {
-    await test.step('Open classes page', async () => {
-      await this.goto();
-      await expect(this.heading).toBeVisible();
-    });
+    await this.goto();
+    await expect(this.heading).toBeVisible();
   }
 
   row(className: string): Locator {
@@ -25,14 +23,10 @@ export class ClassesPage extends BasePage {
   }
 
   async expectClassVisible(className: string) {
-    await test.step(`Verify class "${className}" is listed`, async () => {
-      await expect(this.row(className)).toBeVisible();
-    });
+    await expect(this.row(className)).toBeVisible();
   }
 
   async expectClassNotListed(className: string) {
-    await test.step(`Verify class "${className}" is not listed`, async () => {
-      await expect(this.row(className)).toHaveCount(0);
-    });
+    await expect(this.row(className)).toHaveCount(0);
   }
 }
