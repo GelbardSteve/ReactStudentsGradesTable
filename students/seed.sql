@@ -1,9 +1,10 @@
 -- Demo data. Run after schema.sql: mysql -u root -p < students/seed.sql
--- Login: admin@example.com / admin (already verified)
+-- Logins (already verified): admin@example.com / admin (E2E projectA), userb@example.com / userb-pass (E2E projectB)
 USE stevegel_students;
 
 INSERT INTO admins (id, email, password_hash, is_verified) VALUES
-  (1, 'admin@example.com', '$2a$10$crs3lKK29YwfNyrrxp5i9uAQN/csbiQr.V2Is5rF0HfaVJhQGwTg6', 1);
+  (1, 'admin@example.com', '$2a$10$crs3lKK29YwfNyrrxp5i9uAQN/csbiQr.V2Is5rF0HfaVJhQGwTg6', 1),
+  (2, 'userb@example.com', '$2a$10$BnvEoUYydQyat.JXzrBIEumQbwSvQV3vSU6G6TYihmyyLjb6ooENa', 1);
 
 INSERT INTO classes (id, admin_id, name) VALUES
   (1, 1, 'Math 101'),
