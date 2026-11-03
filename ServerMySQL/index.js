@@ -6,6 +6,7 @@ const app = express();
 const cors = require('cors');
 const getFunc = require('./exportsFunctions');
 const createRequireAdmin = require('./middleware/requireAdmin');
+const mountAi = require('./ai');
 
 // Load local env vars (DB credentials) from .env if present; see .env.example
 const envPath = path.join(__dirname, '.env');
@@ -18,9 +19,6 @@ if (!process.env.DB_PASSWORD) {
   process.exit(1);
 }
 
-app.use(cors());
-app.use(express.json());
-
 // A pool reconnects automatically if MySQL drops an idle connection
 const mysqlConnection = mysql.createPool({
   host: process.env.DB_HOST || '127.0.0.1',
@@ -30,6 +28,12 @@ const mysqlConnection = mysql.createPool({
   database: process.env.DB_NAME || 'stevegel_students',
   connectionLimit: 10,
 });
+const requireAdmin = createRequireAdmin(mysqlConnection);
+
+app.use(cors());
+// Before express.json(): the assistant parses its own, larger request bodies
+mountAi(app, mysqlConnection, requireAdmin);
+app.use(express.json());
 
 mysqlConnection.query('SELECT 1', (err) => {
   if (err) {
@@ -41,8 +45,6 @@ mysqlConnection.query('SELECT 1', (err) => {
 
 const PORT = Number(process.env.PORT) || 4000;
 app.listen(PORT, () => console.log(`Express server is running on port ${PORT}`));
-
-const requireAdmin = createRequireAdmin(mysqlConnection);
 
 getFunc.auth(app, mysqlConnection, requireAdmin);
 getFunc.classes(app, mysqlConnection, requireAdmin);
