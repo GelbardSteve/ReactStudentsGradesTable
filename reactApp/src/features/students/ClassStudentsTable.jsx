@@ -4,6 +4,7 @@ import { Pagination } from '../../components/Pagination/Pagination';
 import { SearchInput } from '../../components/Search/Search';
 import { AddUserModal } from './AddUserModal';
 import { EditUserModal } from './EditUserModal';
+import { GradesModal } from './GradesModal';
 import { StudentsTable } from './StudentsTable';
 import { TableWrapper } from './Table.styles';
 import { useClass } from '../classes/useClasses';
@@ -14,11 +15,13 @@ const ITEMS_PER_PAGE = 10;
 export const ClassStudentsTable = () => {
   const classId = Number(useParams().classId);
   const { data: classItem, error: classError } = useClass(classId);
-  const { allStudents, isLoading, error, deleteStudent, sendGrades, sendingGradesId } = useStudents(classId);
+  const { allStudents, isLoading, error, deleteStudent } = useStudents(classId);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  // The student whose grades modal is open; grades are sent only from that modal
+  const [gradesStudent, setGradesStudent] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
   const [tableHeight, setTableHeight] = useState(() => {
@@ -56,12 +59,6 @@ export const ClassStudentsTable = () => {
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
       deleteStudent(id);
-    }
-  };
-
-  const handleSendGrades = (student) => {
-    if (window.confirm(`Email ${student.name}'s grades to ${student.email}?`)) {
-      sendGrades(student);
     }
   };
 
@@ -139,8 +136,7 @@ export const ClassStudentsTable = () => {
         data={currentItems}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        onSendGrades={handleSendGrades}
-        sendingGradesId={sendingGradesId}
+        onViewGrades={setGradesStudent}
         onSort={handleSort}
         sortField="student_number"
         sortDirection={sortDirection}
@@ -165,6 +161,8 @@ export const ClassStudentsTable = () => {
           onSuccess={() => setShowAddModal(false)}
         />
       )}
+
+      {gradesStudent && <GradesModal student={gradesStudent} onClose={() => setGradesStudent(null)} />}
 
       {showEditModal && selectedUser && (
         <EditUserModal

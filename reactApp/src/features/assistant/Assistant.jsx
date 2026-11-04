@@ -1,5 +1,5 @@
 import { matchPath, useLocation } from 'react-router-dom';
-import { CopilotKit, CopilotPopup, useAgentContext } from '@copilotkit/react-core/v2';
+import { CopilotKit, CopilotSidebar, useAgentContext } from '@copilotkit/react-core/v2';
 import '@copilotkit/react-core/v2/styles.css';
 import { apiClient } from '../../api/client';
 import { getToken } from '../auth/session';
@@ -19,13 +19,13 @@ const CurrentPageContext = () => {
   return null;
 };
 
-// The AI chat popup. It sits next to the page rather than wrapping it: pages don't use CopilotKit,
+// The AI chat sidebar. It sits next to the page rather than wrapping it: pages don't use CopilotKit,
 // so this can load lazily. What the agent can read or change is decided by the server's tools, not here.
 const Assistant = () => (
   <CopilotKit runtimeUrl={RUNTIME_URL} headers={{ Authorization: `Bearer ${getToken()}` }}>
     <CurrentPageContext />
     <AssistantTools />
-    <CopilotPopup
+    <CopilotSidebar
       labels={{
         modalHeaderTitle: 'Class Assistant',
         welcomeMessageText: 'Ask about your classes and students, or ask me to add, update, delete or favorite them.',

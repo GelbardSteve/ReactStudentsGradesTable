@@ -136,49 +136,51 @@ export const TableWrapper = styled.div`
             width: 100%;
 
             thead {
-                background: #f8f9fa;
+                background: #fafbfc;
                 z-index: 10;
 
                 th {
                     border: none;
-                    padding: 16px 20px;
+                    padding: 14px 20px;
                     font-weight: 600;
                     text-align: left;
-                    color: #495057;
-                    cursor: pointer;
+                    color: #6c757d;
                     user-select: none;
-                    font-size: 13px;
+                    font-size: 12px;
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
-                    transition: all 0.2s ease;
-                    border-bottom: 2px solid #dee2e6;
+                    border-bottom: 1px solid #e9ecef;
 
-                    &:hover {
-                        background: #e9ecef;
-                        color: #212529;
+                    &.sortable {
+                        cursor: pointer;
+                        transition: color 0.2s ease;
+
+                        &:hover {
+                            color: #212529;
+                        }
+                    }
+
+                    &.actions-header {
+                        text-align: right;
                     }
                 }
             }
 
             tbody {
                 tr {
-                    border-bottom: 1px solid #f8f9fa;
-                    transition: all 0.2s ease;
+                    border-bottom: 1px solid #eef0f2;
+                    transition: background 0.15s ease;
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
 
                     &:hover {
-                        background: #f8f9fa;
-                    }
-
-                    &:nth-child(even) {
-                        background: rgba(248, 249, 250, 0.5);
-                    }
-
-                    &:nth-child(even):hover {
-                        background: #f8f9fa;
+                        background: #f8fafc;
                     }
 
                     td {
-                        padding: 16px 20px;
+                        padding: 12px 20px;
                         text-align: left;
                         vertical-align: middle;
                         border: none;
@@ -194,8 +196,7 @@ export const TableWrapper = styled.div`
 
                         &:nth-child(2) {
                             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-                            color: #3498db;
-                            font-weight: 500;
+                            color: #6c757d;
                         }
                     }
                 }
@@ -277,6 +278,70 @@ export const TableWrapper = styled.div`
             transform: none !important;
             box-shadow: none !important;
         }
+    }
+
+    /* Row actions: small, neutral buttons; colour only shows on hover, red is kept for Delete */
+    .action-cell {
+        width: 1%;
+        white-space: nowrap;
+    }
+
+    .row-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+
+        &.grades-actions {
+            justify-content: flex-start;
+        }
+
+        .btn {
+            min-width: 0;
+            padding: 5px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #495057;
+            font-size: 13px;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0;
+            transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+            &:before {
+                display: none;
+            }
+
+            &:hover {
+                transform: none;
+                box-shadow: none;
+                background: #f1f5f9;
+                border-color: #cbd5e1;
+                color: #212529;
+            }
+
+            &.btn-outline-primary:hover {
+                color: #2980b9;
+                border-color: #a9cce3;
+                background: #eef6fc;
+            }
+
+            &.btn-outline-danger {
+                color: #c0392b;
+
+                &:hover {
+                    color: #a93226;
+                    border-color: #f1b0a9;
+                    background: #fdf1f0;
+                }
+            }
+        }
+    }
+
+    .no-grades {
+        color: #adb5bd;
+        font-size: 13px;
     }
 
     /* Loading state */
@@ -482,9 +547,7 @@ export const TableWrapper = styled.div`
                 }
 
                 &.action-cell {
-                    flex: 1 1 0;
-                    width: auto;
-                    justify-content: center;
+                    width: 100%;
                     padding-top: 0.5rem;
                     border-top: 1px solid #f1f3f4;
 
@@ -492,12 +555,13 @@ export const TableWrapper = styled.div`
                         display: none;
                     }
 
-                    .btn {
+                    .row-actions {
                         width: 100%;
-                        min-width: 0;
-                        padding: 8px 4px;
-                        font-size: 11px;
-                        letter-spacing: 0;
+
+                        .btn {
+                            flex: 1;
+                            padding: 8px 4px;
+                        }
                     }
                 }
 

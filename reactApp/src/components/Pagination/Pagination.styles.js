@@ -99,15 +99,26 @@ export const StyledNav = styled.nav`
                         border-color: #2980b9;
                     }
                 }
+
+                /* Bigger arrow glyphs; the line-height keeps them as tall as the number buttons */
+                &.page-arrow {
+                    font-size: 24px;
+                    line-height: 20px;
+                }
             }
         }
     }
-    
+
     @media (max-width: 768px) {
         ul li button {
             padding: 10px 14px;
             font-size: 12px;
             min-width: 40px;
+
+            &.page-arrow {
+                font-size: 20px;
+                line-height: 18px;
+            }
         }
     }
 `;

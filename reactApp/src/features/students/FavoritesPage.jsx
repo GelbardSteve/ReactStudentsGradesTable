@@ -4,6 +4,7 @@ import { EditUserModal } from './EditUserModal';
 import { FavoriteButton } from './FavoriteButton';
 import {
     ActionButtons,
+    Avatar,
     CardHeader,
     EmptyState,
     FavoriteCard,
@@ -15,6 +16,20 @@ import {
     StyleFavoritesContainer
 } from './Favorites.styles';
 import { useFavoriteStudents, useStudents } from './useStudents';
+
+// Muted colours that each read well behind white initials
+const ACCENT_COLORS = ['#3498db', '#16a085', '#8e44ad', '#d35400', '#c0392b', '#27ae60', '#34495e', '#b7950b'];
+
+// Picked from the id, so a student keeps the same colour between visits
+const accentFor = (id) => ACCENT_COLORS[id % ACCENT_COLORS.length];
+
+const initialsOf = (name = '') =>
+  name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? '')
+    .join('');
 
 export const FavoritesPage = () => {
   const { favorites: favoriteUsers } = useFavoriteStudents();
@@ -46,8 +61,11 @@ export const FavoritesPage = () => {
             const { id, name, student_number, grades, class_name } = user;
 
             return (
-              <FavoriteCard key={id}>
+              <FavoriteCard key={id} $accent={accentFor(id)}>
                 <CardHeader>
+                  <Avatar $accent={accentFor(id)} aria-hidden="true">
+                    {initialsOf(name)}
+                  </Avatar>
                   <StudentName>{name}</StudentName>
                   <FavoriteButton user={user} />
                 </CardHeader>

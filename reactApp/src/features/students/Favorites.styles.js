@@ -5,8 +5,6 @@ export const StyleFavoritesContainer = styled.div`
   flex-direction: column;
   gap: 2rem;
   padding: 2rem;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   
   @media (max-width: 768px) {
     padding: 1rem;
@@ -18,11 +16,10 @@ export const FavoritesHeader = styled.div`
   margin-bottom: 2rem;
   
   h1 {
-    color: white;
-    font-size: 3rem;
+    color: #2c3e50;
+    font-size: 2.25rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     
     @media (max-width: 768px) {
       font-size: 2rem;
@@ -30,8 +27,8 @@ export const FavoritesHeader = styled.div`
   }
   
   p {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.2rem;
+    color: #6c757d;
+    font-size: 1.1rem;
     margin: 0;
     
     @media (max-width: 768px) {
@@ -55,10 +52,11 @@ export const FavoritesGrid = styled.div`
 `;
 
 export const FavoriteCard = styled.div`
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #e1e5e9;
+  border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -70,19 +68,12 @@ export const FavoriteCard = styled.div`
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
-  }
-  
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    background: ${({ $accent }) => $accent};
   }
   
   &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
   }
   
   @media (max-width: 768px) {
@@ -94,9 +85,26 @@ export const CardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid #f0f0f0;
+`;
+
+// Initials in the student's own colour, so cards are easy to tell apart at a glance
+export const Avatar = styled.div`
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: ${({ $accent }) => $accent};
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
 `;
 
 export const StudentName = styled.h3`
@@ -112,8 +120,8 @@ export const StudentName = styled.h3`
 `;
 
 export const StudentNumber = styled.div`
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
+  background: #eaf4fb;
+  color: #2980b9;
   padding: 0.5rem 1rem;
   border-radius: 25px;
   font-weight: 600;
@@ -145,18 +153,18 @@ export const GradesInfo = styled.div`
 export const EmptyState = styled.div`
   text-align: center;
   padding: 4rem 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
+  background: #ffffff;
+  border: 1px solid #e1e5e9;
+  border-radius: 12px;
   
   h2 {
-    color: white;
+    color: #2c3e50;
     font-size: 2rem;
     margin-bottom: 1rem;
   }
   
   p {
-    color: rgba(255, 255, 255, 0.8);
+    color: #6c757d;
     font-size: 1.1rem;
     margin: 0;
   }
@@ -166,15 +174,15 @@ export const StyledFavoritesButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.5rem;
-  color: #ffd700;
-  padding: 0.5rem;
+  font-size: 1.05rem;
+  color: #f0b429;
+  padding: 0.25rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 32px;
+  min-height: 32px;
   position: relative;
   
   &:active {
@@ -230,14 +238,14 @@ export const ActionButtons = styled.div`
     
     &.btn-outline-secondary {
       background: transparent;
-      color: #667eea;
-      border-color: #667eea;
+      color: #3498db;
+      border-color: #3498db;
       
       &:hover {
-        background: #667eea;
+        background: #3498db;
         color: white;
         transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
       }
     }
     
