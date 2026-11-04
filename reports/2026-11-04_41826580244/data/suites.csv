@@ -1,0 +1,8 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","1278","Sign In is disabled when fields are empty","auth","2026-11-04","passed","2026-11-04","Login","auth/VerifyLogin.spec.ts","",""
+"","314","login as projectA user","setup","2026-11-04","passed","2026-11-04","","auth.setup.ts","",""
+"","3266","wrong password shows an error","auth","2026-11-04","passed","2026-11-04","Login","auth/VerifyLogin.spec.ts","",""
+"","247","login as projectB user","setup","2026-11-04","passed","2026-11-04","","auth.setup.ts","",""
+"","1424","does not show another user's class","projectB","2026-11-04","passed","2026-11-04","Class isolation between users","projectB/VerifyClassIsolation.spec.ts","",""
+"","1387","shows a class the user created","projectA","2026-11-04","passed","2026-11-04","Classes page","projectA/VerifyClassesPage.spec.ts","",""
+"","2479","admin can log in with valid credentials","auth","2026-11-04","passed","2026-11-04","Login","auth/VerifyLogin.spec.ts","",""
